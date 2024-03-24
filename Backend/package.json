@@ -1,0 +1,22 @@
+{
+  "name": "buet-storms-end-code-samurai-mock-24",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "author": "BUET Storm's End",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "express-promise-router": "^4.1.1",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "node-postgres": "^0.6.2",
+    "nodemon": "^3.0.3",
+    "pg": "^8.11.3"
+  }
+}
