@@ -3,7 +3,7 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const cors = require("cors");
-const pool = require('./src/pool');
+const dbInit = require("./src/db/init");
 const app = express();
 
 app.use(helmet());
@@ -11,19 +11,15 @@ app.use(morgan("common"));
 app.use(cors());
 app.use(express.json());
 
-
-const BOOK_TABLE = `
-CREATE TABLE IF NOT EXISTS public.books (
-    id INTEGER PRIMARY KEY,
-    title TEXT NOT NULL,
-    author TEXT NOT NULL,
-    genre TEXT NOT NULL,
-    price FLOAT NOT NULL
-);`
-
-pool.query(BOOK_TABLE)
-    .then(() => console.log("Table created successfully"))
-    .catch((error) => console.log(error));
+while (true) {
+  console.log("Waiting for db");
+  try {
+    dbInit("./init_ddl.sql");
+    break;
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 app.get("/", (req, res) => {
     res.json({
@@ -33,7 +29,7 @@ app.get("/", (req, res) => {
 
 app.use("/api", require("./src/route"));
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

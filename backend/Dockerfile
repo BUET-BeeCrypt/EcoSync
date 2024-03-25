@@ -6,5 +6,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-EXPOSE 5000
+ENV DB_URL="postgres://mfbduoao:m5M02hX1ObP_C3zALot-FX7TAlEY5D7s@rain.db.elephantsql.com/mfbduoao"
+EXPOSE 8000
 CMD [ "npm", "start"]

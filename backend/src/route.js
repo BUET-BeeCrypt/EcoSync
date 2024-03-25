@@ -1,10 +1,11 @@
-const { addBook, editBook, getBook, getBooks } = require('./controller');
-
 const router = require('express-promise-router')();
 
-router.post("/books", addBook);
-router.put("/books/:id", editBook);
-router.get("/books/:id", getBook);
-router.get("/books", getBooks);
+// router.use('/books', require('./book/route'));
+router.use('/users', require('./user/route'));
+router.use('/wallets', require('./user/route-wallet'));
+router.use('/stations', require('./station/route'));
+router.use('/trains', require('./train/route'));
+router.use('/tickets', require('./ticket/route'));
+router.use('/routes', require('./route/route'));
 
 module.exports = router;
