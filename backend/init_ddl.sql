@@ -12,15 +12,21 @@
 -- Bill (bill_id, vehicle_id, timestamp, billed_amount)
 
 
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
 
 CREATE TABLE public."User"
 (
     user_id serial NOT NULL,
     name character varying(256) NOT NULL,
+    username character varying(256) NOT NULL,
     email character varying(256) NOT NULL,
     password character varying(512) NOT NULL,
     PRIMARY KEY (user_id)
 );
+
+-- Insert admin user
+INSERT INTO public."User" (name, username, email, password) VALUES ('admin', 'admin', 'admin@admin.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa');
 
 CREATE TABLE public."Role"
 (
@@ -29,6 +35,11 @@ CREATE TABLE public."Role"
     details character varying(256) NOT NULL,
     PRIMARY KEY (role_id)
 );
+
+INSERT INTO public."Role" (name, details) VALUES ('system-admin', 'System Admin role');
+INSERT INTO public."Role" (name, details) VALUES ('sts-manager', 'STS Manager role');
+INSERT INTO public."Role" (name, details) VALUES ('landfill-manager', 'Landfill Manager role');
+INSERT INTO public."Role" (name, details) VALUES ('unassigned', 'Unassigned role');
 
 CREATE TABLE public."User_Role"
 (
@@ -44,6 +55,9 @@ CREATE TABLE public."User_Role"
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
+
+-- give admin user sysadmin role
+INSERT INTO public."User_Role" (user_id, role_id) VALUES (1, 1);
 
 CREATE TABLE public."Permission"
 (
