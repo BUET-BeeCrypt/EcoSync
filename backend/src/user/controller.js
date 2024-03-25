@@ -1,50 +1,72 @@
 const repository = require("./repository");
 const modules = {};
 
+// modules.addUser = async (req, res) => {
+//   const user = req.body;
+//   const createdUser = await repository.createUser(user);
+//   res.status(201).json(createdUser);
+// };
+
+
+modules.getAllUsers = async (req, res) => {
+  const users = await repository.getUsers();
+  res.status(200).json(users);
+};
+
+modules.getUser = async (req, res) => {
+  const user_id = req.params.user_id;
+  const user = await repository.getUser(id);
+  res.status(200).json(user);
+}
+
 modules.addUser = async (req, res) => {
   const user = req.body;
   const createdUser = await repository.createUser(user);
   res.status(201).json(createdUser);
-};
+}
 
-const userToWallet = (user) => ({
-  wallet_id: user.user_id,
-  balance: user.balance,
-  wallet_user: { user_id: user.user_id, user_name: user.user_name },
-});
+modules.deleteUser = async(req, res) => {
+  const user_id = req.params.user_id;
+  await repository.deleteUser(user_id);
+  res.status(200).json({"message":"Deleted successfully"});
+}
 
-modules.getWallet = async (req, res) => {
-  const walletId = req.params.wallet_id;
-  try {
-    const user = await repository.getWallet(walletId);
-    res.status(200).json(userToWallet(user));
-  } catch (error) {
-    console.log(error);
-    const { code, message } = error;
-    res.status(code).json({ message });
+modules.updateUser = async (req, res) => {
+  const loggedInUser = req.user;
+  const user_id = req.params.user_id;
+  const user = req.body;
+  if( loggedInUser.role !== "admin" && loggedInUser.user_id !== user_id ){
+    return res.status(401).json({message: `Unauthorized`});
   }
-};
+  const updatedUser = await repository.updateUser(user_id, user);
+  res.status(200).json(updatedUser);
+}
 
-modules.addWalletBalance = async (req, res) => {
-  const walletId = req.params.wallet_id;
-  const recharge = req.body.recharge;
-  try {
-    if (Number.isNaN(recharge)) {
-      throw { code: 400, message: "recharge must be an integer" };
-    }
-    
-    let rechargeInt = parseInt(recharge);
-    if (rechargeInt > 10000 || rechargeInt < 100) {
-      throw { code: 400, message: `invalid amount: ${rechargeInt}` };
-    }
+modules.getAllRoles = async (req, res) => {
+  const roles = await repository.getAllRoles();
+  res.status(201).json(roles);
+}
 
-    const user = await repository.rechargeWallet(walletId, rechargeInt);
-    res.status(200).json(userToWallet(user));
-  } catch (error) {
-    console.log(error);
-    const { code, message } = error;
-    res.status(code).json({ message });
+modules.updateUserRoles = async (req, res) => {
+  const user_id = req.params.user_id;
+  const roles = req.body.roles;
+  for(const role in roles){
+    await repository.addRole(user_id,role);
   }
-};
+  return res.status(201).json({"message":"Roles updated successfully"});
+}
+
+modules.getProfile = async (req, res) => {
+  const user = req.user;
+  const userProfile = await repository.getUser(user.user_id);
+  return res.status(201).json(userProfile);
+}
+
+modules.updateProfile = async (req, res) => {
+  const user = req.user;
+  const userProfile = req.body.profile;
+  await repository.updateUser(user.user_id, userProfile);
+}
+
 
 module.exports = modules;
