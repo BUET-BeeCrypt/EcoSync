@@ -1,23 +1,26 @@
 version: "3.8"
 services:
   web:
-    depends_on:
-      - pg-db
     build: .
+    depends_on:
+      pg-db:
+        condition: service_healthy
+
+    restart: on-failure
     environment:
-      DB_URL: postgresql://pg-db:5432/codes-samurai-mock?user=postgres&password=password
-      PORT: 5000
+      DB_URL: postgresql://pg-db:5432/code-samurai?user=postgres&password=password
+      PORT: 8000
     ports:
-      - "5000:5000"
+      - "8000:8000"
   
   pg-db: 
     image: postgres:16.1-alpine3.19
     environment:
-      POSTGRES_DB: codes-samurai-mock
+      POSTGRES_DB: code-samurai
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-    volumes: 
-      - db-data:/var/lib/postgresql/data
-
-volumes:
-  db-data:
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 5s
+      timeout: 5s
+      retries: 10
