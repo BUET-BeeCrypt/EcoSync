@@ -33,8 +33,8 @@ CREATE TABLE public."User"
 (
     user_id serial NOT NULL,
     name character varying(256) NOT NULL,
-    username character varying(256) NOT NULL,
-    email character varying(256) NOT NULL,
+    username character varying(256) UNIQUE NOT NULL,
+    email character varying(256) UNIQUE NOT NULL,
     password character varying(512) NOT NULL,
     active boolean NOT NULL DEFAULT false,
     banned boolean NOT NULL DEFAULT false,
@@ -49,6 +49,16 @@ CREATE TABLE public."User"
 -- Insert admin user
 INSERT INTO public."User" (name, username, email, password, role_id, active) VALUES ('admin', 'admin', 'admin@admin.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa',1, true);
 
+CREATE TABLE public."Refresh_Token"
+(
+    user_id integer NOT NULL,
+    token character varying(512) NOT NULL,
+    PRIMARY KEY (user_id,token),
+    FOREIGN KEY (user_id)
+        REFERENCES public."User" (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
 
 
 -- CREATE TABLE public."User_Role"

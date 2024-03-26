@@ -35,8 +35,20 @@ function signConfirmCodeToken(username, confirmCode) {
   return confirmCodeToken;
 }
 
+function signForgetPasswordToken(username) {
+  const forgetPasswordToken = sign(
+    { username: username, type: 'forget-password-token'},
+    jwtSecretKey,
+    {
+      expiresIn: '1h',
+    }
+  );
+  return forgetPasswordToken;
+}
+
 module.exports = {
   signAccessToken,
   signRefreshToken,
   signConfirmCodeToken,
+  signForgetPasswordToken
 };

@@ -3,7 +3,8 @@ const dotenv = require("dotenv").config();
 
 const checkAuth = (req, res, next) => {
   try {
-    const token = req.headers.authorization;
+    let token = req.headers.authorization;
+    if( token && token.startsWith("Bearer ") ) token = token.split(" ")[1];
     if( !token ) return res.status(401).json({ message: "Authorization required!" });
     
     const decoded = verify(token, process.env.JWT_SECRET_KEY);
