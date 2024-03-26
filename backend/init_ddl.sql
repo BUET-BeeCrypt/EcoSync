@@ -12,17 +12,23 @@
 -- Bill (bill_id, vehicle_id, timestamp, billed_amount)
 
 
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
 
-CREATE TABLE public."Users"
+CREATE TABLE public."User"
 (
     user_id serial NOT NULL,
     name character varying(256) NOT NULL,
+    username character varying(256) NOT NULL,
     email character varying(256) NOT NULL,
     password character varying(512) NOT NULL,
     PRIMARY KEY (user_id)
 );
 
-CREATE TABLE public."Roles"
+-- Insert admin user
+INSERT INTO public."User" (name, username, email, password) VALUES ('admin', 'admin', 'admin@admin.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa');
+
+CREATE TABLE public."Role"
 (
     role_id serial NOT NULL,
     name character varying(256) NOT NULL,
@@ -30,22 +36,30 @@ CREATE TABLE public."Roles"
     PRIMARY KEY (role_id)
 );
 
+INSERT INTO public."Role" (name, details) VALUES ('system-admin', 'System Admin role');
+INSERT INTO public."Role" (name, details) VALUES ('sts-manager', 'STS Manager role');
+INSERT INTO public."Role" (name, details) VALUES ('landfill-manager', 'Landfill Manager role');
+INSERT INTO public."Role" (name, details) VALUES ('unassigned', 'Unassigned role');
+
 CREATE TABLE public."User_Role"
 (
     user_id integer NOT NULL,
     role_id integer NOT NULL,
     PRIMARY KEY (user_id, role_id),
     FOREIGN KEY (role_id)
-        REFERENCES public."Roles" (role_id) MATCH SIMPLE
+        REFERENCES public."Role" (role_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     FOREIGN KEY (user_id)
-        REFERENCES public."Users" (user_id) MATCH SIMPLE
+        REFERENCES public."User" (user_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
 
-CREATE TABLE public."Permissions"
+-- give admin user sysadmin role
+INSERT INTO public."User_Role" (user_id, role_id) VALUES (1, 1);
+
+CREATE TABLE public."Permission"
 (
     permission_id serial NOT NULL,
     name character varying(256) NOT NULL,
@@ -59,16 +73,16 @@ CREATE TABLE public."Permission_Role"
     role_id integer NOT NULL,
     PRIMARY KEY (permission_id, role_id),
     FOREIGN KEY (permission_id)
-        REFERENCES public."Permissions" (permission_id) MATCH SIMPLE
+        REFERENCES public."Permission" (permission_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     FOREIGN KEY (role_id)
-        REFERENCES public."Roles" (role_id) MATCH SIMPLE
+        REFERENCES public."Role" (role_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
 
-CREATE TABLE public."Landfills"
+CREATE TABLE public."Landfill"
 (
     landfill_id serial NOT NULL,
     manager_id integer NOT NULL,
@@ -77,7 +91,7 @@ CREATE TABLE public."Landfills"
     longitude double precision NOT NULL,
     PRIMARY KEY (landfill_id),
     FOREIGN KEY (manager_id)
-        REFERENCES public."Users" (user_id) MATCH SIMPLE
+        REFERENCES public."User" (user_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
@@ -93,12 +107,12 @@ CREATE TABLE public."STS"
     longitude double precision NOT NULL,
     PRIMARY KEY (sts_id),
     FOREIGN KEY (manager_id)
-        REFERENCES public."Users" (user_id) MATCH SIMPLE
+        REFERENCES public."User" (user_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
 
-CREATE TABLE public."Vehicles"
+CREATE TABLE public."Vehicle"
 (
     vehicle_id serial NOT NULL,
     type character varying(256) NOT NULL,
@@ -106,7 +120,7 @@ CREATE TABLE public."Vehicles"
     PRIMARY KEY (vehicle_id)
 );
 
-CREATE TABLE public."Landfill_Entries"
+CREATE TABLE public."Landfill_entry"
 (
     landfill_entry_id serial NOT NULL,
     landfill_id integer NOT NULL,
@@ -116,17 +130,17 @@ CREATE TABLE public."Landfill_Entries"
     volume double precision NOT NULL,
     PRIMARY KEY (landfill_entry_id),
     FOREIGN KEY (landfill_id)
-        REFERENCES public."Landfills" (landfill_id) MATCH SIMPLE
+        REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     FOREIGN KEY (vehicle_id)
-        REFERENCES public."Vehicles" (vehicle_id) MATCH SIMPLE
+        REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 
 );
 
-CREATE TABLE public."STS_Entries"
+CREATE TABLE public."STS_entry"
 (
     sts_entry_id serial NOT NULL,
     sts_id integer NOT NULL,
@@ -140,13 +154,13 @@ CREATE TABLE public."STS_Entries"
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     FOREIGN KEY (vehicle_id)
-        REFERENCES public."Vehicles" (vehicle_id) MATCH SIMPLE
+        REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 
 );
 
-CREATE TABLE public."Bills"
+CREATE TABLE public."Bill"
 (
     bill_id serial NOT NULL,
     vehicle_id integer NOT NULL,
@@ -154,7 +168,7 @@ CREATE TABLE public."Bills"
     timestamp integer NOT NULL,
     PRIMARY KEY (bill_id),
     FOREIGN KEY (vehicle_id)
-        REFERENCES public."Vehicles" (vehicle_id) MATCH SIMPLE
+        REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 

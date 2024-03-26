@@ -14,7 +14,7 @@ services:
       - "8000:8000"
   
   pg-db: 
-    image: postgres:16.1-alpine3.19
+    image: postgres:16.2-alpine
     environment:
       POSTGRES_DB: code-samurai
       POSTGRES_USER: postgres

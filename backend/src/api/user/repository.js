@@ -77,6 +77,5 @@ const deleteUserRole = async(user_id, role_id) => {
 
 module.exports = {
 	createUser,
-	getAllUsers,
-
+	getAllUsers
 };
