@@ -10,7 +10,7 @@ const createUser = async (user) => {
 }
 
 const getUserById = async (user_id) => {
-	const query = "SELECT * FROM user WHERE user_id = $1";
+	const query = `SELECT * FROM "User" WHERE user_id = $1`;
 	const result = await pool.query(query, [user_id]);
 	if (result.rows.length === 0) {
 		throw {code:404,message: "User not found"};
@@ -27,22 +27,33 @@ const getUserByUsername = async (username) => {
 	return result.rows[0];
 }
 
-const getUserRoles = async (user_id) => {
-	const query = `SELECT "name" FROM "User_Role" natural join "Role" WHERE user_id = $1`;
-	const result = await pool.query(query, [user_id]);
+// const getUserRole = async (user_id) => {
+// 	const query = `SELECT "name" FROM "User_Role" natural join "Role" WHERE user_id = $1`;
+// 	const result = await pool.query(query, [user_id]);
 
-	if (result.rows.length === 0) {
-		return ["unassigned"];
-	}
+// 	if (result.rows.length === 0) {
+// 		return ["unassigned"];
+// 	}
 
-	// return an array of roles
-	return result.rows.map((row) => row.name);
+// 	// return an array of roles
+// 	return result.rows[0].name;
+// }
+
+const updatePassword = async (user_id, password) => {
+	const query = `UPDATE "User" SET password = $1 WHERE user_id = $2`;
+	const result = await pool.query(query, [password, user_id]);
 }
 
+const updateActive = async (user_id, active) => {
+	const query = `UPDATE "User" SET active = $1 WHERE user_id = $2`;
+	const result = await pool.query(query, [active, user_id]);
+}
 
 module.exports = {
 	createUser,
 	getUserById,
 	getUserByUsername,
-	getUserRoles,
+	// getUserRole,
+	updatePassword,
+	updateActive
 };

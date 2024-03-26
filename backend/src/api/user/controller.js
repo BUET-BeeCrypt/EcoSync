@@ -38,7 +38,7 @@ modules.updateUser = async (req, res) => {
   const user_id = req.params.user_id;
   const user = req.body;
   // console.log(loggedInUser);
-  if( !loggedInUser.roles.includes("SYSTEM_ADMIN") && loggedInUser.user_id+"" !== user_id ){
+  if( loggedInUser.role !== "SYSTEM_ADMIN" && loggedInUser.user_id+"" !== user_id ){
     return res.status(401).json({message: `Unauthorized`});
   }
   const updatedUser = await repository.updateUser(user_id, user);
@@ -52,10 +52,10 @@ modules.getAllRoles = async (req, res) => {
 
 modules.updateUserRoles = async (req, res) => {
   const user_id = req.params.user_id;
-  const roles = req.body.roles;
-  for(const role in roles){
-    await repository.addRole(user_id,role);
-  }
+  const role_id = req.body.roles;
+  
+  await repository.updateUserRole(user_id,role_id);
+  
   return res.status(201).json({"message":"Roles updated successfully"});
 }
 

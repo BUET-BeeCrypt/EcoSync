@@ -1,6 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6WyJTWVNURU1fQURNSU4iXSwiaWF0IjoxNzExNDQ4OTM4LCJleHAiOjE3MTE0NTI1Mzh9.kV9X4BbUSkHjM_V-n0KbVFLiRA_0UtK9DDlXeMeVk8c
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6WyJTWVNURU1fQURNSU4iXSwiaWF0IjoxNzExNDUwMTE0LCJleHAiOjE3MTE0NTM3MTR9.uPRx7d5kGLgq6GFxjeOrVzJsdku6OR3smaUMq9AcsMc
 
 ### health
 GET {{url}} HTTP/1.1
@@ -16,4 +16,8 @@ content-type: application/json
 
 ### test
 GET {{url}}/api/users/test HTTP/1.1
-Authorization: Bearer {{access}}
+Authorization: {{access}}
+
+### profile
+GET {{url}}/api/profile HTTP/1.1
+Authorization: {{access}}
