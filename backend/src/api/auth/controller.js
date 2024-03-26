@@ -28,7 +28,7 @@ modules.login = async (req, res) => {
 
   console.log(roles);
 
-  const accessToken = signAccessToken(user.username, roles);
+  const accessToken = signAccessToken(user.user_id, user.username, roles);
   const refreshToken = signRefreshToken(user.username);
 
   res.status(200).json({ accessToken, refreshToken });

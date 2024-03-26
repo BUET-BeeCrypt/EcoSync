@@ -36,10 +36,10 @@ CREATE TABLE public."Role"
     PRIMARY KEY (role_id)
 );
 
-INSERT INTO public."Role" (name, details) VALUES ('system-admin', 'System Admin role');
-INSERT INTO public."Role" (name, details) VALUES ('sts-manager', 'STS Manager role');
-INSERT INTO public."Role" (name, details) VALUES ('landfill-manager', 'Landfill Manager role');
-INSERT INTO public."Role" (name, details) VALUES ('unassigned', 'Unassigned role');
+INSERT INTO public."Role" (name, details) VALUES ('SYSTEM_ADMIN', 'System Admin role');
+INSERT INTO public."Role" (name, details) VALUES ('STS_MANAGER', 'STS Manager role');
+INSERT INTO public."Role" (name, details) VALUES ('LANDFILL_MANAGER', 'Landfill Manager role');
+INSERT INTO public."Role" (name, details) VALUES ('UNASSIGNED', 'Unassigned role');
 
 CREATE TABLE public."User_Role"
 (

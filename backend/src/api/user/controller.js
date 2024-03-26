@@ -1,8 +1,10 @@
 const repository = require("./repository");
+const bcyrpt = require("bcrypt");
 const modules = {};
 
 modules.addUser = async (req, res) => {
   const user = req.body;
+  user.password = await bcyrpt.hash(user.password, 10);
   const createdUser = await repository.createUser(user);
   res.status(201).json(createdUser);
 }
@@ -15,7 +17,7 @@ modules.getAllUsers = async (req, res) => {
 
 modules.getUser = async (req, res) => {
   const user_id = req.params.user_id;
-  const user = await repository.getUser(id);
+  const user = await repository.getUser(user_id);
   res.status(200).json(user);
 }
 
@@ -23,6 +25,10 @@ modules.getUser = async (req, res) => {
 
 modules.deleteUser = async(req, res) => {
   const user_id = req.params.user_id;
+  if( req.user.user_id+"" === user_id ){
+    return res.status(401).json({message: `Cannot delete yourself`});
+  }
+
   await repository.deleteUser(user_id);
   res.status(200).json({"message":"Deleted successfully"});
 }
@@ -31,7 +37,8 @@ modules.updateUser = async (req, res) => {
   const loggedInUser = req.user;
   const user_id = req.params.user_id;
   const user = req.body;
-  if( loggedInUser.role !== "admin" && loggedInUser.user_id !== user_id ){
+  // console.log(loggedInUser);
+  if( !loggedInUser.roles.includes("SYSTEM_ADMIN") && loggedInUser.user_id+"" !== user_id ){
     return res.status(401).json({message: `Unauthorized`});
   }
   const updatedUser = await repository.updateUser(user_id, user);
@@ -39,7 +46,7 @@ modules.updateUser = async (req, res) => {
 }
 
 modules.getAllRoles = async (req, res) => {
-  const roles = await repository.getAllRoles();
+  const roles = await repository.getRoles();
   res.status(201).json(roles);
 }
 
