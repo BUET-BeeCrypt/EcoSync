@@ -4,9 +4,9 @@ require("dotenv").config();
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 const refreshTokenSecretKey = process.env.REFRESH_TOKEN_SECRET_KEY;
 
-function signAccessToken(username, role) {
+function signAccessToken(user_id, username, role) {
   const accessToken = sign(
-    { username: username , role: role},
+    { user_id: user_id, username: username , role: role},
     jwtSecretKey,
     {
       expiresIn: '1h',
