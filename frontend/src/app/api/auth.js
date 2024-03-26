@@ -4,6 +4,9 @@ import { api_url } from ".";
 export const login = async (username, password) =>
     axios.post(api_url("/auth/login"), { username, password }).then(res => res.data);
 
+export const logout = async (refreshToken) =>
+    axios.post(api_url("/auth/logout"), { token: refreshToken }).then(res => res.data);
+
 export const register = async (username, email, password) => 
     axios.post(api_url("/auth/register"), { username, email, password }).then(res => res.data);
 
