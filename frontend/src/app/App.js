@@ -25,7 +25,7 @@ const sampleUser = {
 
 export const UserContext = createContext({
   user: undefined,
-  user: sampleUser,
+  // user: sampleUser,
   setUser: (u) => {},
 });
 export const UserProvider = UserContext.Provider;
@@ -42,8 +42,8 @@ export const parseUserFromJwt = (token) => {
     );
     const rawPayload = JSON.parse(jsonPayload);
     const user = {
-      username: rawPayload.sub,
-      role: rawPayload.role.reduce((acc, cur) => `${acc}${cur.authority}`, ""),
+      username: rawPayload.username,
+      role: rawPayload.role,
     };
     return user;
   } catch (e) {
@@ -56,8 +56,8 @@ function App() {
   const [isFullPageLayout, setIsFullPageLayout] = useState(false);
 
   const [user, setUser] = useState(
-    // parseUserFromJwt(localStorage.getItem("token"))
-    sampleUser
+    parseUserFromJwt(localStorage.getItem("token"))
+    // sampleUser
   );
 
   axios.interceptors.response.use(

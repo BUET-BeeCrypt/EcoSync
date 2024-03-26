@@ -1,6 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6WyJTWVNURU1fQURNSU4iXSwiaWF0IjoxNzExNDUwMTE0LCJleHAiOjE3MTE0NTM3MTR9.uPRx7d5kGLgq6GFxjeOrVzJsdku6OR3smaUMq9AcsMc
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxMTQ3MTgwNiwiZXhwIjoxNzExNDc1NDA2fQ.LY5A4v8rcXQiiNpSp-XaBrWeqHAvjsSX_1epLRyw9Yk
 
 ### health
 GET {{url}} HTTP/1.1
@@ -20,4 +20,20 @@ Authorization: {{access}}
 
 ### profile
 GET {{url}}/api/profile HTTP/1.1
+Authorization: {{access}}
+
+### add user
+POST {{url}}/api/users HTTP/1.1
+Authorization : {{access}}
+Content-Type: application/json
+
+{
+  "username": "test",
+  "email": "test@xyz.com",
+  "password": "12345678",
+  "name": "test name"
+}
+
+### get all users
+GET {{url}}/api/users/ HTTP/1.1
 Authorization: {{access}}

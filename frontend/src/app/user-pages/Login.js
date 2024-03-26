@@ -39,8 +39,9 @@ export function Login() {
           toast.dismiss(toastId);
           toast.success("Logged in successfully!");
           console.log(res);
-          localStorage.setItem("token", res.jwt);
-          setUser(parseUserFromJwt(res.jwt));
+          localStorage.setItem("token", res.accessToken);
+          localStorage.setItem("refreshToken", res.refreshToken);
+          setUser(parseUserFromJwt(res.accessToken));
         })
         .catch((err) => {
           toast.dismiss(toastId);

@@ -3,11 +3,10 @@ import { Button } from "react-bootstrap";
 import { validate } from "../user-pages/validate";
 import toast from "react-hot-toast";
 import { Link, useHistory } from "react-router-dom";
-import { addDoctorRequest } from "../api/admin";
+import { addUser } from "../api/admin";
 
 export default function AddUser() {
-  const inputRef = useRef();
-
+  const nameRef = useRef();
   const usernameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -20,6 +19,7 @@ export default function AddUser() {
     const password = passwordRef.current.value;
     const confirmPassword = confirmPasswordRef.current.value;
     const sendEmail = sendEmailRef.current.checked;
+    const name = nameRef.current.value;
 
     const err = validate({ username, email, password });
 
@@ -29,14 +29,14 @@ export default function AddUser() {
       toast.error("Passwords do not match");
     } else {
       const toastId = toast.loading("Registering", { duration: 5000 });
-      //   register(username, email, password).then((res) => {
-      //     toast.dismiss(toastId);
-      //     history.push("/auth/login");
-      //     toast.success("Check your mail for account confiramtion", {duration: 5000});
-      //   }).catch(err => {
-      //     toast.dismiss(toastId);
-      //     toast.error("Registration failed! Try again later.")
-      //   })
+        addUser(username, email, password, name, sendEmail).then((res) => {
+          toast.dismiss(toastId);
+          toast.success("User created successfully with unassigned role", {duration: 5000});
+          [nameRef, usernameRef, emailRef, passwordRef, confirmPasswordRef].forEach(ref => ref.current.value = "");
+        }).catch(err => {
+          toast.dismiss(toastId);
+          toast.error("New user creation failed! " + err?.response?.data?.message || "Try again later.")
+        })
     }
   };
 
@@ -65,6 +65,14 @@ export default function AddUser() {
             <div className="card-body">
               <h4 className="card-title mb-4">New unassigned user</h4>
               <form className="pt-3">
+                <div className="form-group">
+                  <input
+                    type="text"
+                    className="form-control form-control-lg"
+                    placeholder="Name"
+                    ref={nameRef}
+                  />
+                </div>
                 <div className="form-group">
                   <input
                     type="text"
