@@ -27,6 +27,15 @@ const getUserByUsername = async (username) => {
 	return result.rows[0];
 }
 
+const getUserByEmail = async (email) => {
+	const query = `SELECT * FROM "User" WHERE email = $1`;
+	const result = await pool.query(query, [email]);
+	if (result.rows.length === 0) {
+		return null;
+	}
+	return result.rows[0];
+}
+
 // const getUserRole = async (user_id) => {
 // 	const query = `SELECT "name" FROM "User_Role" natural join "Role" WHERE user_id = $1`;
 // 	const result = await pool.query(query, [user_id]);
@@ -49,11 +58,37 @@ const updateActive = async (user_id, active) => {
 	const result = await pool.query(query, [active, user_id]);
 }
 
+const saveRefreshToken = async (user_id, token) => {
+	const query = `INSERT INTO "Refresh_Token"(user_id, token) VALUES ($1, $2) RETURNING *`;
+	const result = await pool.query(query, [user_id, token]);
+	return;
+}
+
+const getRefreshToken = async (user_id, token) => {
+	const query = `SELECT token FROM "Refresh_Token" WHERE user_id = $1 and token = $2`;
+	const result = await pool.query(query, [user_id, token]);
+	if (result.rows.length === 0) {
+		return null;
+	}
+	return result.rows[0].token;
+}
+
+const deleteRefreshToken = async (user_id, token) => {
+	const query = `DELETE FROM "Refresh_Token" WHERE user_id = $1 and token = $2`;
+	const result = await pool.query(query, [user_id, token]);
+	return;
+}
+
+
 module.exports = {
 	createUser,
 	getUserById,
 	getUserByUsername,
 	// getUserRole,
+	getRefreshToken,
+	saveRefreshToken,
+	deleteRefreshToken,
+	getUserByEmail,
 	updatePassword,
 	updateActive
 };
