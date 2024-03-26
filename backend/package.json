@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js",
-    "test": "jest"
+    "test": "jest",
+    "swagger": "node swagger.js"
   },
   "author": "BUET Storm's End",
   "license": "ISC",
@@ -27,6 +28,8 @@
     "save-dev": "^0.0.1-security"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12"
+    "@types/jest": "^29.5.12",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.0"
   }
 }
