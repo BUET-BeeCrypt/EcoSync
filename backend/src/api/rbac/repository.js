@@ -68,10 +68,8 @@ const hasPermission = async (role_name, permission_name) => {
     // const query = `SELECT 1 FROM "Permission_Role" 
     // JOIN "Permission" on "Permission_Role".permission_id = "Permission".permission_id
     // WHERE "Permission_Role".role_id = $1 AND "Permission".name = $2`;
-    const query = `select r."name", p."name"  from "Permission_Role" pr 
-    join "Role" r on r.role_id = pr.role_id 
-    join "Permission" p on p.permission_id = pr.permission_id  
-    where r."name" = $1 and p."name"=$2;`
+    const query = `select 1 from "Permission_Role"
+    where role_name=$1 and permission_name=$2;`
 
     const result = await pool.query(query,[role_name, permission_name]);
 

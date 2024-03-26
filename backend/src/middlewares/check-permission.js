@@ -6,7 +6,7 @@ function checkPermission(permissionSlug) {
     const permission = await hasPermission(request.user.role, permissionSlug);
 
     if (!permission) {
-      return response.status(403).json({ message: `Access Denied! ${request.user.role} have no permission for this endpoint!` });
+      return response.status(403).json({ message: `Access Denied! ${request.user.role} role have no permission for this endpoint!` });
     }
 
     next();
