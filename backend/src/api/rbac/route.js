@@ -5,8 +5,6 @@ const router = require("express-promise-router")();
 router.post("/roles",controller.addRole);
 // update a role info
 router.put("/roles/:role_id",controller.updateRole);
-// get alll roles
-router.get("/roles",controller.getAllRoles);
 
 router.post("/permissions",controller.addPermission);
 router.put("/permissions/:permission_id",controller.updatePermission);
