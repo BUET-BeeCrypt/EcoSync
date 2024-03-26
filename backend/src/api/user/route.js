@@ -17,7 +17,6 @@ router.post("/", requiresAdmin, controller.addUser);
 router.put("/:user_id", controller.updateUser);
 
 
-
 router.put("/:user_id/roles", requiresAdmin, controller.updateUserRoles);
 
 

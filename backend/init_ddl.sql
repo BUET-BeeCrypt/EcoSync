@@ -15,19 +15,6 @@
 DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 
-CREATE TABLE public."User"
-(
-    user_id serial NOT NULL,
-    name character varying(256) NOT NULL,
-    username character varying(256) NOT NULL,
-    email character varying(256) NOT NULL,
-    password character varying(512) NOT NULL,
-    PRIMARY KEY (user_id)
-);
-
--- Insert admin user
-INSERT INTO public."User" (name, username, email, password) VALUES ('admin', 'admin', 'admin@admin.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa');
-
 CREATE TABLE public."Role"
 (
     role_id serial NOT NULL,
@@ -41,23 +28,46 @@ INSERT INTO public."Role" (name, details) VALUES ('STS_MANAGER', 'STS Manager ro
 INSERT INTO public."Role" (name, details) VALUES ('LANDFILL_MANAGER', 'Landfill Manager role');
 INSERT INTO public."Role" (name, details) VALUES ('UNASSIGNED', 'Unassigned role');
 
-CREATE TABLE public."User_Role"
+
+CREATE TABLE public."User"
 (
-    user_id integer NOT NULL,
-    role_id integer NOT NULL,
-    PRIMARY KEY (user_id, role_id),
+    user_id serial NOT NULL,
+    name character varying(256) NOT NULL,
+    username character varying(256) NOT NULL,
+    email character varying(256) NOT NULL,
+    password character varying(512) NOT NULL,
+    active boolean NOT NULL DEFAULT false,
+    banned boolean NOT NULL DEFAULT false,
+    role_id integer NOT NULL DEFAULT 4,
+    PRIMARY KEY (user_id),
     FOREIGN KEY (role_id)
         REFERENCES public."Role" (role_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    FOREIGN KEY (user_id)
-        REFERENCES public."User" (user_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
 
+-- Insert admin user
+INSERT INTO public."User" (name, username, email, password, role_id, active) VALUES ('admin', 'admin', 'admin@admin.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa',1, true);
+
+
+
+-- CREATE TABLE public."User_Role"
+-- (
+--     user_id integer NOT NULL,
+--     role_id integer NOT NULL,
+--     PRIMARY KEY (user_id, role_id),
+--     FOREIGN KEY (role_id)
+--         REFERENCES public."Role" (role_id) MATCH SIMPLE
+--         ON UPDATE NO ACTION
+--         ON DELETE NO ACTION,
+--     FOREIGN KEY (user_id)
+--         REFERENCES public."User" (user_id) MATCH SIMPLE
+--         ON UPDATE NO ACTION
+--         ON DELETE NO ACTION
+-- );
+
 -- give admin user sysadmin role
-INSERT INTO public."User_Role" (user_id, role_id) VALUES (1, 1);
+-- INSERT INTO public."User_Role" (user_id, role_id) VALUES (1, 1);
 
 CREATE TABLE public."Permission"
 (
