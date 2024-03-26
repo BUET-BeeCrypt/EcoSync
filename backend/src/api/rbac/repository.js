@@ -1,4 +1,5 @@
 const pool = require(`../../db/pool`);
+modules = {};
 
 /*
 CREATE TABLE public.`Roles`
@@ -34,36 +35,36 @@ CREATE TABLE public.`Permission_Role`
 );
 */
 
-const createRole = async (role) => {
+modules.createRole = async (role) => {
 	const query = `INSERT INTO "Role"(name, details) VALUES($1, $2)`;
 	const result = await pool.query(query,[role.name,role.details]);
 	return;
 }
 
-const updateRole = async (role_id, role) => {
+modules.updateRole = async (role_id, role) => {
 	const query = `UPDATE "Role" SET name = $2, details = $3 WHERE role_id = $1`;
 	const result = await pool.query(query,[role_id, role.name, role.details]);
 	return;
 }
 
-const createPermission = async (permission) => {
+modules.createPermission = async (permission) => {
 	const query = `INSERT INTO "Permission"(name, details) VALUES($1, $2)`;
 	const result = await pool.query(query,[permission.name,permission.details]);
 	return;
 }
 
-const updatePermission = async (permission_id, permission) => {
+modules.updatePermission = async (permission_id, permission) => {
 	const query = `UPDATE "Permission" SET name = $2, details = $3 WHERE permission_id = $1`;
 	const result = await pool.query(query,[permission_id, permission.name,permission.details]);
 	return;
 }
 
-const addRolePermission = async (role_id, permission_id) => {
+modules.addRolePermission = async (role_id, permission_id) => {
 	const query = `INSERT INTO permission_role(role_id, permission_id) VALUES($1, $2)`;
 }
 
 // check a user has a permission or not
-const hasPermission = async (role_name, permission_name) => {
+modules.hasPermission = async (role_name, permission_name) => {
 
     // const query = `SELECT 1 FROM "Permission_Role" 
     // JOIN "Permission" on "Permission_Role".permission_id = "Permission".permission_id
@@ -78,11 +79,4 @@ const hasPermission = async (role_name, permission_name) => {
 
 
 
-module.exports = {
-    createRole,
-    updateRole,
-    createPermission,
-    updatePermission,
-    addRolePermission,
-    hasPermission,
-};
+module.exports = modules;

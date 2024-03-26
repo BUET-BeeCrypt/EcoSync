@@ -62,17 +62,27 @@ modules.updateUser = async (req, res) => {
 }
 
 modules.getAllRoles = async (req, res) => {
-  const roles = await repository.getRoles();
-  res.status(201).json(roles);
+  const roles = await repository.getRoles().catch(err => {
+    return res.status(500).json({message: "Internal server error"});
+  });
+  return res.status(200).json(roles);
 }
 
-modules.updateUserRoles = async (req, res) => {
+modules.updateUserRole = async (req, res) => {
   const user_id = req.params.user_id;
-  const role_id = req.body.roles;
-  
-  await repository.updateUserRole(user_id,role_id);
-  
-  return res.status(201).json({"message":"Roles updated successfully"});
+  const role_name = req.body.role_name;
+  if (!role_name) return res.status(400).json({message: "Role name is required"});
+  try{
+    const result = await repository.updateUserRole(user_id, role_name)
+    return res.status(200).json({"message":`User role updated to ${role_name}`});
+  }catch(err){
+    //console.log(err);
+    const err_msg = err.message || "Internal server error";
+    if (err_msg.includes("violates foreign key constraint")) {
+      return res.status(400).json({message: "Role does not exist"});
+    }
+    return res.status(500).json({message: err_msg});
+  }
 }
 
 modules.getProfile = async (req, res) => {

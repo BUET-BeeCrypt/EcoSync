@@ -1,6 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxMTQ4MjI1NywiZXhwIjoxNzExNDg1ODU3fQ.vSoeXlVgYZ9ACftR_9_I-soE_Qrgpnt-fXjKXmMsUmQ
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxMTQ4NzM0NywiZXhwIjoxNzExNDkwOTQ3fQ.fQhURMaT-mVFcxbiBddzyOFbKTYdrQ1lHCQwzW_zSlY
 
 @refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzExNDgyMjU3LCJleHAiOjE3MTIwODcwNTd9.B02DQSYX9KFBklCZXyGb6bcHkcffRkBCdX-YAPkfALE
 
@@ -58,3 +58,12 @@ Content-Type: application/json
 ### get all users
 GET {{url}}/api/users HTTP/1.1
 Authorization: {{access}}
+
+### update role
+PUT {{url}}/api/users/5/roles HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "role_name": "STS_MANAGER"
+}
