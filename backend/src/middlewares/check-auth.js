@@ -22,7 +22,11 @@ const checkAuth = (req, res, next) => {
 const requiresAdmin = (req, res, next) => {
   try{
     const role = req.user.role;
-    if( role !== "SYSTEM_ADMIN" ) return res.status(401).json({message:"Access Denied"});
+    if( role !== "SYSTEM_ADMIN" )
+      return res.status(403)
+          .json({ 
+            message:`Access Denied! ${role} role have no permission for this endpoint!`
+          });
     next();
   } catch(error) {
     res.status(401).json({ message: "Invalid credintials!" });
@@ -31,5 +35,5 @@ const requiresAdmin = (req, res, next) => {
 
 module.exports = {
 	checkAuth,
-	requiresAdmin
+  requiresAdmin
 };
