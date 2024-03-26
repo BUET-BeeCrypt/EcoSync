@@ -80,9 +80,7 @@ const deleteRefreshToken = async (token) => {
 }
 
 const getUserRole = async (username) => {
-	const query = `select "Role".name as "role" FROM 
-	"User" JOIN "Role" on "Role".role_id  = "User".role_id
-	where "User".username = $1`;
+	const query = `select role_name as "role" FROM "User" where "User".username = $1`;
 
 	const result = await pool.query(query, [username]);
 	if (result.rows.length === 0) {
