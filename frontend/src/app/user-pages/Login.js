@@ -105,20 +105,20 @@ export function Login() {
                     Forgot password?
                   </Link>
                 </div>
-                <div className="text-center mt-4 font-weight-light">
+                {/* <div className="text-center mt-4 font-weight-light">
                   Don't have an account?{" "}
                   <Link to="/auth/register" className="text-primary">
                     Create
                   </Link>
-                </div>
-                <div className="mt-3">
+                </div> */}
+                {/* <div className="mt-3">
                   <Link
                     className="btn btn-block btn-inverse-success btn-lg font-weight-medium auth-form-btn"
                     to="/verify"
                   >
                     Verify Documents
                   </Link>
-                </div>
+                </div> */}
               </Form>
             </div>
           </div>

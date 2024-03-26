@@ -10,6 +10,10 @@ const Verify = lazy(() => import("./user-pages/Verify"));
 const Login = lazy(() => import("./user-pages/Login"));
 const ForgetPassword = lazy(() => import("./user-pages/ForgetPassword"));
 
+const SystemAdminHome = lazy(() => import("./system-admin/Dashboard"));
+const AddUser = lazy(() => import("./system-admin/AddUser"));
+const Users = lazy(() => import("./system-admin/Users"));
+
 // const Activate = lazy(() => import("./user-pages/Activate"));
 // const ActivateDoctor = lazy(() => import("./user-pages/RegisterDoctor"));
 
@@ -75,12 +79,12 @@ export default function AppRoutes() {
               </Switch>
             )}
 
-            {user?.role === "ROLE_ADMIN" && (
+            {user?.role === "SYSTEM_ADMIN" && (
               <Switch>
-                {/* <Route path="/admin/dashboard" component={AdminHome} />
-                <Route path="/admin/add-doctor" component={AddDoctor} />
+                <Route path="/admin/dashboard" component={SystemAdminHome} />
+                <Route path="/admin/add-user" component={AddUser} />
                 <Route path="/admin/users" component={Users} />
-                <Redirect to="/admin/dashboard" /> */}
+                <Redirect to="/admin/dashboard" />
               </Switch>
             )}
 

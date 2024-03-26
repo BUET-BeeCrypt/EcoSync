@@ -8,11 +8,24 @@ import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import { BASE_URL, FORBIDDEN, UNAUTHORIZED } from "./api";
 import { toast } from "react-hot-toast";
 import UserSidebar from "./user/UserSidebar";
-import AdminSidebar from "./admin/AdminSidebar";
+import AdminSidebar from "./system-admin/SystemAdminSidebar";
 import DoctorSidebar from "./doctor/DoctorSidebar";
+
+export const USER_ROLES = {
+  SYSTEM_ADMIN: "SYSTEM_ADMIN",
+  STS_MANAGET: "STS_MANAGER",
+  LANDFILL_MANAGER: "LANDFILL_MANAGER",
+  UNASSIGNED: "UNASSIGNED",
+}
+
+const sampleUser = {
+  username: "admin",
+  role: USER_ROLES.SYSTEM_ADMIN,
+};
 
 export const UserContext = createContext({
   user: undefined,
+  user: sampleUser,
   setUser: (u) => {},
 });
 export const UserProvider = UserContext.Provider;
@@ -43,7 +56,8 @@ function App() {
   const [isFullPageLayout, setIsFullPageLayout] = useState(false);
 
   const [user, setUser] = useState(
-    parseUserFromJwt(localStorage.getItem("token"))
+    // parseUserFromJwt(localStorage.getItem("token"))
+    sampleUser
   );
 
   axios.interceptors.response.use(
@@ -96,7 +110,7 @@ function App() {
   let sidebarComponent = !isFullPageLayout ? (
     user?.role === "ROLE_USER" ? (
       <UserSidebar />
-    ) : user?.role === "ROLE_ADMIN" ? (
+    ) : user?.role === USER_ROLES.SYSTEM_ADMIN ? (
       <AdminSidebar />
     ) : user?.role === "ROLE_DOCTOR" ? (
       <DoctorSidebar />

@@ -33,6 +33,7 @@ axios.interceptors.response.use(
       error.response.status === FORBIDDEN
     ) {
       if (localStorage.getItem("refreshToken")) {
+        localStorage.removeItem("token");
         try {
           const token = getRefreshToken();
           localStorage.setItem("token", token);
@@ -40,7 +41,7 @@ axios.interceptors.response.use(
         } catch (error) {
           removeTokenFromStorage("token");
           removeTokenFromStorage("refreshToken");
-          window.location.reload();
+          return Promise.reject(error);
         }
       }
     } else {
