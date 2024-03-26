@@ -1,11 +1,11 @@
 const repository = require("./repository");
 const modules = {};
 
-// modules.addUser = async (req, res) => {
-//   const user = req.body;
-//   const createdUser = await repository.createUser(user);
-//   res.status(201).json(createdUser);
-// };
+modules.addUser = async (req, res) => {
+  const user = req.body;
+  const createdUser = await repository.createUser(user);
+  res.status(201).json(createdUser);
+}
 
 
 modules.getAllUsers = async (req, res) => {
@@ -19,11 +19,7 @@ modules.getUser = async (req, res) => {
   res.status(200).json(user);
 }
 
-modules.addUser = async (req, res) => {
-  const user = req.body;
-  const createdUser = await repository.createUser(user);
-  res.status(201).json(createdUser);
-}
+
 
 modules.deleteUser = async(req, res) => {
   const user_id = req.params.user_id;
