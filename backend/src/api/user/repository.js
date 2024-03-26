@@ -72,6 +72,23 @@ const updateUserRole = async(user_id, role_id) => {
 // }
 
 
+const getUserByUsername = async (username) => {
+	const query = `SELECT * FROM "User" WHERE username = $1`;
+	const result = await pool.query(query, [username]);
+	if (result.rows.length === 0) {
+		return null;
+	}
+	return result.rows[0];
+}
+
+const getUserByEmail = async (email) => {
+	const query = `SELECT * FROM "User" WHERE email = $1`;
+	const result = await pool.query(query, [email]);
+	if (result.rows.length === 0) {
+		return null;
+	}
+	return result.rows[0];
+}
 
 
 
@@ -84,5 +101,7 @@ module.exports = {
 	getRoles,
 	getUserRoles,
 	updateUserRole,
+	getUserByUsername,
+	getUserByEmail
 	// deleteUserRole
 };
