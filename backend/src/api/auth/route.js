@@ -3,7 +3,7 @@ const router = require("express-promise-router")();
 const { checkAuth } = require("../../middlewares/check-auth");
 
 router.post("/login", controller.login);
-router.post("/logout", checkAuth, controller.logout);
+router.post("/logout", controller.logout);
 router.post("/change-password",  controller.changePassword);
 router.post("/reset-password/initiate", controller.initiateResetPassword);
 router.post("/reset-password/confirm", controller.resetPassword);
