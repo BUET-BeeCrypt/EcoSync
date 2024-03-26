@@ -7,8 +7,6 @@ const { sendMail } = require("../../utils/helpers/send-email");
 
 const modules = {};
 
-const roles = ["","SYSTEM_ADMIN", "STS_MANAGER","LANDFILL_MANAGER", "UNASSIGNED"];
-
 modules.login = async (req, res) => {
   const cred = req.body;
 
@@ -27,13 +25,7 @@ modules.login = async (req, res) => {
   if (!isMatch)
       return res.status(401).json({ message: "Invalid credentials." });
 
-  // get user roles
-  if( !user.role_id || user.role_id < 1 || user.role_id > 4) user.role_id = 4;
-  const role = roles[user.role_id];
-
-//   console.log(role);
-
-  const accessToken = signAccessToken(user.user_id, user.username, role);
+  const accessToken = signAccessToken(user.user_id, user.username, user.role_name);
   const refreshToken = signRefreshToken(user.username);
   repository.saveRefreshToken(user.user_id, refreshToken);
   if( user.active == false){
