@@ -50,15 +50,27 @@ modules.deleteUser = async(req, res) => {
 }
 
 modules.updateUser = async (req, res) => {
-  const loggedInUser = req.user;
   const user_id = req.params.user_id;
-  const user = req.body;
-  // console.log(loggedInUser);
-  if( loggedInUser.role !== "SYSTEM_ADMIN" && loggedInUser.user_id+"" !== user_id ){
-    return res.status(401).json({message: `Unauthorized`});
+
+  const username = req.body.username;
+  const email = req.body.email;
+  const name = req.body.name;
+  const banned = req.body.banned;
+  const active = req.body.active;
+
+  if( req.user.role !== "SYSTEM_ADMIN" && req.user.user_id+"" !== user_id ){
+    return res.status(403).json({message: `Only system admin can update other users`});
   }
-  const updatedUser = await repository.updateUser(user_id, user);
-  res.status(200).json(updatedUser);
+  try{
+    const updatedUser = await repository.updateUser(user_id, username, email, name, banned, active);
+    res.status(200).json(updatedUser);
+  }catch(err){
+    if(err.code !== 404){
+      return res.status(500).json({message: err.message});
+    }else{
+      return res.status(404).json({message: err.message});
+    }
+  }
 }
 
 modules.getAllRoles = async (req, res) => {
