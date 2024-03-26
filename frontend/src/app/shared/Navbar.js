@@ -5,9 +5,20 @@ import { UserContext } from "../App";
 import { useEffect } from "react";
 import { getProfile } from "../api/user";
 import { useState } from "react";
+import { logout } from "../api/auth";
 
 function Navbar() {
   const history = useHistory();
+
+  const logoutFunction = (evt) => {
+    evt.preventDefault();
+    localStorage.removeItem("token");
+    logout(localStorage.getItem("refreshToken")).then((e) => {
+      localStorage.removeItem("refreshToken");
+      setUser(null);
+      console.log("signout");
+    });
+  };
 
   const toggleOffcanvas = () => {
     document.querySelector(".sidebar-offcanvas").classList.toggle("active");
@@ -92,15 +103,7 @@ function Navbar() {
                   <i className="mdi mdi-security mr-2 text-success"></i>
                   Security Settings
                 </Dropdown.Item>
-                <Dropdown.Item
-                  href="!#"
-                  onClick={(evt) => {
-                    evt.preventDefault();
-                    localStorage.removeItem("token");
-                    setUser(null);
-                    console.log("signout");
-                  }}
-                >
+                <Dropdown.Item href="!#" onClick={logoutFunction}>
                   <i className="mdi mdi-logout mr-2 text-primary"></i>
                   Signout
                 </Dropdown.Item>
@@ -226,16 +229,7 @@ function Navbar() {
             </Dropdown>
           </li> */}
           <li className="nav-item nav-logout d-none d-lg-block">
-            <a
-              className="nav-link"
-              href="!#"
-              onClick={(event) => {
-                event.preventDefault();
-                localStorage.removeItem("token");
-                setUser(null);
-                console.log("logout");
-              }}
-            >
+            <a className="nav-link" href="!#" onClick={logoutFunction}>
               <i className="mdi mdi-power"></i>
             </a>
           </li>

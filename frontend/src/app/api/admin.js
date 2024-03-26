@@ -15,3 +15,6 @@ export const changeUserBannedStatus = async (id, banned) =>
 
 export const filterAndAnalyze = async (data) =>
   axios.post(api_url("/admin/filter"), data).then((res) => res.data);
+
+export const addUser = async (username, email, password, name, send_email) =>
+  axios.post(api_url("/users"), { username, email, password, name, send_email}).then((res) => res.data);
