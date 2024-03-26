@@ -6,7 +6,19 @@ const modules = {};
 modules.addUser = async (req, res) => {
   const user =  {...req.body};
   user.password = await bcyrpt.hash(user.password, 10);
-  const createdUser = {};//await repository.createUser(user);
+  const existingUserByEmail = await repository.getUserByEmail(user.email);
+
+  if( existingUserByEmail ){
+    return res.status(409).json({message: `User with email ${user.email} already exists`});
+  }
+
+  const existingUserByUsername = await repository.getUserByUsername(user.username);
+  if( existingUserByUsername ){
+    return res.status(409).json({message: `User with username ${user.username} already exists`});
+  }
+
+
+  const createdUser = await repository.createUser(user);
   if( req.body.send_email && req.body.send_email === true)
     sendMail(user.email, "Welcome to our platform", 
         `Hello ${user.name},\n\nWelcome to EcoSync. You can log in to your account using the following credentials:\n\nEmail: ${user.email}\nPassword: ${req.body.password}\n\nThank you for joining us`);

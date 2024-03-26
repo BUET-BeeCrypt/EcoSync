@@ -33,8 +33,8 @@ CREATE TABLE public."User"
 (
     user_id serial NOT NULL,
     name character varying(256) NOT NULL,
-    username character varying(256) NOT NULL,
-    email character varying(256) NOT NULL,
+    username character varying(256) UNIQUE NOT NULL,
+    email character varying(256) UNIQUE NOT NULL,
     password character varying(512) NOT NULL,
     active boolean NOT NULL DEFAULT false,
     banned boolean NOT NULL DEFAULT false,
