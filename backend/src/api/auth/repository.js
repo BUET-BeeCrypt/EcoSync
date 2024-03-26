@@ -73,9 +73,9 @@ const getRefreshToken = async (user_id, token) => {
 	return result.rows[0].token;
 }
 
-const deleteRefreshToken = async (user_id, token) => {
-	const query = `DELETE FROM "Refresh_Token" WHERE user_id = $1 and token = $2`;
-	const result = await pool.query(query, [user_id, token]);
+const deleteRefreshToken = async (token) => {
+	const query = `DELETE FROM "Refresh_Token" WHERE token = $1`;
+	const result = await pool.query(query, [token]);
 	return;
 }
 

@@ -43,13 +43,12 @@ modules.login = async (req, res) => {
 };
 
 modules.logout = async (req, res) => {
-    const user = req.user;
     const token = req.body.token;
     if (!token)
         return res.status(400).json({ message: "Bad request." });
 
-    await repository.deleteRefreshToken(user.user_id, token);
-    res.status(200).json({ message: "Logged out." });
+    await repository.deleteRefreshToken(token);
+    res.status(200).json({ message: "Logged out" });
 }
 
 modules.changePassword = async (req, res) => {

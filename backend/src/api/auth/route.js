@@ -4,8 +4,6 @@ const { checkAuth } = require("../../middlewares/check-auth");
 const checkPermission = require("../../middlewares/check-permission");
 const repository = require("./repository");
 
-// middleware function to set user id in request object
-
 router.post("/login", async (req, res, next) => {
     console.log("login route");
     const username = req.body.username;
@@ -22,7 +20,7 @@ router.post("/login", async (req, res, next) => {
     req.user.role = role;
     next();
 }, checkPermission("LOGIN"), controller.login);
-router.post("/logout", checkAuth, controller.logout);
+router.post("/logout", controller.logout);
 router.post("/change-password",  controller.changePassword);
 router.post("/reset-password/initiate", controller.initiateResetPassword);
 router.post("/reset-password/confirm", controller.resetPassword);
