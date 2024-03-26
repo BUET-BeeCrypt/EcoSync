@@ -12,8 +12,8 @@ function Navbar() {
 
   const logoutFunction = (evt) => {
     evt.preventDefault();
+    localStorage.removeItem("token");
     logout(localStorage.getItem("refreshToken")).then((e) => {
-      localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       setUser(null);
       console.log("signout");

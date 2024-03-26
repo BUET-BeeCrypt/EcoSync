@@ -85,7 +85,7 @@ modules.initiateResetPassword = async (req, res) => {
         return res.status(404).json({ message: "User not found." });
 
     const forgetPasswordToken = signForgetPasswordToken(user.username);
-    sendMail(user.email, "Reset password", `Hello ${user.name},\n\nYou can reset your password using the following link: http://localhost:3000/auth/reset/${forgetPasswordToken}`);
+    sendMail(user.email, "Reset password", `Hello ${user.name},\n\nYou can reset your password using the following link: http://localhost:3000/auth/forget-password?token=${forgetPasswordToken}`);
     res.status(200).json({ forgetPasswordToken });
 }
 

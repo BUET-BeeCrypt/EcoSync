@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { Button, Form } from "react-bootstrap";
-import { useRef } from "react";
+import { Button, Form, Modal } from "react-bootstrap";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { login } from "../api/auth";
+import { changePassword, login } from "../api/auth";
 import { useContext } from "react";
 import { UserContext, parseUserFromJwt } from "../App";
 import { validate } from "./validate";
@@ -21,8 +21,11 @@ export const EMAIL_REGEX =
 
 export function Login() {
   const { setUser } = useContext(UserContext);
+  const [loginResponse, setLoginResponse] = useState(null);
   const usernameRef = useRef();
   const passwordRef = useRef();
+  const newPasswordRef = useRef();
+  const confirmPasswordRef = useRef();
 
   const handleLogin = () => {
     const usernameValue = usernameRef.current.value;
@@ -38,15 +41,61 @@ export function Login() {
         .then((res) => {
           toast.dismiss(toastId);
           toast.success("Logged in successfully!");
-          console.log(res);
-          localStorage.setItem("token", res.accessToken);
-          localStorage.setItem("refreshToken", res.refreshToken);
-          setUser(parseUserFromJwt(res.accessToken));
+
+          if (res?.active === false) {
+            toast.success(
+              "Seems like you are using admin created credentials. You should change your password."
+            );
+            setLoginResponse(res);
+          } else {
+            localStorage.setItem("token", res.accessToken);
+            localStorage.setItem("refreshToken", res.refreshToken);
+            setUser(parseUserFromJwt(res.accessToken));
+          }
         })
         .catch((err) => {
+          console.log(err);
           toast.dismiss(toastId);
           toast.error("Login failed!");
         });
+    }
+  };
+
+  const handleChangePassword = () => {
+    const newPasswordValue = newPasswordRef.current.value;
+    const confirmPasswordValue = confirmPasswordRef.current.value;
+
+    if (newPasswordValue !== confirmPasswordValue) {
+      toast.error("Passwords do not match!");
+    } else {
+      const err = validate({ password: newPasswordValue });
+
+      if (err) {
+        toast.error(err);
+      } else {
+        const toastId = toast.loading("Changing password...", {
+          duration: 5000,
+        });
+        changePassword(
+          loginResponse.accessToken,
+          passwordRef.current.value,
+          newPasswordValue
+        )
+          .then((res) => {
+            toast.dismiss(toastId);
+            toast.success("Password changed successfully!");
+            setLoginResponse((res) => {
+              localStorage.setItem("token", res.accessToken);
+              localStorage.setItem("refreshToken", res.refreshToken);
+              setUser(parseUserFromJwt(res.accessToken));
+              return null;
+            });
+          })
+          .catch((err) => {
+            toast.dismiss(toastId);
+            toast.error("Password change failed!");
+          });
+      }
     }
   };
 
@@ -125,6 +174,44 @@ export function Login() {
           </div>
         </div>
       </div>
+      <Modal
+        centered
+        show={loginResponse}
+        onHide={() => setLoginResponse(null)}
+        backdrop="static"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Change Password</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="form-group">
+            <label>New Password</label>
+            <input
+              type="password"
+              className="form-control"
+              placeholder="New Password"
+              ref={newPasswordRef}
+            />
+          </div>
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              className="form-control"
+              placeholder="Confirm Password"
+              ref={confirmPasswordRef}
+            />
+          </div>
+          <div className="mt-3">
+            <Button
+              className="btn btn-block btn-primary btn-lg font-weight-medium"
+              onClick={handleChangePassword}
+            >
+              Change Password
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

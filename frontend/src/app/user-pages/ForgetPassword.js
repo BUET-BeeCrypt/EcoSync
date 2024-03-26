@@ -70,7 +70,7 @@ export function LockScreen() {
                     </Button>
                   </div>
                   <div className="mt-3 text-center">
-                    <Link to="/auth/login" className="auth-link text-white">
+                    <Link to="/auth/login" className="auth-link text-dark">
                       Sign in using a different account
                     </Link>
                   </div>
