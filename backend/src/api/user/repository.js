@@ -12,13 +12,13 @@ CREATE TABLE public.`Users`
 */
 
 const getUsers = async() => {
-	const query = `SELECT name, email from "User"`;
+	const query = `SELECT user_id, "name", username, email, active, banned, role_name FROM "User";`;
 	const result = await pool.query(query,[]);
 	return result.rows;
 }
 
 const getUser = async(user_id) => {
-	const query = `SELECT name, email FROM "User" WHERE user_id = $1`;
+	const query = `SELECT user_id, "name", username, email, active, role_name FROM "User" WHERE user_id = $1`;
 	const result = await pool.query(query,[user_id]);
 	if( result.rows.length === 0 ){
 		throw {code:404, message: `User not found`};
@@ -27,7 +27,9 @@ const getUser = async(user_id) => {
 }
 
 const createUser = async (user) => {
-	const query = `INSERT INTO "User" (name, username, email, password ) VALUES ($1, $2, $3, $4) RETURNING *`;
+	const query = `INSERT INTO "User" (name, username, email, password ) VALUES ($1, $2, $3, $4) RETURNING 
+	"user_id", "name", "username", "email", "active", "role_name"
+	`;
 	const result = await pool.query(query, [user.name, user.username, user.email, user.password]);
 	if (result.rows.length === 0) {
 		throw {code:404,message: `User not created`};

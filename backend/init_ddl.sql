@@ -37,7 +37,7 @@ CREATE TABLE public."User"
     password character varying(512) NOT NULL,
     active boolean NOT NULL DEFAULT false,
     banned boolean NOT NULL DEFAULT false,
-    role_name character varying(256) NOT NULL,
+    role_name character varying(256) DEFAULT 'UNASSIGNED' NOT NULL,
     PRIMARY KEY (user_id),
     FOREIGN KEY (role_name)
         REFERENCES public."Role" (name) MATCH SIMPLE
