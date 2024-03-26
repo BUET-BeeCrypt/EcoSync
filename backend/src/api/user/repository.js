@@ -59,17 +59,17 @@ const getUserRoles = async(user_id) => {
 	return result.rows;
 }
 
-const addUserRole = async(user_id, role_id) => {
-	const query = `INSERT INTO user_role(user_id, role_id) VALUES($1, $2)`
+const updateUserRole = async(user_id, role_id) => {
+	const query = `UPDATE "User" SET role_id = $2 WHERE user_id = $1`;
 	const result = await pool.query(query,[user_id,role_id]);
 	return;
 }
 
-const deleteUserRole = async(user_id, role_id) => {
-	const query = `DELETE FROM user_role WHERE user_id = $1 and role_id = $2`;
-	const result = await pool.query(query,[user_id, role_id]);
-	return;
-}
+// const deleteUserRole = async(user_id, role_id) => {
+// 	const query = `DELETE FROM user_role WHERE user_id = $1 and role_id = $2`;
+// 	const result = await pool.query(query,[user_id, role_id]);
+// 	return;
+// }
 
 
 
@@ -83,6 +83,6 @@ module.exports = {
 	updateUser,
 	getRoles,
 	getUserRoles,
-	addUserRole,
-	deleteUserRole
+	updateUserRole,
+	// deleteUserRole
 };
