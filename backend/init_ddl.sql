@@ -17,10 +17,9 @@ CREATE SCHEMA public;
 
 CREATE TABLE public."Role"
 (
-    role_id serial NOT NULL,
     name character varying(256) NOT NULL,
     details character varying(256) NOT NULL,
-    PRIMARY KEY (role_id)
+    PRIMARY KEY (name)
 );
 
 INSERT INTO public."Role" (name, details) VALUES ('SYSTEM_ADMIN', 'System Admin role');
@@ -38,16 +37,22 @@ CREATE TABLE public."User"
     password character varying(512) NOT NULL,
     active boolean NOT NULL DEFAULT false,
     banned boolean NOT NULL DEFAULT false,
-    role_id integer NOT NULL DEFAULT 4,
+    role_name character varying(256) NOT NULL,
     PRIMARY KEY (user_id),
-    FOREIGN KEY (role_id)
-        REFERENCES public."Role" (role_id) MATCH SIMPLE
+    FOREIGN KEY (role_name)
+        REFERENCES public."Role" (name) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
 
 -- Insert admin user
-INSERT INTO public."User" (name, username, email, password, role_id, active) VALUES ('admin', 'admin', 'admin@admin.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa',1, true);
+INSERT INTO public."User" (name, username, email, password, role_name, active) VALUES ('admin', 'admin', 'admin@admin.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','SYSTEM_ADMIN', true);
+-- insert sts manager user
+INSERT INTO public."User" (name, username, email, password, role_name, active) VALUES ('sts_manager', 'sts_manager', 'sts@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','STS_MANAGER', true);
+-- insert landfill manager user
+INSERT INTO public."User" (name, username, email, password, role_name, active) VALUES ('landfill_manager', 'landfill_manager', 'landfill@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','LANDFILL_MANAGER', true);
+-- insert an unassigned user
+INSERT INTO public."User" (name, username, email, password, role_name, active) VALUES ('unassigned', 'unassigned', 'unassigned@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','UNASSIGNED', true);
 
 CREATE TABLE public."Refresh_Token"
 (
@@ -61,43 +66,24 @@ CREATE TABLE public."Refresh_Token"
 );
 
 
--- CREATE TABLE public."User_Role"
--- (
---     user_id integer NOT NULL,
---     role_id integer NOT NULL,
---     PRIMARY KEY (user_id, role_id),
---     FOREIGN KEY (role_id)
---         REFERENCES public."Role" (role_id) MATCH SIMPLE
---         ON UPDATE NO ACTION
---         ON DELETE NO ACTION,
---     FOREIGN KEY (user_id)
---         REFERENCES public."User" (user_id) MATCH SIMPLE
---         ON UPDATE NO ACTION
---         ON DELETE NO ACTION
--- );
-
--- give admin user sysadmin role
--- INSERT INTO public."User_Role" (user_id, role_id) VALUES (1, 1);
-
 CREATE TABLE public."Permission"
 (
-    permission_id serial NOT NULL,
     name character varying(256) NOT NULL,
     details character varying(256) NOT NULL,
-    PRIMARY KEY (permission_id)
+    PRIMARY KEY (name)
 );
 
 CREATE TABLE public."Permission_Role"
 (
-    permission_id integer NOT NULL,
-    role_id integer NOT NULL,
-    PRIMARY KEY (permission_id, role_id),
-    FOREIGN KEY (permission_id)
-        REFERENCES public."Permission" (permission_id) MATCH SIMPLE
+    role_name character varying(256) NOT NULL,
+    permission_name character varying(256) NOT NULL,
+    PRIMARY KEY (role_name, permission_name),
+    FOREIGN KEY (role_name)
+        REFERENCES public."Role" (name) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    FOREIGN KEY (role_id)
-        REFERENCES public."Role" (role_id) MATCH SIMPLE
+    FOREIGN KEY (permission_name)
+        REFERENCES public."Permission" (name) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
@@ -193,3 +179,59 @@ CREATE TABLE public."Bill"
         ON DELETE NO ACTION
 
 );
+
+INSERT INTO public."Permission" (name, details) VALUES ('LOGIN', 'Login permission');
+INSERT INTO public."Permission" (name, details) VALUES ('CREATE_USER', 'Create User permission');
+INSERT INTO public."Permission" (name, details) VALUES ('UPDATE_USER', 'Update User permission');
+INSERT INTO public."Permission" (name, details) VALUES ('DELETE_USER', 'Delete User permission');
+INSERT INTO public."Permission" (name, details) VALUES ('VIEW_USER', 'View User permission');
+INSERT INTO public."Permission" (name, details) VALUES ('CREATE_ROLE', 'Create Role permission');
+INSERT INTO public."Permission" (name, details) VALUES ('UPDATE_ROLE', 'Update Role permission');
+INSERT INTO public."Permission" (name, details) VALUES ('DELETE_ROLE', 'Delete Role permission');
+INSERT INTO public."Permission" (name, details) VALUES ('VIEW_ROLE', 'View Role permission');
+INSERT INTO public."Permission" (name, details) VALUES ('CREATE_PERMISSION', 'Create Permission permission');
+INSERT INTO public."Permission" (name, details) VALUES ('UPDATE_PERMISSION', 'Update Permission permission');
+INSERT INTO public."Permission" (name, details) VALUES ('DELETE_PERMISSION', 'Delete Permission permission');
+INSERT INTO public."Permission" (name, details) VALUES ('VIEW_PERMISSION', 'View Permission permission');
+INSERT INTO public."Permission" (name, details) VALUES ('ASSIGN_ROLE', 'Assign Role permission');
+INSERT INTO public."Permission" (name, details) VALUES ('UNASSIGN_ROLE', 'Unassign Role permission');
+INSERT INTO public."Permission" (name, details) VALUES ('ASSIGN_PERMISSION', 'Assign Permission permission');
+INSERT INTO public."Permission" (name, details) VALUES ('UNASSIGN_PERMISSION', 'Unassign Permission permission');
+INSERT INTO public."Permission" (name, details) VALUES ('CREATE_LANDFILL', 'Create Landfill permission');
+INSERT INTO public."Permission" (name, details) VALUES ('UPDATE_LANDFILL', 'Update Landfill permission');
+INSERT INTO public."Permission" (name, details) VALUES ('DELETE_LANDFILL', 'Delete Landfill permission');
+INSERT INTO public."Permission" (name, details) VALUES ('VIEW_LANDFILL', 'View Landfill permission');
+INSERT INTO public."Permission" (name, details) VALUES ('CREATE_STS', 'Create STS permission');
+INSERT INTO public."Permission" (name, details) VALUES ('UPDATE_STS', 'Update STS permission');
+INSERT INTO public."Permission" (name, details) VALUES ('DELETE_STS', 'Delete STS permission');
+INSERT INTO public."Permission" (name, details) VALUES ('VIEW_STS', 'View STS permission');
+INSERT INTO public."Permission" (name, details) VALUES ('CREATE_VEHICLE', 'Create Vehicle permission');
+INSERT INTO public."Permission" (name, details) VALUES ('UPDATE_VEHICLE', 'Update Vehicle permission');
+INSERT INTO public."Permission" (name, details) VALUES ('DELETE_VEHICLE', 'Delete Vehicle permission');
+INSERT INTO public."Permission" (name, details) VALUES ('VIEW_VEHICLE', 'View Vehicle permission');
+INSERT INTO public."Permission" (name, details) VALUES ('CREATE_LANDFILL_ENTRY', 'Create Landfill Entry permission');
+INSERT INTO public."Permission" (name, details) VALUES ('UPDATE_LANDFILL_ENTRY', 'Update Landfill Entry permission');
+INSERT INTO public."Permission" (name, details) VALUES ('DELETE_LANDFILL_ENTRY', 'Delete Landfill Entry permission');
+INSERT INTO public."Permission" (name, details) VALUES ('VIEW_LANDFILL_ENTRY', 'View Landfill Entry permission');
+INSERT INTO public."Permission" (name, details) VALUES ('CREATE_STS_ENTRY', 'Create STS Entry permission');
+INSERT INTO public."Permission" (name, details) VALUES ('UPDATE_STS_ENTRY', 'Update STS Entry permission');
+INSERT INTO public."Permission" (name, details) VALUES ('DELETE_STS_ENTRY', 'Delete STS Entry permission');
+INSERT INTO public."Permission" (name, details) VALUES ('VIEW_STS_ENTRY', 'View STS Entry permission');
+INSERT INTO public."Permission" (name, details) VALUES ('CREATE_BILL', 'Create Bill permission');
+INSERT INTO public."Permission" (name, details) VALUES ('UPDATE_BILL', 'Update Bill permission');
+INSERT INTO public."Permission" (name, details) VALUES ('DELETE_BILL', 'Delete Bill permission');
+INSERT INTO public."Permission" (name, details) VALUES ('VIEW_BILL', 'View Bill permission');
+
+-- login permission to all user except unassigned
+INSERT INTO public."Permission_Role" (role_name, permission_name)
+    VALUES ('STS_MANAGER', 'LOGIN');
+INSERT INTO public."Permission_Role" (role_name, permission_name)
+    VALUES ('LANDFILL_MANAGER', 'LOGIN');
+
+
+-- nested query to get all permissions and give them to system admin
+INSERT INTO public."Permission_Role" (role_name, permission_name)
+    SELECT 'SYSTEM_ADMIN', name FROM public."Permission";
+
+
+
