@@ -5,7 +5,7 @@
 -- Permission(permission_id, name, details)
 -- Permission_Role(permission_id, role_id)
 -- Landfill(landfill_id, manager, name, latitude, longitude)
--- STS(STS_id, manager, Ward_id, capacity, amount, latitude, longitude)
+-- STS(STS_id, Ward_id, capacity, amount, latitude, longitude)
 -- Vehicle (vehicle_id, type, capcity)
 -- Landfill_entry( landfill_entry_id, landfill_id, vehicle_id, entry_time, departute_time, volume )
 -- STS_entry( sts_entry_id, sts_id, vehicle_id, entry_time, departute_time, volume )
@@ -88,26 +88,109 @@ CREATE TABLE public."Permission_Role"
         ON DELETE NO ACTION
 );
 
-CREATE TABLE public."Landfill"
-(
-    landfill_id serial NOT NULL,
-    name character varying(256) NOT NULL,
-    start_time integer NOT NULL,
-    end_time integer NOT NULL,
-    latitude double precision NOT NULL,
-    longitude double precision NOT NULL,
-    PRIMARY KEY (landfill_id)
-);
+/***
+
+STS
+    - Ward_id [int]
+    - Name [string]
+    - Capacity [double]
+    - Latitude [double]
+    - Longitude [double]
+
+STS_Manager
+    - sts_id [int]
+    - user_id [int]
+
+STS_entry
+    - sts_id [int]
+    - manager_id [int]
+    - entry_time [timestamp]
+    - departure_time [timestamp] [nullable]
+    - vehicle_id [int] [nullable]
+    - volume [double] [ + or - ] [ + for entry, - for exit]
+
+Landfill
+    - Name [string]
+    - Start_time [timestamp]
+    - End_time [timestamp]
+    - Latitude [double]
+    - Longitude [double]
+
+Landfill_Manager
+    - landfill_id [int]
+    - user_id [int]
+
+Landfill_entry
+    - landfill_id [int]
+    - manager_id [int]
+    - vehicle_id [int]
+    - entry_time [timestamp]
+    - departure_time [timestamp]
+    - volume [double]
+
+***/
 
 CREATE TABLE public."STS"
 (
     sts_id serial NOT NULL,
     ward_id integer NOT NULL,
     capacity double precision NOT NULL,
-    amount double precision NOT NULL,
     latitude double precision NOT NULL,
     longitude double precision NOT NULL,
     PRIMARY KEY (sts_id)
+);
+
+
+CREATE TABLE public."STS_Manager"
+(
+    sts_id integer NOT NULL,
+    user_id integer NOT NULL,
+    PRIMARY KEY (sts_id, user_id),
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (user_id)
+        REFERENCES public."User" (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE public."STS_Entry"
+(
+    sts_entry_id serial NOT
+    sts_id integer NOT NULL,
+    manager_id integer NOT NULL,
+    entry_time integer NOT NULL,
+    departure_time integer,
+    vehicle_id integer,
+    volume double precision NOT NULL,
+    PRIMARY KEY (sts_entry_id),
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (manager_id)
+        REFERENCES public."User" (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (vehicle_id)
+        REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE public."Landfill"
+(
+    landfill_id serial NOT NULL,
+    name character varying(256) NOT NULL,
+    latitude double precision NOT NULL,
+    longitude double precision NOT NULL,
+    PRIMARY KEY (landfill_id),
+    FOREIGN KEY (manager_id)
+        REFERENCES public."User" (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
 );
 
 CREATE TABLE public."Landfill_Manager"
@@ -125,76 +208,29 @@ CREATE TABLE public."Landfill_Manager"
         ON DELETE NO ACTION
 );
 
-CREATE TABLE public."STS_Manager"
-(
-    sts_id integer NOT NULL,
-    user_id integer NOT NULL,
-    PRIMARY KEY (sts_id, user_id),
-    FOREIGN KEY (sts_id)
-        REFERENCES public."STS" (sts_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    FOREIGN KEY (user_id)
-        REFERENCES public."User" (user_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-);
 
-CREATE TABLE public."Vehicle"
-(
-    vehicle_id serial NOT NULL,
-    registration character varying(256) UNIQUE NOT NULL,
-    type character varying(256) NOT NULL,
-    capacity double precision NOT NULL,
-    disabled boolean DEFAULT false,
-    fuel_cost_per_km_loaded double precision NOT NULL,
-    fuel_cost_per_km_unloaded double precision NOT NULL,
-    landfill_id integer,
-    PRIMARY KEY (vehicle_id),
-    FOREIGN KEY (landfill_id)
-        REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-);
-
-CREATE TABLE public."Landfill_entry"
+CREATE TABLE public."Landfill_Entry"
 (
     landfill_entry_id serial NOT NULL,
     landfill_id integer NOT NULL,
+    manager_id integer NOT NULL,
     vehicle_id integer NOT NULL,
     entry_time integer NOT NULL,
-    departute_time integer NOT NULL,
+    departure_time integer NOT NULL,
     volume double precision NOT NULL,
     PRIMARY KEY (landfill_entry_id),
     FOREIGN KEY (landfill_id)
         REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    FOREIGN KEY (vehicle_id)
-        REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-
-);
-
-CREATE TABLE public."STS_entry"
-(
-    sts_entry_id serial NOT NULL,
-    sts_id integer NOT NULL,
-    vehicle_id integer NOT NULL,
-    entry_time integer NOT NULL,
-    departute_time integer NOT NULL,
-    volume double precision NOT NULL,
-    PRIMARY KEY (sts_entry_id),
-    FOREIGN KEY (sts_id)
-        REFERENCES public."STS" (sts_id) MATCH SIMPLE
+    FOREIGN KEY (manager_id)
+        REFERENCES public."User" (user_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     FOREIGN KEY (vehicle_id)
         REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
-
 );
 
 CREATE TABLE public."Bill"
