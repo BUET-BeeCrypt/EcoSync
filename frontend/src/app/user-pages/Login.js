@@ -56,7 +56,8 @@ export function Login() {
         .catch((err) => {
           console.log(err);
           toast.dismiss(toastId);
-          toast.error("Login failed!");
+          const message = err?.response?.data?.message;
+          toast.error("Login failed!" + (message ? ` ${message}` : ""));
         });
     }
   };
