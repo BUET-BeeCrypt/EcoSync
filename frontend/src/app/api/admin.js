@@ -25,14 +25,19 @@ export const addSTS = async (ward_id, capacity, latitude, longitude) =>
     .post(api_url("/sts"), { ward_id, capacity, latitude, longitude })
     .then((res) => res.data);
 
-
 export const getSTSs = async () =>
   axios.get(api_url(`/sts`)).then((res) => res.data);
 
 export const getSTS = async (sts_id) =>
   axios.get(api_url(`/sts/${sts_id}`)).then((res) => res.data);
 
-export const updateSTS = async (sts_id, ward_id, capacity, latitude, longitude) =>
+export const updateSTS = async (
+  sts_id,
+  ward_id,
+  capacity,
+  latitude,
+  longitude
+) =>
   axios
     .put(api_url(`/sts/${sts_id}`), { ward_id, capacity, latitude, longitude })
     .then((res) => res.data);
@@ -41,15 +46,54 @@ export const deleteSTS = async (sts_id) =>
   axios.delete(api_url(`/sts/${sts_id}`)).then((res) => res.data);
 
 export const addManagerToSTS = async (sts_id, user_id) =>
-  axios.post(api_url(`/sts/${sts_id}/managers`), { user_id }).then((res) => res.data);
+  axios
+    .post(api_url(`/sts/${sts_id}/managers`), { user_id })
+    .then((res) => res.data);
 
 export const getManagersOfSTS = async (sts_id) =>
   axios.get(api_url(`/sts/${sts_id}/managers`)).then((res) => res.data);
 
 export const removeManagerFromSTS = async (sts_id, user_id) =>
-  axios.delete(api_url(`/sts/${sts_id}/managers/${user_id}`)).then((res) => res.data);
+  axios
+    .delete(api_url(`/sts/${sts_id}/managers/${user_id}`))
+    .then((res) => res.data);
+
+export const getLandfills = async () =>
+  axios.get(api_url(`/landfill`)).then((res) => res.data);
+
+export const getLandfill = async (landfill_id) =>
+  axios.get(api_url(`/landfill/${landfill_id}`)).then((res) => res.data);
+
+export const addLandfill = async (name, latitude, longitude) =>
+  axios
+    .post(api_url("/landfill"), { name, latitude, longitude })
+    .then((res) => res.data);
+
+export const updateLandfill = async (landfill_id, name, latitude, longitude) =>
+  axios
+    .put(api_url(`/landfill/${landfill_id}`), { name, latitude, longitude })
+    .then((res) => res.data);
+
+export const deleteLandfill = async (landfill_id) =>
+  axios.delete(api_url(`/landfill/${landfill_id}`)).then((res) => res.data);
+
+export const addManagerToLandfill = async (landfill_id, user_id) =>
+  axios
+    .post(api_url(`/landfill/${landfill_id}/managers`), { user_id })
+    .then((res) => res.data);
+
+export const getManagersOfLandfill = async (landfill_id) =>
+  axios
+    .get(api_url(`/landfill/${landfill_id}/managers`))
+    .then((res) => res.data);
+
+export const removeManagerFromLandfill = async (landfill_id, user_id) =>
+  axios
+    .delete(api_url(`/landfill/${landfill_id}/managers/${user_id}`))
+    .then((res) => res.data);
+
 ///////////////////////// OLD /////////////////////////
-  
+
 export const addDoctorRequest = async (email) =>
   axios.post(api_url("/admin/add-doctor"), { email }).then((res) => res.data);
 

@@ -14,6 +14,7 @@ const SystemAdminHome = lazy(() => import("./system-admin/Dashboard"));
 const AddUser = lazy(() => import("./system-admin/AddUser"));
 const Users = lazy(() => import("./system-admin/Users"));
 const STSFacilities = lazy(() => import("./system-admin/STSFacilities"));
+const LandfillFacilities = lazy(() => import("./system-admin/LandfillFacilities"));
 
 // const Activate = lazy(() => import("./user-pages/Activate"));
 // const ActivateDoctor = lazy(() => import("./user-pages/RegisterDoctor"));
@@ -85,6 +86,7 @@ export default function AppRoutes() {
                 <Route path="/admin/add-user" component={AddUser} />
                 <Route path="/admin/users" component={Users} />
                 <Route path="/admin/facilities/sts" component={STSFacilities} />
+                <Route path="/admin/facilities/landfill" component={LandfillFacilities} />
                 <Redirect to="/admin/dashboard" />
               </Switch>
             )}
