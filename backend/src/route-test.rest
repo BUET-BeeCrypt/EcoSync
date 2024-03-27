@@ -1,7 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxMTU3MTk3OCwiZXhwIjoxNzExNTc1NTc4fQ.wIPZtdh9IL_eQD9nSbp8DAIhCGGeW3v7Qy2oNte6oxA
-
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTU3Nzg2OSwiZXhwIjoxNzExNTgxNDY5fQ.jbb0LysfVvPKqU8vsASk5T70H27jm2Uvm8ah3CsLaTA
 @refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzExNDg1ODcxLCJleHAiOjE3MTIwOTA2NzF9.yquv251X2ze43Th7BSK0lRZ52BZw5T0gf2W-1M0CY5I
 
 ### health
@@ -12,7 +11,7 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "admin",
+  "username": "landfill_manager",
   "password": "12345678"
 }
 
