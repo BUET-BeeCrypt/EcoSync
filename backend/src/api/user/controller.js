@@ -130,6 +130,8 @@ modules.updateUserRole = async (req, res) => {
     const err_msg = err.message || "Internal server error";
     if (err_msg.includes("violates foreign key constraint")) {
       return res.status(400).json({message: "Role does not exist"});
+    }else if (err.code===404){
+      return res.status(404).json({message: err_msg});
     }
     return res.status(500).json({message: err_msg});
   }
