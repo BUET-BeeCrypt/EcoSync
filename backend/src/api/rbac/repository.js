@@ -64,10 +64,15 @@ modules.deleteRole = async (role_name) => {
     const result = await pool.query(query,[role_name]);
 }
 
+modules.existsPermission = async (permission_name) => {
+    const query = `SELECT 1 FROM "Permission" WHERE name = $1`;
+    const result = await pool.query(query, [permission_name]);
+    return !!result.rows[0];
+}
 
-modules.createPermission = async (permission) => {
+modules.createPermission = async (permission_name, description) => {
 	const query = `INSERT INTO "Permission"(name, details) VALUES($1, $2)`;
-	const result = await pool.query(query,[permission.name,permission.details]);
+    const result = await pool.query(query, [permission_name, description]);
 	return;
 }
 
@@ -77,8 +82,36 @@ modules.updatePermission = async (permission_id, permission) => {
 	return;
 }
 
-modules.addRolePermission = async (role_id, permission_id) => {
-	const query = `INSERT INTO permission_role(role_id, permission_id) VALUES($1, $2)`;
+modules.deletePermission = async (permission_name) => {
+    // delete cascade
+    const query = `DELETE FROM "Permission" WHERE name = $1`;
+    const result = await pool.query(query, [permission_name]);
+}
+
+// get permissions with pagination
+modules.getPermissions = async (limit, offset) => {
+    const query = `SELECT * FROM "Permission" LIMIT $1 OFFSET $2`;
+    const result = await pool.query(query, [limit, offset]);
+    return result.rows;
+}
+
+// get role permissions with pagination
+modules.getRolePermissions = async (role_name, limit, offset) => {
+    const query = `SELECT * FROM "Permission_Role" WHERE role_name = $1 LIMIT $2 OFFSET $3`;
+    const result = await pool.query(query, [role_name, limit, offset]);
+    return result.rows;
+}
+
+modules.assignPermission = async (role_name, permission_name) => {
+    const query = `INSERT INTO "Permission_Role"(role_name, permission_name) VALUES($1, $2) RETURNING *`;
+    const result = await pool.query(query, [role_name, permission_name]);
+    return result.rows[0];
+}
+
+// revoke permission from a role
+modules.revokePermission = async (role_name, permission_name) => {
+    const query = `DELETE FROM "Permission_Role" WHERE role_name = $1 AND permission_name = $2`;
+    const result = await pool.query(query, [role_name, permission_name]);
 }
 
 // check a user has a permission or not
