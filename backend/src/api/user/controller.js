@@ -33,8 +33,21 @@ modules.getAllUsers = async (req, res) => {
 
 modules.getUser = async (req, res) => {
   const user_id = req.params.user_id;
-  const user = await repository.getUser(user_id);
-  res.status(200).json(user);
+  // check is user id is an integer
+  if( isNaN(user_id) ){
+    return res.status(400).json({message: "Invalid user id! User id must be an integer!"});
+  }
+  try{
+    const user = await repository.getUser(user_id);
+    res.status(200).json(user);
+  }catch(err){
+    console.log(err)
+    if(err.code !== 404){
+      return res.status(500).json({message: "Internal server error!"});
+    }else{
+      return res.status(404).json({message: err.message});
+    }
+  }
 }
 
 
