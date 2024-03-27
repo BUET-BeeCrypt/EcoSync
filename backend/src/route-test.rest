@@ -1,6 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxMTQ4NTg3MSwiZXhwIjoxNzExNDg5NDcxfQ.1f9spXcVJLavPHq2mWbSgg27kUUGlVMH7JCuxy6D9Wk
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxMTU1OTc0MiwiZXhwIjoxNzExNTYzMzQyfQ.y7e0hepZfpCGXtfSGdkiUOKwXwsPM-8mWOXWJBVGeWQ
 
 @refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzExNDg1ODcxLCJleHAiOjE3MTIwOTA2NzF9.yquv251X2ze43Th7BSK0lRZ52BZw5T0gf2W-1M0CY5I
 
@@ -84,3 +84,19 @@ Content-Type: application/json
   "active": true,
   "banned": false
 }
+
+### Create STS
+POST {{url}}/api/sts HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "ward_id": 0,
+  "capacity": 0,
+  "latitude": 0,
+  "longitude": 0
+}
+
+### Get all STS
+GET {{url}}/api/sts HTTP/1.1
+Authorization: {{access}}
