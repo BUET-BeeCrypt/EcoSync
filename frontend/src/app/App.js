@@ -5,7 +5,7 @@ import AppRoutes from "./AppRoutes";
 import Navbar from "./shared/Navbar";
 import Footer from "./shared/Footer";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
-import { BASE_URL, FORBIDDEN, UNAUTHORIZED } from "./api";
+import { api_url, BASE_URL, FORBIDDEN, UNAUTHORIZED } from "./api";
 import { toast } from "react-hot-toast";
 import UserSidebar from "./user/UserSidebar";
 import AdminSidebar from "./system-admin/SystemAdminSidebar";
@@ -16,7 +16,7 @@ export const USER_ROLES = {
   STS_MANAGER: "STS_MANAGER",
   LANDFILL_MANAGER: "LANDFILL_MANAGER",
   UNASSIGNED: "UNASSIGNED",
-}
+};
 
 const sampleUser = {
   username: "admin",
@@ -68,11 +68,10 @@ function App() {
         return Promise.reject(error);
       const status = error?.response?.status;
 
-      if (status === UNAUTHORIZED || status === FORBIDDEN) {
-        localStorage.removeItem("token");
+      if (api_url("/auth/refresh-token") === error?.response?.config?.url) {
         setUser(null);
         toast.error("Please login again.");
-        return new Promise(() => {});
+        return new Promise.reject(error);
       }
       // else {
       //   const message = error?.response?.data || "Failed";
