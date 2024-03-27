@@ -156,41 +156,13 @@ CREATE TABLE public."STS_Manager"
         ON DELETE NO ACTION
 );
 
-CREATE TABLE public."STS_Entry"
-(
-    sts_entry_id serial NOT
-    sts_id integer NOT NULL,
-    manager_id integer NOT NULL,
-    entry_time integer NOT NULL,
-    departure_time integer,
-    vehicle_id integer,
-    volume double precision NOT NULL,
-    PRIMARY KEY (sts_entry_id),
-    FOREIGN KEY (sts_id)
-        REFERENCES public."STS" (sts_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    FOREIGN KEY (manager_id)
-        REFERENCES public."User" (user_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    FOREIGN KEY (vehicle_id)
-        REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-);
-
 CREATE TABLE public."Landfill"
 (
     landfill_id serial NOT NULL,
     name character varying(256) NOT NULL,
     latitude double precision NOT NULL,
     longitude double precision NOT NULL,
-    PRIMARY KEY (landfill_id),
-    FOREIGN KEY (manager_id)
-        REFERENCES public."User" (user_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    PRIMARY KEY (landfill_id)
 );
 
 CREATE TABLE public."Landfill_Manager"
@@ -209,6 +181,23 @@ CREATE TABLE public."Landfill_Manager"
 );
 
 
+CREATE TABLE public."Vehicle"
+(
+    vehicle_id serial NOT NULL,
+    registration character varying(256) UNIQUE NOT NULL,
+    type character varying(256) NOT NULL,
+    capacity double precision NOT NULL,
+    disabled boolean DEFAULT false,
+    fuel_cost_per_km_loaded double precision NOT NULL,
+    fuel_cost_per_km_unloaded double precision NOT NULL,
+    landfill_id integer,
+    PRIMARY KEY (vehicle_id),
+    FOREIGN KEY (landfill_id)
+        REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
 CREATE TABLE public."Landfill_Entry"
 (
     landfill_entry_id serial NOT NULL,
@@ -221,6 +210,30 @@ CREATE TABLE public."Landfill_Entry"
     PRIMARY KEY (landfill_entry_id),
     FOREIGN KEY (landfill_id)
         REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (manager_id)
+        REFERENCES public."User" (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (vehicle_id)
+        REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE public."STS_Entry"
+(
+    sts_entry_id serial NOT NULL,
+    sts_id integer NOT NULL,
+    manager_id integer NOT NULL,
+    entry_time integer NOT NULL,
+    departure_time integer,
+    vehicle_id integer,
+    volume double precision NOT NULL,
+    PRIMARY KEY (sts_entry_id),
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     FOREIGN KEY (manager_id)
