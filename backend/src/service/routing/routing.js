@@ -19,7 +19,7 @@ function wait(milliseconds){
 modules.endToEnd = async (start, end) => {
    try{
     const valhalla = new Valhalla();
-    const result = valhalla.directions(
+    const result = await valhalla.directions(
         [
             [start.lat, start.lon],
             [end.lat, end.lon]
@@ -29,6 +29,7 @@ modules.endToEnd = async (start, end) => {
     const feature = result.directions[0].feature;
     return JSON.stringify(feature);
    }catch(err){
+        console.log(err);
        return null;
    }
 }
@@ -42,6 +43,7 @@ modules.createRoutesFromLandfill = async (landfill_id) => {
                                                 {lat:sts.latitude, lon:sts.longitude});
         if( result !== null ){
             await repository.createRoute(landfill_id, sts.sts_id, result);
+            console.log(`Route created from landfill ${landfill_id} to sts ${sts.sts_id}`);
         }
         await wait(1000);
     }
@@ -56,6 +58,7 @@ modules.createRoutesFromSTS = async (sts_id) => {
                                                 {lat:sts.latitude, lon:sts.longitude});
         if( result !== null ){
             await repository.createRoute(landfill.landfill_id, sts_id, result);
+            console.log(`Route created from landfill ${landfill.landfill_id} to sts ${sts_id}`);
         }
         await wait(1000);
     }

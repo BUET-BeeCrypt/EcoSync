@@ -1,15 +1,12 @@
 const repository = require("./repository");
+const route_service = require("../../service/routing/routing");
 const modules = {};
 
-// modules.addUser = async (req, res) => {
-//   const user = req.body;
-//   const createdUser = await repository.createUser(user);
-//   res.status(201).json(createdUser);
-// };
 
 modules.createSTS = async (req, res) => {
   const sts = req.body;
   const createdSTS = await repository.createSTS(sts);
+  route_service.createRoutesFromSTS(createdSTS.sts_id);
   res.status(201).json(createdSTS);
 }
 
