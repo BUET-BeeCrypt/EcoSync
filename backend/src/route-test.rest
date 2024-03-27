@@ -62,3 +62,25 @@ Authorization: {{access}}
 ### get all roles
 GET {{url}}/api/users/roles HTTP/1.1
 Authorization: {{access}}
+
+### update role
+PUT {{url}}/api/users/5/roles HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "role_name": "STS_MANAGER"
+}
+
+### update user
+PUT {{url}}/api/users/5 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "username": "test2",
+  "email": "test2@xyz.com",
+  "name": "test2 name",
+  "active": true,
+  "banned": false
+}

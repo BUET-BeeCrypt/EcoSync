@@ -42,10 +42,15 @@ const deleteUser = async(user_id) => {
 	const result = await pool.query(query,[user_id]);
 }
 
-const updateUser = async (user_id, user) => {
-	const query = `UPDATE "User" SET name = $2 WHERE user_id = $1`;
-	const result = await pool.query(query,[user_id, user.name]);
-	return;
+const updateUser = async (user_id, username, email, name, banned, active) => {
+	const query = `UPDATE "User" SET username = $2, email = $3, "name" = $4, banned = $5, active = $6 WHERE user_id = $1 RETURNING 
+	"user_id", "name", "username", "email","role_name", "active", "banned"
+	`;
+	const result = await pool.query(query, [user_id, username, email, name, banned, active]);
+	if (result.rows.length === 0) {
+		throw {code:404, message: `User not found`};
+	}
+	return result.rows[0];
 }
 
 const getRoles = async() => {
@@ -55,15 +60,9 @@ const getRoles = async() => {
 }
 
 
-const getUserRoles = async(user_id) => {
-	const query = `SELECT * FROM "Role" JOIN user_role ON "Role".role_id = user_role.role_id and user_role.user_id = $1`;
-	const result = await pool.query(query,[user_id]);
-	return result.rows;
-}
-
-const updateUserRole = async(user_id, role_id) => {
-	const query = `UPDATE "User" SET role_id = $2 WHERE user_id = $1`;
-	const result = await pool.query(query,[user_id,role_id]);
+const updateUserRole = async(user_id, role_name) => {
+	const query = `UPDATE "User" SET role_name = $2 WHERE user_id = $1`;
+	const result = await pool.query(query,[user_id,role_name]);
 	return;
 }
 
@@ -101,7 +100,6 @@ module.exports = {
 	deleteUser,
 	updateUser,
 	getRoles,
-	getUserRoles,
 	updateUserRole,
 	getUserByUsername,
 	getUserByEmail
