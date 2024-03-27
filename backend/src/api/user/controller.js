@@ -5,6 +5,18 @@ const modules = {};
 
 modules.addUser = async (req, res) => {
   const user =  {...req.body};
+  err_msg = "";
+  if( !user.username) err_msg = "Username is required";
+  if( !user.email) err_msg = "Email is required";
+  if( !user.password) err_msg = "Password is required";
+  if( !user.name) err_msg = "Name is required";
+  if( err_msg !== "") return res.status(400).json({message: err_msg});
+
+  // check password length is greater than 6
+  if( user.password.length < 6){
+    return res.status(400).json({message: "Password must be at least 6 characters"});
+  }
+
   user.password = await bcyrpt.hash(user.password, 10);
   const existingUserByEmail = await repository.getUserByEmail(user.email);
 
@@ -57,13 +69,25 @@ modules.deleteUser = async(req, res) => {
   if( req.user.user_id+"" === user_id ){
     return res.status(401).json({message: `Cannot delete yourself`});
   }
-
-  await repository.deleteUser(user_id);
-  res.status(200).json({"message":"Deleted successfully"});
+  try{
+    await repository.deleteUser(user_id);
+    res.status(200).json({"message":"Deleted successfully"});
+  }catch(err){
+    if(err.code !== 404){
+      return res.status(500).json({message: err.message});
+    }else{
+      return res.status(404).json({message: err.message});
+    }
+  }
+  
 }
 
 modules.updateUser = async (req, res) => {
   const user_id = req.params.user_id;
+
+  if (isNaN(user_id)) {
+    return res.status(400).json({message: "Invalid user id! User id must be an integer!"});
+  }
 
   const username = req.body.username;
   const email = req.body.email;
@@ -71,6 +95,7 @@ modules.updateUser = async (req, res) => {
   const banned = req.body.banned;
   const active = req.body.active;
 
+  // restricted to own details or System Admin access
   if( req.user.role !== "SYSTEM_ADMIN" && req.user.user_id+"" !== user_id ){
     return res.status(403).json({message: `Only system admin can update other users`});
   }
