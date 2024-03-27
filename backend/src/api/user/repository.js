@@ -40,6 +40,11 @@ const createUser = async (user) => {
 const deleteUser = async(user_id) => {
 	const query = `DELETE FROM "User" WHERE user_id = $1`;
 	const result = await pool.query(query,[user_id]);
+	// check if user was deleted
+	if( result.rowCount === 0 ){
+		throw {code:404, message: `User not found`};
+	}
+	return;
 }
 
 const updateUser = async (user_id, username, email, name, banned, active) => {

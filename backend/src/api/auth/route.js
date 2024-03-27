@@ -21,7 +21,7 @@ router.post("/login", async (req, res, next) => {
     next();
 }, checkPermission("LOGIN"), controller.login);
 router.post("/logout", controller.logout);
-router.post("/change-password",  controller.changePassword);
+router.post("/change-password", checkAuth, controller.changePassword);
 router.post("/reset-password/initiate", controller.initiateResetPassword);
 router.post("/reset-password/confirm", controller.resetPassword);
 router.post("/refresh-token", controller.refreshToken);
