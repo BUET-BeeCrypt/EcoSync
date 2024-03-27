@@ -1,24 +1,17 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { Modal, ProgressBar } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
 import {
   addLandfill,
   addManagerToLandfill,
-  addManagerToSTS,
-  addSTS,
   deleteLandfill,
-  deleteSTS,
   getLandfills,
   getManagersOfLandfill,
-  getManagersOfSTS,
-  getSTSs,
   getUsers,
   removeManagerFromLandfill,
-  removeManagerFromSTS,
   updateLandfill,
-  updateSTS,
 } from "../api/admin";
 import { USER_ROLES } from "../App";
 

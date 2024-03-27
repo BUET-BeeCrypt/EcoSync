@@ -92,6 +92,58 @@ export const removeManagerFromLandfill = async (landfill_id, user_id) =>
     .delete(api_url(`/landfill/${landfill_id}/managers/${user_id}`))
     .then((res) => res.data);
 
+export const getVehicles = async () =>
+  axios.get(api_url(`/vehicles`)).then((res) => res.data);
+
+export const getVehicle = async (vehicle_id) =>
+  axios.get(api_url(`/vehicles/${vehicle_id}`)).then((res) => res.data);
+
+export const addVehicle = async (
+  registration,
+  type,
+  capacity,
+  disabled,
+  fuel_cost_per_km_loaded,
+  fuel_cost_per_km_unloaded,
+  landfill_id
+) =>
+  axios
+    .post(api_url("/vehicles"), {
+      registration,
+      type,
+      capacity,
+      disabled,
+      fuel_cost_per_km_loaded,
+      fuel_cost_per_km_unloaded,
+      landfill_id,
+    })
+    .then((res) => res.data);
+
+export const updateVehicle = async (
+  vehicle_id,
+  registration,
+  type,
+  capacity,
+  disabled,
+  fuel_cost_per_km_loaded,
+  fuel_cost_per_km_unloaded,
+  landfill_id
+) =>
+  axios
+    .put(api_url(`/vehicles/${vehicle_id}`), {
+      registration,
+      type,
+      capacity,
+      disabled,
+      fuel_cost_per_km_loaded,
+      fuel_cost_per_km_unloaded,
+      landfill_id,
+    })
+    .then((res) => res.data);
+
+export const deleteVehicle = async (vehicle_id) =>
+  axios.delete(api_url(`/vehicles/${vehicle_id}`)).then((res) => res.data);
+
 ///////////////////////// OLD /////////////////////////
 
 export const addDoctorRequest = async (email) =>
