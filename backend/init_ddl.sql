@@ -41,8 +41,8 @@ CREATE TABLE public."User"
     PRIMARY KEY (user_id),
     FOREIGN KEY (role_name)
         REFERENCES public."Role" (name) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 -- Insert admin user
@@ -61,8 +61,8 @@ CREATE TABLE public."Refresh_Token"
     PRIMARY KEY (user_id,token),
     FOREIGN KEY (user_id)
         REFERENCES public."User" (user_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 
@@ -80,12 +80,12 @@ CREATE TABLE public."Permission_Role"
     PRIMARY KEY (role_name, permission_name),
     FOREIGN KEY (role_name)
         REFERENCES public."Role" (name) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (permission_name)
         REFERENCES public."Permission" (name) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 /***

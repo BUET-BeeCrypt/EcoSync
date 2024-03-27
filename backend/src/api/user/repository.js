@@ -68,6 +68,10 @@ const getRoles = async() => {
 const updateUserRole = async(user_id, role_name) => {
 	const query = `UPDATE "User" SET role_name = $2 WHERE user_id = $1`;
 	const result = await pool.query(query,[user_id,role_name]);
+	// check if user was updated
+	if( result.rowCount === 0 ){
+		throw {code:404, message: `User not found`};
+	}
 	return;
 }
 

@@ -69,8 +69,32 @@ Authorization: {{access}}
 Content-Type: application/json
 
 {
-  "role_name": "STS_MANAGER"
+  "role_name": "STS_MANAGER2"
 }
+
+###  Create role
+POST {{url}}/api/rbac/roles HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "role_name": "STS_MANAGER2",
+  "description": "STS Manager2"
+}
+
+### Update role
+PUT {{url}}/api/rbac/roles/STS_MANAGER2 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "role_name": "STS_MANAGER_U",
+  "description": "STS Manager2 udpated"
+}
+
+### delete role
+DELETE {{url}}/api/rbac/roles/STS_MANAGER2 HTTP/1.1
+Authorization: {{access}}
 
 ### update user
 PUT {{url}}/api/users/5 HTTP/1.1

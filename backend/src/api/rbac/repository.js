@@ -34,18 +34,36 @@ CREATE TABLE public.`Permission_Role`
         ON DELETE NO ACTION
 );
 */
+modules.existsRole = async (role_name) => {
+    const query = `SELECT 1 FROM "Role" WHERE name = $1`;
+    const result = await pool.query(query,[role_name]);
+    return !!result.rows[0];
+}
 
-modules.createRole = async (role) => {
-	const query = `INSERT INTO "Role"(name, details) VALUES($1, $2)`;
-	const result = await pool.query(query,[role.name,role.details]);
+modules.createRole = async (role_name, description) => {
+	const query = `INSERT INTO "Role" (name, details) VALUES($1, $2)`;
+	const result = await pool.query(query,[role_name,description]);
 	return;
 }
 
-modules.updateRole = async (role_id, role) => {
-	const query = `UPDATE "Role" SET name = $2, details = $3 WHERE role_id = $1`;
-	const result = await pool.query(query,[role_id, role.name, role.details]);
+modules.updateRole = async (old_role_name, new_role_name, role_desc) => {
+	const query = `UPDATE "Role" SET name = $2, details = $3 WHERE name = $1`;
+	const result = await pool.query(query,[old_role_name, new_role_name, role_desc]);
 	return;
 }
+
+modules.updateRoleDescription = async (role_name, role_desc) => {
+    const query = `UPDATE "Role" SET details = $2 WHERE name = $1`;
+    const result = await pool.query(query,[role_name, role_desc]);
+    return;
+}
+
+modules.deleteRole = async (role_name) => {
+    // delete cascade
+    const query = `DELETE FROM "Role" WHERE name = $1`;
+    const result = await pool.query(query,[role_name]);
+}
+
 
 modules.createPermission = async (permission) => {
 	const query = `INSERT INTO "Permission"(name, details) VALUES($1, $2)`;
