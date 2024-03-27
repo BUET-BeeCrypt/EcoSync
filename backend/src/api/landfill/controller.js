@@ -38,7 +38,8 @@ modules.deleteLandfill = async (req, res) => {
 }
 
 modules.addManagerToLandfill = async (req, res) => {
-  const { landfill_id, user_id } = req.params;
+  const { landfill_id } = req.params;
+  const { user_id } = req.body;
   await repository.addManagerToLandfill(landfill_id, user_id);
   res.status(200).json({ message: "Manager added to landfill" });
 }

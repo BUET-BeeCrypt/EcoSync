@@ -148,12 +148,12 @@ CREATE TABLE public."STS_Manager"
     PRIMARY KEY (sts_id, user_id),
     FOREIGN KEY (sts_id)
         REFERENCES public."STS" (sts_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (user_id)
         REFERENCES public."User" (user_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 CREATE TABLE public."Landfill"
@@ -172,12 +172,12 @@ CREATE TABLE public."Landfill_Manager"
     PRIMARY KEY (landfill_id, user_id),
     FOREIGN KEY (landfill_id)
         REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (user_id)
         REFERENCES public."User" (user_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 
@@ -194,8 +194,8 @@ CREATE TABLE public."Vehicle"
     PRIMARY KEY (vehicle_id),
     FOREIGN KEY (landfill_id)
         REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
 );
 
 CREATE TABLE public."Landfill_Entry"
@@ -210,16 +210,16 @@ CREATE TABLE public."Landfill_Entry"
     PRIMARY KEY (landfill_entry_id),
     FOREIGN KEY (landfill_id)
         REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (manager_id)
         REFERENCES public."User" (user_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE SET NULL,
     FOREIGN KEY (vehicle_id)
         REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
 );
 
 CREATE TABLE public."STS_Entry"
@@ -234,16 +234,16 @@ CREATE TABLE public."STS_Entry"
     PRIMARY KEY (sts_entry_id),
     FOREIGN KEY (sts_id)
         REFERENCES public."STS" (sts_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (manager_id)
         REFERENCES public."User" (user_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE SET NULL,
     FOREIGN KEY (vehicle_id)
         REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
 );
 
 CREATE TABLE public."Bill"

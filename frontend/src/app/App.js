@@ -13,7 +13,7 @@ import DoctorSidebar from "./doctor/DoctorSidebar";
 
 export const USER_ROLES = {
   SYSTEM_ADMIN: "SYSTEM_ADMIN",
-  STS_MANAGET: "STS_MANAGER",
+  STS_MANAGER: "STS_MANAGER",
   LANDFILL_MANAGER: "LANDFILL_MANAGER",
   UNASSIGNED: "UNASSIGNED",
 }

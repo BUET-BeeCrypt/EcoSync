@@ -38,7 +38,8 @@ modules.deleteSTS = async (req, res) => {
 }
 
 modules.addManagerToSTS = async (req, res) => {
-  const { sts_id, user_id } = req.params;
+  const {sts_id} = req.params;
+  const {user_id} = req.body;
   await repository.addManagerToSTS(sts_id, user_id);
   res.status(200).json({ message: "Manager added to sts" });
 }
