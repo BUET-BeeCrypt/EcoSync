@@ -56,15 +56,18 @@ CREATE TABLE public."Landfill_Entry"
 */
 
 const createLandfill = async (landfill) => {
-	const { name, start_time, end_time, latitude, longitude } = landfill;
-	const query = `INSERT INTO public."Landfill" (name, start_time, end_time, latitude, longitude) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
-	const values = [name, start_time, end_time, latitude, longitude];
+	const { name, latitude, longitude } = landfill;
+	const query = `INSERT INTO public."Landfill" (name, latitude, longitude) VALUES ($1, $2, $3) RETURNING *`;
+	const values = [name, latitude, longitude];
 	const { rows } = await pool.query(query, values);
 	return rows[0];
 }
 
 const getLandfills = async () => {
-	const query = `SELECT * FROM public."Landfill"`;
+	const query = `SELECT *,
+	(SELECT COUNT(*) FROM public."Landfill_Manager" lm WHERE lm.landfill_id = l.landfill_id) AS managers_count,
+	(SELECT COALESCE(SUM(volume),0) FROM public."Landfill_Entry" le WHERE le.landfill_id = l.landfill_id) AS total_volume
+    FROM public."Landfill" l`;
 	const result = await pool.query(query,[]);
 	return result.rows;
 }
@@ -80,9 +83,9 @@ const getLandfill = async (landfill_id) => {
 }
 
 const updateLandfill = async (landfill_id, landfill) => {
-	const { name, start_time, end_time, latitude, longitude } = landfill;
-	const query = `UPDATE public."Landfill" SET name = $1, start_time = $2, end_time = $3, latitude = $4, longitude = $5 WHERE landfill_id = $6 RETURNING *`;
-	const values = [name, start_time, end_time, latitude, longitude, landfill_id];
+	const { name, latitude, longitude } = landfill;
+	const query = `UPDATE public."Landfill" SET name = $1, latitude = $2, longitude = $3 WHERE landfill_id = $4 RETURNING *`;
+	const values = [name, latitude, longitude, landfill_id];
 	const result = await pool.query(query, values);
 	if( result.rows.length === 0 ) return null;
 	return result.rows[0];

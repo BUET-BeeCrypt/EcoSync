@@ -4,64 +4,72 @@ import toast from "react-hot-toast";
 import { Modal, ProgressBar } from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
 import {
+  addLandfill,
+  addManagerToLandfill,
   addManagerToSTS,
   addSTS,
+  deleteLandfill,
   deleteSTS,
+  getLandfills,
+  getManagersOfLandfill,
   getManagersOfSTS,
   getSTSs,
   getUsers,
+  removeManagerFromLandfill,
   removeManagerFromSTS,
+  updateLandfill,
   updateSTS,
 } from "../api/admin";
 import { USER_ROLES } from "../App";
 
-const addStsSample = {
-  sts_id: 0,
-  ward_id: 0,
-  capacity: 0,
+const defaultLandfillFacility = {
+  landfill_id: 0,
+  name: "",
   latitude: 0,
   longitude: 0,
   manager_count: 0,
   amount: 0,
 };
 
-export default function STSFacilities() {
+export default function LandfillFacilities() {
   // const [query, location] = useQuery();
   // const page = (Number.parseInt(query.get("page")) || 1) - 1;
 
-  const [sts, setSts] = useState([]);
+  const [landfills, setLandfills] = useState([]);
   const [first, setFirst] = useState(true);
   const [last, setLast] = useState(true);
 
-  const [selectedEditSts, setSelectedEditSts] = useState(null);
-  const [selectedDeleteSTS, setSelectedDeleteSTS] = useState(null);
-  const [selectedStsManagers, setSelectedStsManagers] = useState(null);
+  const [selectedEditLandfill, setSelectedEditLandfill] = useState(null);
+  const [selectedDeleteLandfill, setSelectedDeleteLandfill] = useState(null);
+  const [selectedLandfillManagers, setSelectedLandfillManagers] =
+    useState(null);
 
-  const [stsManagers, setStsManagers] = useState([]);
+  const [landfillManagers, setLandfillManagers] = useState([]);
 
   useEffect(() => {
     toast.promise(
-      getSTSs().then((sts) => {
-        setSts(sts);
+      getLandfills().then((lfs) => {
+        setLandfills(lfs);
       }),
       {
-        loading: "Loading STS",
-        success: "Loaded STS",
-        error: "Failed loading STS",
+        loading: "Loading Landfills",
+        success: "Loaded Landfills",
+        error: "Failed loading Landfills",
       }
     );
+
     getUsers().then((users) => {
-      setStsManagers(
-        users.filter((u) => u.role_name === USER_ROLES.STS_MANAGER)
+      setLandfillManagers(
+        users.filter((u) => u.role_name === USER_ROLES.LANDFILL_MANAGER)
       );
     });
   }, []);
 
   const closeManagerModal = () =>
-    setSelectedStsManagers((m) => {
-      setSts(
-        sts.map((s) =>
-          s.sts_id === m.sts_id
+    setSelectedLandfillManagers((m) => {
+      setLandfills(
+        landfills.map((s) =>
+          s.landfill_id === m.landfill_id
             ? { ...s, manager_count: `${m.managers.length}` }
             : s
         )
@@ -72,7 +80,7 @@ export default function STSFacilities() {
   return (
     <div>
       <div className="page-header">
-        <h3 className="page-title"> Solid Treatment Site (STS) Facilities </h3>
+        <h3 className="page-title"> Waste Landfill Sites </h3>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
@@ -81,7 +89,7 @@ export default function STSFacilities() {
               </a>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              STS
+              Landfill
             </li>
           </ol>
         </nav>
@@ -92,7 +100,7 @@ export default function STSFacilities() {
           <div className="card">
             <div className="card-body">
               <h4 className="card-title">
-                STS
+                Landfill
                 <span className="float-right">
                   <button
                     className={
@@ -116,7 +124,7 @@ export default function STSFacilities() {
                     className={"btn btn-outline-success btn-sm icon-btn"}
                     onClick={(e) => {
                       e.preventDefault();
-                      setSelectedEditSts(addStsSample);
+                      setSelectedEditLandfill(defaultLandfillFacility);
                     }}
                   >
                     <i className="mdi mdi-plus mr-2"></i>
@@ -128,27 +136,18 @@ export default function STSFacilities() {
                 <table className="table table-outline table-hover">
                   <thead>
                     <tr>
-                      <th> Ward # </th>
+                      <th> Name </th>
                       <th> Amount </th>
-                      <th> Capacity </th>
-                      <th> Amount / Capacity </th>
                       <th> Location </th>
                       <th> No of Managers </th>
                       <th> Action </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {sts.map((s) => (
-                      <tr key={s.sts_id} className={"text-dark"}>
-                        <td> {s.ward_id} </td>
+                    {landfills.map((s) => (
+                      <tr key={s.landfill_id} className={"text-dark"}>
+                        <td> {s.name} </td>
                         <td> {s.amount} </td>
-                        <td> {s.capacity} </td>
-                        <td>
-                          <ProgressBar
-                            now={(s.amount / s.capacity) * 100}
-                            variant="success"
-                          />
-                        </td>
                         <td>
                           ({s.latitude}, {s.longitude})
                         </td>
@@ -168,11 +167,11 @@ export default function STSFacilities() {
                               onClick={(e) => {
                                 e.preventDefault();
                                 toast.promise(
-                                  getManagersOfSTS(s.sts_id).then(
+                                  getManagersOfLandfill(s.landfill_id).then(
                                     (managers) => {
-                                      setSelectedStsManagers({
-                                        sts_id: s.sts_id,
-                                        ward_id: s.ward_id,
+                                      setSelectedLandfillManagers({
+                                        landfill_id: s.landfill_id,
+                                        name: s.name,
                                         managers,
                                       });
                                     }
@@ -195,7 +194,7 @@ export default function STSFacilities() {
                             className="btn btn-outline-dark btn-sm"
                             onClick={(e) => {
                               e.preventDefault();
-                              setSelectedEditSts(s);
+                              setSelectedEditLandfill(s);
                             }}
                           >
                             Edit
@@ -203,7 +202,7 @@ export default function STSFacilities() {
                           <button
                             className="btn btn-outline-danger btn-sm"
                             onClick={(e) => {
-                              setSelectedDeleteSTS(s);
+                              setSelectedDeleteLandfill(s);
                             }}
                           >
                             Delete
@@ -219,14 +218,14 @@ export default function STSFacilities() {
         </div>
       </div>
       <Modal
-        show={selectedDeleteSTS}
-        onHide={() => setSelectedDeleteSTS(null)}
+        show={selectedDeleteLandfill}
+        onHide={() => setSelectedDeleteLandfill(null)}
         centered
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            Are you sure you want to delete STS from Ward "
-            {selectedDeleteSTS?.ward_id}"?
+            Are you sure you want to delete Landfill - "
+            {selectedDeleteLandfill?.name}"?
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -234,7 +233,7 @@ export default function STSFacilities() {
             <div className="col-md-12 text-right">
               <button
                 className="btn btn-outline-danger mr-2"
-                onClick={() => setSelectedDeleteSTS(null)}
+                onClick={() => setSelectedDeleteLandfill(null)}
               >
                 Cancel
               </button>
@@ -242,16 +241,19 @@ export default function STSFacilities() {
                 className="btn btn-danger"
                 onClick={() => {
                   toast.promise(
-                    deleteSTS(selectedDeleteSTS.sts_id).then((e) => {
-                      setSts(
-                        sts.filter((u) => u.sts_id !== selectedDeleteSTS.sts_id)
+                    deleteLandfill(selectedDeleteLandfill.landfill_id).then((e) => {
+                      setLandfills(
+                        landfills.filter(
+                          (u) =>
+                            u.landfill_id !== selectedDeleteLandfill.landfill_id
+                        )
                       );
-                      setSelectedDeleteSTS(null);
+                      setSelectedDeleteLandfill(null);
                     }),
                     {
-                      loading: "Deleting STS",
-                      success: "Deleted STS",
-                      error: "Failed deleting STS",
+                      loading: "Deleting Landfill",
+                      success: "Deleted Landfill",
+                      error: "Failed deleting Landfill",
                     }
                   );
                 }}
@@ -264,47 +266,31 @@ export default function STSFacilities() {
       </Modal>
 
       <Modal
-        show={selectedEditSts}
-        onHide={() => setSelectedEditSts(null)}
+        show={selectedEditLandfill}
+        onHide={() => setSelectedEditLandfill(null)}
         centered
         size="md"
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            {selectedEditSts?.sts_id === 0
-              ? "Add STS"
-              : `Edit STS in Ward #${selectedEditSts?.ward_id}`}
+            {selectedEditLandfill?.landfill_id === 0
+              ? "Add Landfill"
+              : `Edit Landfill - "${selectedEditLandfill?.name}"`}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="row">
-            <div className="col-md-6">
+            <div className="col-md-12">
               <div className="form-group">
-                <label>Ward #</label>
+                <label>Name</label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
-                  value={selectedEditSts?.ward_id}
+                  value={selectedEditLandfill?.name}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
-                      ward_id: Number.parseInt(e.target.value),
-                    });
-                  }}
-                />
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className="form-group">
-                <label>Capacity (in Tons)</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={selectedEditSts?.capacity}
-                  onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
-                      capacity: Number.parseInt(e.target.value),
+                    setSelectedEditLandfill({
+                      ...selectedEditLandfill,
+                      name: e.target.value,
                     });
                   }}
                 />
@@ -316,10 +302,10 @@ export default function STSFacilities() {
                 <input
                   type="number"
                   className="form-control"
-                  value={selectedEditSts?.latitude}
+                  value={selectedEditLandfill?.latitude}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
+                    setSelectedEditLandfill({
+                      ...selectedEditLandfill,
                       latitude: Number.parseFloat(e.target.value),
                     });
                   }}
@@ -332,10 +318,10 @@ export default function STSFacilities() {
                 <input
                   type="number"
                   className="form-control"
-                  value={selectedEditSts?.longitude}
+                  value={selectedEditLandfill?.longitude}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
+                    setSelectedEditLandfill({
+                      ...selectedEditLandfill,
                       longitude: Number.parseFloat(e.target.value),
                     });
                   }}
@@ -345,7 +331,7 @@ export default function STSFacilities() {
             <div className="col-md-12 text-right">
               <button
                 className="btn btn-outline-danger mr-2"
-                onClick={() => setSelectedEditSts(null)}
+                onClick={() => setSelectedEditLandfill(null)}
               >
                 Cancel
               </button>
@@ -353,40 +339,49 @@ export default function STSFacilities() {
                 className="btn btn-primary"
                 onClick={async () => {
                   toast.promise(
-                    selectedEditSts?.sts_id === 0
-                      ? addSTS(
-                          selectedEditSts.ward_id,
-                          selectedEditSts.capacity,
-                          selectedEditSts.latitude,
-                          selectedEditSts.longitude
+                    selectedEditLandfill?.landfill_id === 0
+                      ? addLandfill(
+                          selectedEditLandfill.name,
+                          selectedEditLandfill.latitude,
+                          selectedEditLandfill.longitude
                         ).then((e) => {
-                          setSts([...sts, { ...selectedEditSts, ...e }]);
-                          setSelectedEditSts(null);
+                          setLandfills([
+                            ...landfills,
+                            { ...selectedEditLandfill, ...e },
+                          ]);
+                          setSelectedEditLandfill(null);
                         })
-                      : updateSTS(
-                          selectedEditSts.sts_id,
-                          selectedEditSts.ward_id,
-                          selectedEditSts.capacity,
-                          selectedEditSts.latitude,
-                          selectedEditSts.longitude
+                      : updateLandfill(
+                          selectedEditLandfill.landfill_id,
+                          selectedEditLandfill.name,
+                          selectedEditLandfill.latitude,
+                          selectedEditLandfill.longitude
                         ).then((e) => {
-                          setSts(
-                            sts.map((u) =>
-                              u.sts_id === e.sts_id ? selectedEditSts : u
+                          setLandfills(
+                            landfills.map((u) =>
+                              u.landfill_id === e.landfill_id
+                                ? selectedEditLandfill
+                                : u
                             )
                           );
-                          setSelectedEditSts(null);
+                          setSelectedEditLandfill(null);
                         }),
                     {
                       loading: `${
-                        selectedEditSts?.sts_id === 0 ? "Adding" : "Updating"
-                      } STS`,
+                        selectedEditLandfill?.landfill_id === 0
+                          ? "Adding"
+                          : "Updating"
+                      } Landfill`,
                       success: `${
-                        selectedEditSts?.sts_id === 0 ? "Added" : "Updated"
-                      } STS`,
+                        selectedEditLandfill?.landfill_id === 0
+                          ? "Added"
+                          : "Updated"
+                      } Landfill`,
                       error: `Failed ${
-                        selectedEditSts?.sts_id === 0 ? "adding" : "updating"
-                      } STS`,
+                        selectedEditLandfill?.landfill_id === 0
+                          ? "adding"
+                          : "updating"
+                      } Landfill`,
                     }
                   );
                 }}
@@ -397,28 +392,32 @@ export default function STSFacilities() {
           </div>
         </Modal.Body>
       </Modal>
-      <Modal show={selectedStsManagers} onHide={closeManagerModal} centered>
+      <Modal
+        show={selectedLandfillManagers}
+        onHide={closeManagerModal}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>
-            Managers of STS in Ward #{selectedStsManagers?.ward_id}
+            Managers of Landfill - "{selectedLandfillManagers?.name}"
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="row">
             <div className="col-md-12">
               <div className="form-group">
-                <label>Add New STS Manager</label>
+                <label>Add New Landfill Manager</label>
                 <Typeahead
                   onChange={(selected) => {
                     toast.promise(
-                      addManagerToSTS(
-                        selectedStsManagers.sts_id,
+                      addManagerToLandfill(
+                        selectedLandfillManagers.landfill_id,
                         selected[0].user_id
                       ).then((e) => {
-                        setSelectedStsManagers((selectedStsManagers) => ({
-                          ...selectedStsManagers,
+                        setSelectedLandfillManagers((m) => ({
+                          ...m,
                           managers: [
-                            ...selectedStsManagers.managers,
+                            ...m.managers,
                             selected[0],
                           ],
                         }));
@@ -430,7 +429,7 @@ export default function STSFacilities() {
                       }
                     );
                   }}
-                  options={stsManagers}
+                  options={landfillManagers}
                   labelKey={(option) =>
                     `[${option.username}] ${option.name} (${option.email})`
                   }
@@ -450,7 +449,7 @@ export default function STSFacilities() {
                   </tr>
                 </thead>
                 <tbody>
-                  {selectedStsManagers?.managers.map((u) => (
+                  {selectedLandfillManagers?.managers.map((u) => (
                     <tr key={u.user_id} className={"text-dark"}>
                       <td> {u.username} </td>
                       <td> {u.email} </td>
@@ -462,15 +461,16 @@ export default function STSFacilities() {
                           onClick={(e) => {
                             e.preventDefault();
                             toast.promise(
-                              removeManagerFromSTS(
-                                selectedStsManagers.sts_id,
+                              removeManagerFromLandfill(
+                                selectedLandfillManagers.landfill_id,
                                 u.user_id
                               ).then((e) => {
-                                setSelectedStsManagers({
-                                  ...selectedStsManagers,
-                                  managers: selectedStsManagers.managers.filter(
-                                    (m) => m.user_id !== u.user_id
-                                  ),
+                                setSelectedLandfillManagers({
+                                  ...selectedLandfillManagers,
+                                  managers:
+                                    selectedLandfillManagers.managers.filter(
+                                      (m) => m.user_id !== u.user_id
+                                    ),
                                 });
                               }),
                               {
