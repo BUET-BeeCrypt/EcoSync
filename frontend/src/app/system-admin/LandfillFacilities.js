@@ -354,7 +354,6 @@ export default function LandfillFacilities() {
                       : updateLandfill(
                           selectedEditLandfill.landfill_id,
                           selectedEditLandfill.name,
-                          selectedEditLandfill.capacity,
                           selectedEditLandfill.latitude,
                           selectedEditLandfill.longitude
                         ).then((e) => {
