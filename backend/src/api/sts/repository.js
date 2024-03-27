@@ -61,7 +61,10 @@ const createSTS = async (sts) => {
 }
 
 const getSTSs = async () => {
-	const query = `SELECT * FROM public."STS"`;
+	const query = `SELECT *,
+	(SELECT COUNT(*) FROM public."STS_Manager" sm WHERE sm.sts_id = s.sts_id) as manager_count,
+	(SELECT COALESCE(SUM(volume),0) FROM public."STS_Entry" se WHERE se.sts_id = s.sts_id) as amount
+	FROM public."STS" s`;
 	const result = await pool.query(query,[]);
 	return result.rows;
 }
@@ -79,7 +82,7 @@ const getSTS = async (sts_id) => {
 
 const updateSTS = async (sts_id, sts) => {
 	const { ward_id, capacity, latitude, longitude } = sts;
-	const query = `UPDATE public."STS" SET ward_id = $1, capacity = $2, latitude = $4, longitude = $5 WHERE sts_id = $6 RETURNING *`;
+	const query = `UPDATE public."STS" SET ward_id = $1, capacity = $2, latitude = $3, longitude = $4 WHERE sts_id = $5 RETURNING *`;
 	const values = [ward_id, capacity, latitude, longitude, sts_id];
 	const result = await pool.query(query, values);
 	if( result.rows.length === 0 ) return null;

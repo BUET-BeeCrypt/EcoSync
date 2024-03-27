@@ -3,7 +3,7 @@ import { Switch, Route, Redirect } from "react-router-dom";
 
 import Spinner from "../app/shared/Spinner";
 import { useContext } from "react";
-import { UserContext } from "./App";
+import { USER_ROLES, UserContext } from "./App";
 
 const Register = lazy(() => import("./user-pages/Register"));
 const Verify = lazy(() => import("./user-pages/Verify"));
@@ -13,6 +13,7 @@ const ForgetPassword = lazy(() => import("./user-pages/ForgetPassword"));
 const SystemAdminHome = lazy(() => import("./system-admin/Dashboard"));
 const AddUser = lazy(() => import("./system-admin/AddUser"));
 const Users = lazy(() => import("./system-admin/Users"));
+const STSFacilities = lazy(() => import("./system-admin/STSFacilities"));
 
 // const Activate = lazy(() => import("./user-pages/Activate"));
 // const ActivateDoctor = lazy(() => import("./user-pages/RegisterDoctor"));
@@ -40,14 +41,13 @@ const Users = lazy(() => import("./system-admin/Users"));
 // const AccessEmergency = lazy(() => import("./doctor/AceessEmergencyProfile"));
 // const DoctorSettings = lazy(() => import("./doctor/DoctorSettings"));
 
-
 export default function AppRoutes() {
   const { user } = useContext(UserContext);
 
   return (
     <Suspense fallback={<Spinner />}>
       <Switch>
-        <Route path="/verify" component={Verify} />
+        {/* <Route path="/verify" component={Verify} /> */}
 
         {user && (
           <Switch>
@@ -79,11 +79,12 @@ export default function AppRoutes() {
               </Switch>
             )}
 
-            {user?.role === "SYSTEM_ADMIN" && (
+            {user?.role === USER_ROLES.SYSTEM_ADMIN && (
               <Switch>
                 <Route path="/admin/dashboard" component={SystemAdminHome} />
                 <Route path="/admin/add-user" component={AddUser} />
                 <Route path="/admin/users" component={Users} />
+                <Route path="/admin/facilities/sts" component={STSFacilities} />
                 <Redirect to="/admin/dashboard" />
               </Switch>
             )}
