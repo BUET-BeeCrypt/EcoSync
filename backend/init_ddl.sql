@@ -260,6 +260,23 @@ CREATE TABLE public."Bill"
 
 );
 
+CREATE TABLE public."Vehicle_Route"
+(
+    route_id serial NOT NULL,
+    landfill_id integer NOT NULL,
+    sts_id integer NOT NULL,
+    route text NOT NULL,
+    PRIMARY KEY (route_id),
+    FOREIGN KEY (landfill_id)
+        REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
 INSERT INTO public."Permission" (name, details) VALUES ('LOGIN', 'Login permission');
 INSERT INTO public."Permission" (name, details) VALUES ('CREATE_USER', 'Create User permission');
 INSERT INTO public."Permission" (name, details) VALUES ('UPDATE_USER', 'Update User permission');
