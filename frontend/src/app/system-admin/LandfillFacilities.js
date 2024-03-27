@@ -21,7 +21,7 @@ const defaultLandfillFacility = {
   latitude: 0,
   longitude: 0,
   manager_count: 0,
-  amount: 0,
+  total_volume: 0,
 };
 
 export default function LandfillFacilities() {
@@ -140,7 +140,7 @@ export default function LandfillFacilities() {
                     {landfills.map((s) => (
                       <tr key={s.landfill_id} className={"text-dark"}>
                         <td> {s.name} </td>
-                        <td> {s.amount} </td>
+                        <td> {s.total_volume} </td>
                         <td>
                           ({s.latitude}, {s.longitude})
                         </td>
