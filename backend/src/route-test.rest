@@ -210,3 +210,20 @@ Content-Type: application/json
 ### delete STS
 DELETE {{url}}/api/sts/47 HTTP/1.1
 Authorization: {{access}}
+
+### assign manager to sts
+POST {{url}}/api/sts/47/managers HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "user_id": 3
+}
+
+### unassign manager from sts
+DELETE {{url}}/api/sts/47/managers/2 HTTP/1.1
+Authorization: {{access}}
+
+### get all managers of sts
+GET {{url}}/api/sts/47/managers HTTP/1.1
+Authorization: {{access}}

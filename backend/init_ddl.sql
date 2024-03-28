@@ -46,13 +46,17 @@ CREATE TABLE public."User"
 );
 
 -- Insert admin user
-INSERT INTO public."User" (name, username, email, password, role_name, active) VALUES ('admin', 'admin', 'admin@admin.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','SYSTEM_ADMIN', true);
+INSERT INTO public."User" (name, username, email, password, role_name, active) VALUES 
+    ('admin', 'admin', 'admin@admin.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','SYSTEM_ADMIN', true),
 -- insert sts manager user
-INSERT INTO public."User" (name, username, email, password, role_name, active) VALUES ('sts_manager', 'sts_manager', 'sts@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','STS_MANAGER', true);
+    ('sts_manager', 'sts_manager', 'sts@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','STS_MANAGER', true),
+    ('sts_manager1', 'sts_manager1', 'sts1@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','STS_MANAGER', true),
 -- insert landfill manager user
-INSERT INTO public."User" (name, username, email, password, role_name, active) VALUES ('landfill_manager', 'landfill_manager', 'landfill@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','LANDFILL_MANAGER', true);
+    ('landfill_manager', 'landfill_manager', 'landfill@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','LANDFILL_MANAGER', true),
+    ('landfill_manager1', 'landfill_manager1', 'landfill1@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','LANDFILL_MANAGER', true),
 -- insert an unassigned user
-INSERT INTO public."User" (name, username, email, password, role_name, active) VALUES ('unassigned', 'unassigned', 'unassigned@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','UNASSIGNED', true);
+    ('unassigned', 'unassigned', 'unassigned@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','UNASSIGNED', true),
+    ('unassigned1', 'unassigned1', 'unassigned1@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','UNASSIGNED', true);
 
 CREATE TABLE public."Refresh_Token"
 (
@@ -253,14 +257,11 @@ CREATE TABLE public."Vehicle"
         ON DELETE SET NULL
 );
 
-INSERT INTO public."Vehicle" (registration, type, capacity, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded) 
-    VALUES ('Dhaka Metro 1', 'Open Truck', 3, 10, 5);
-INSERT INTO public."Vehicle" (registration, type, capacity, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded)
-    VALUES ('Dhaka Metro 2', 'Dump Truck', 5, 10, 5);
-INSERT INTO public."Vehicle" (registration, type, capacity, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded)
-    VALUES ('Dhaka Metro 3', 'Compactor', 7, 10, 5);
-INSERT INTO public."Vehicle" (registration, type, capacity, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded)
-    VALUES ('Dhaka Metro 4', 'Container Carrier', 7, 10, 5);
+INSERT INTO public."Vehicle" (registration, type, capacity, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded) VALUES 
+    ('Dhaka Metro 1', 'Open Truck', 3, 10, 5),
+    ('Dhaka Metro 2', 'Dump Truck', 5, 10, 5),
+    ('Dhaka Metro 3', 'Compactor', 7, 10, 5),
+    ('Dhaka Metro 4', 'Container Carrier', 7, 10, 5);
 
 CREATE TABLE public."Landfill_Entry"
 (
@@ -346,15 +347,24 @@ INSERT INTO public."Permission" ("name",details) VALUES
         ('UPDATE_LANDFILL','Update Landfill permission'),
         ('DELETE_LANDFILL','Delete Landfill permission'),
         ('VIEW_LANDFILL','View Landfill permission'),
+        ('ASSIGN_LANDFILL_MANAGER','Assign Landfill Manager permission'),
+        ('UNASSIGN_LANDFILL_MANAGER','Unassign Landfill Manager permission'),
+        ('VIEW_LANDFILL_MANAGER','View Landfill Managers'),
         ('CREATE_STS','Create STS permission'),
         ('UPDATE_STS','Update STS permission'),
         ('DELETE_STS','Delete STS permission'),
         ('VIEW_STS','View STS permission'),
         ('VIEW_ALL_STS','View All STS permission'),
+        ('ASSIGN_STS_MANAGER','Assign STS Manager permission'),
+        ('UNASSIGN_STS_MANAGER','Unassign STS Manager permission'),
+        ('VIEW_STS_MANAGER','View STS Managers'),
+        ('ASSIGN_VEHCILE','Assign Vehicle to STS'),
+        ('UNASSIGN_VEHICLE','Unassign Vehicle from STS'),
         ('CREATE_VEHICLE','Create Vehicle permission'),
         ('UPDATE_VEHICLE','Update Vehicle permission'),
         ('DELETE_VEHICLE','Delete Vehicle permission'),
         ('VIEW_VEHICLE','View Vehicle permission'),
+        ('VIEW_ALL_VEHICLE','View All Vehicle permission'),
         ('CREATE_LANDFILL_ENTRY','Create Landfill Entry permission'),
         ('UPDATE_LANDFILL_ENTRY','Update Landfill Entry permission'),
         ('DELETE_LANDFILL_ENTRY','Delete Landfill Entry permission'),
@@ -369,10 +379,9 @@ INSERT INTO public."Permission" ("name",details) VALUES
         ('VIEW_BILL','View Bill permission');
 
 -- login permission to all user except unassigned
-INSERT INTO public."Permission_Role" (role_name, permission_name)
-    VALUES ('STS_MANAGER', 'LOGIN');
-INSERT INTO public."Permission_Role" (role_name, permission_name)
-    VALUES ('LANDFILL_MANAGER', 'LOGIN');
+INSERT INTO public."Permission_Role" (role_name, permission_name) VALUES 
+    ('STS_MANAGER', 'LOGIN'),
+    ('LANDFILL_MANAGER', 'LOGIN');
 
 
 -- nested query to get all permissions and give them to system admin
@@ -381,14 +390,11 @@ INSERT INTO public."Permission_Role" (role_name, permission_name)
 
 -- sts manager permissions
 -- view vehicle, view sts, view sts entry, create sts entry
-INSERT INTO public."Permission_Role" (role_name, permission_name)
-    VALUES ('STS_MANAGER', 'VIEW_VEHICLE');
-INSERT INTO public."Permission_Role" (role_name, permission_name)
-    VALUES ('STS_MANAGER', 'VIEW_STS');
-INSERT INTO public."Permission_Role" (role_name, permission_name)
-    VALUES ('STS_MANAGER', 'VIEW_STS_ENTRY');
-INSERT INTO public."Permission_Role" (role_name, permission_name)
-    VALUES ('STS_MANAGER', 'CREATE_STS_ENTRY');
+INSERT INTO public."Permission_Role" (role_name, permission_name)VALUES 
+    ('STS_MANAGER', 'VIEW_VEHICLE'),
+    ('STS_MANAGER', 'VIEW_STS'),
+    ('STS_MANAGER', 'VIEW_STS_ENTRY'),
+    ('STS_MANAGER', 'CREATE_STS_ENTRY');
 
 
 
