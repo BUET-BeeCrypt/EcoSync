@@ -263,7 +263,7 @@ function STSManagerSideBar(props) {
           className={isPathActive("/sts/records") ? "nav-item active" : "nav-item"}
         >
           <Link className="nav-link" to="/sts/records">
-            <span className="menu-title">Logs</span>
+            <span className="menu-title">Records</span>
             <i className="mdi mdi-book-open-variant-outline menu-icon"></i>
           </Link>
         </li>

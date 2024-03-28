@@ -29,7 +29,7 @@ const getRefreshToken = async () => {
     removeTokenFromStorage("refreshToken");
     return Promise.reject("Failed to refresh token");
   }
-  return response.data.token;
+  return response.data.accessToken;
 };
 
 axios.interceptors.response.use(
@@ -44,8 +44,9 @@ axios.interceptors.response.use(
       if (localStorage.getItem("refreshToken")) {
         localStorage.removeItem("token");
         try {
-          const token = getRefreshToken();
-          localStorage.setItem("token", token);
+          getRefreshToken().then((token) => {
+            localStorage.setItem("token", token);
+          });
           // return axios.request(error.config);
         } catch (error) {
           removeTokenFromStorage("token");

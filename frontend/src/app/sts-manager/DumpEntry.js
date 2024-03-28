@@ -1,34 +1,21 @@
-import { Typeahead } from "react-bootstrap-typeahead";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { addSTSEntry, getSTSVehicles } from "../api/sts";
+import { addSTSDumpEntry, getMySTS } from "../api/sts";
 
-export const formatDateFromTimestamp = (
-  timestamp,
-  style = { timeStyle: "short", dateStyle: "short" }
-) => {
-  if (!timestamp) return "Invalid DateTime";
-  return new Intl.DateTimeFormat("en-BD", {
-    ...style,
-    timeZone: "Asia/Dhaka",
-    hourCycle: "h12",
-  }).format(new Date(timestamp));
-};
-
-export default function VehicleEntry() {
-  const [vehicles, setVehicles] = useState([]);
-  const [vehicle, setVehicle] = useState(null);
+export default function DumpEntry() {
+  const [mySTS, setMySTS] = useState(null);
+  const [volume, setVolume] = useState(0);
   const [entryTime, setEntryTime] = useState(
     new Date().getTime() + 1000 * 60 * 60 * 6
   );
 
   useEffect(() => {
     toast.promise(
-      getSTSVehicles().then((vehicles) => setVehicles(vehicles)),
+      getMySTS().then((sts) => setMySTS(sts)),
       {
-        loading: "Loading vehicles...",
-        success: "Vehicles loaded!",
-        error: "Failed to load vehicles",
+        loading: "Loading STS Details...",
+        success: "STS Details loaded!",
+        error: "Failed to load STS Details",
       }
     );
   }, []);
@@ -36,61 +23,44 @@ export default function VehicleEntry() {
   return (
     <div>
       <div className="page-header">
-        <h3 className="page-title"> Vehicle Entry </h3>
+        <h3 className="page-title"> Dump Entry </h3>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
               <a href="!#" onClick={(event) => event.preventDefault()}>
-                Vehicle
+                STS
               </a>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              Entry
+              Dump Entry
             </li>
           </ol>
         </nav>
       </div>
 
-      <div className="d-flex justify-content-center mb-5">
-        <div className="col-md-6">
-          <div className="d-flex justify-content-center">
-            <Typeahead
-              onChange={(selected) => {
-                setVehicle(selected[0]);
-              }}
-              options={vehicles}
-              labelKey={(option) => `[${option.type}] ${option.registration}`}
-              filterBy={["text", "name"]}
-              placeholder="Choose vehicle..."
-              className="flex-grow-1"
-            />
-          </div>
-        </div>
-      </div>
-
-      {vehicle && (
+      {mySTS && (
         <div className="row">
           <div className={`col-md-6 grid-margin stretch-card`}>
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title">{vehicle.registration}</h4>
-                <p className="card-description">Vehicle Details</p>
+                <h4 className="card-title">Ward #{mySTS.ward_id}</h4>
+                <p className="card-description">STS Details</p>
                 <div className="row">
                   <div className="col-md-6">
-                    <p className="text-muted">Type</p>
-                    <p>{vehicle.type}</p>
+                    <p className="text-muted">Amount (Tons)</p>
+                    <p>{mySTS.amount}</p>
                   </div>
                   <div className="col-md-6">
                     <p className="text-muted">Capacity (Tons)</p>
-                    <p>{vehicle.capacity}</p>
+                    <p>{mySTS.capacity}</p>
                   </div>
                   <div className="col-md-6">
-                    <p className="text-muted">Loaded Cost/km</p>
-                    <p>{vehicle.fuel_cost_per_km_loaded}</p>
+                    <p className="text-muted">Latittude</p>
+                    <p>{mySTS.latitude}</p>
                   </div>
                   <div className="col-md-6">
-                    <p className="text-muted">Unloaded Cost/km</p>
-                    <p>{vehicle.fuel_cost_per_km_unloaded}</p>
+                    <p className="text-muted">Longitude</p>
+                    <p>{mySTS.longitude}</p>
                   </div>
                 </div>
               </div>
@@ -99,8 +69,8 @@ export default function VehicleEntry() {
           <div className={`col-md-6 grid-margin stretch-card`}>
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title">Vehicle Entry</h4>
-                <p className="card-description">Add Vehicle entry details</p>
+                <h4 className="card-title">Dump Entry</h4>
+                <p className="card-description">Add dump information</p>
                 <div className="row">
                   <div className="col-md-12">
                     <p className="text-muted">Entry Time</p>
@@ -118,7 +88,20 @@ export default function VehicleEntry() {
                       />
                     </p>
                   </div>
-                  <div className="col-md-3">
+                  <div className="col-md-12">
+                    <p className="text-muted">Volume (Tons)</p>
+                    <p>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={volume}
+                        onChange={(e) =>
+                          setVolume(Number.parseFloat(e.target.value))
+                        }
+                      />
+                    </p>
+                  </div>
+                  <div className="col-md-6">
                     <p className="text-muted"> </p>
                     <p>
                       <button
@@ -126,13 +109,37 @@ export default function VehicleEntry() {
                         onClick={(e) => {
                           e.preventDefault();
 
+                          if (volume <= 0) {
+                            toast.error("Volume must be greater than 0");
+                            return;
+                          } else if (
+                            entryTime >
+                            new Date().getTime() + 1000 * 60 * 60 * 6
+                          ) {
+                            toast.error(
+                              "Exit time must be less than current time"
+                            );
+                            return;
+                          } else if (volume > mySTS.capacity - mySTS.amount) {
+                            toast.error(
+                              "Volume must be less than capacity - amount"
+                            );
+                            return;
+                          }
+
                           toast.promise(
-                            addSTSEntry(
-                              vehicle.vehicle_id,
-                              entryTime - 1000 * 60 * 60 * 6
+                            addSTSDumpEntry(
+                              entryTime - 1000 * 60 * 60 * 6,
+                              volume
                             ).then(() => {
-                              toast.success("Entry added successfully");
-                              setVehicle(null);
+                              setVolume(0);
+                              setEntryTime(
+                                new Date().getTime() + 1000 * 60 * 60 * 6
+                              );
+                              setMySTS({
+                                ...mySTS,
+                                amount: mySTS.amount + volume,
+                              });
                             }),
                             {
                               loading: "Adding entry...",
@@ -142,7 +149,7 @@ export default function VehicleEntry() {
                           );
                         }}
                       >
-                        Entry
+                        Dump Entry
                       </button>
                     </p>
                   </div>

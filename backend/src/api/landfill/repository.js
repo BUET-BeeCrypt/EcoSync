@@ -115,13 +115,52 @@ const removeManagerFromLandfill = async (landfill_id, user_id) => {
 }
 
 
+const addEntryToLandfill = async (landfill_id, manager_id, vehicle_id, entry_time) => {
+    const query = `INSERT INTO public."Landfill_Entry" (landfill_id, manager_id, vehicle_id, entry_time, departure_time, volume) VALUES ($1, $2, $3, $4, NULL, 0) RETURNING *`;
+    const values = [landfill_id, manager_id, vehicle_id, entry_time];
+    const { rows } = await pool.query(query, values);
+    return rows[0];
+}
+
+const getEntriesOfLandfill = async (landfill_id) => {
+    const query = `SELECT * FROM public."Landfill_Entry" WHERE landfill_id = $1 ORDER BY entry_time DESC`;
+    const { rows } = await pool.query(query, [landfill_id]);
+    return rows;
+}
+
+const getOnlyEntriesOfLandfill = async (landfill_id) => {
+    const query = `SELECT * FROM public."Landfill_Entry" WHERE landfill_id = $1 AND departure_time IS NULL`;
+    const { rows } = await pool.query(query, [landfill_id]);
+    return rows;
+}
+
+const addDepartureToLandfill = async (landfill_entry_id, departure_time, volume) => {
+    const query = `UPDATE public."Landfill_Entry" SET departure_time = $1, volume = $2 WHERE landfill_entry_id = $3 RETURNING *`;
+    const values = [departure_time, volume, landfill_entry_id];
+    const { rows } = await pool.query(query, values);
+    return rows[0];
+}
+
+const getLandfillIdfromManagerId = async (user_id) => {
+    const query = `SELECT landfill_id FROM public."Landfill_Manager" WHERE user_id = $1`;
+    const { rows } = await pool.query(query, [user_id]);
+    if( rows.length === 0 ) return null;
+    return rows[0].landfill_id;
+}
+
+
 module.exports = {
-   createLandfill,
-   getLandfills,
-   getLandfill,
-   updateLandfill,
-   deleteLandfill,
-   addManagerToLandfill,
-   getManagersOfLandfill,
-   removeManagerFromLandfill
+    createLandfill,
+    getLandfills,
+    getLandfill,
+    updateLandfill,
+    deleteLandfill,
+    addManagerToLandfill,
+    getManagersOfLandfill,
+    removeManagerFromLandfill,
+    addEntryToLandfill,
+    getEntriesOfLandfill,
+    getOnlyEntriesOfLandfill,
+    addDepartureToLandfill,
+    getLandfillIdfromManagerId
 };

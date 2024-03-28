@@ -160,7 +160,7 @@ modules.assignSTSsToLandfills = async (req, res) => {
 
 modules.recalculateRoutes = async ( ) => {
     
-    let routes = await repository.getRoutesBySTS(sts_id);
+    let routes = await repository.getRoutes();
     const STSs = await stsRepository.getSTSs();
     const landfills = await repository.getLandfills();
 
@@ -177,6 +177,8 @@ modules.recalculateRoutes = async ( ) => {
         }
         for( const sts of STSs ){
             if( distances[landfill.landfill_id][sts.sts_id] === undefined ){
+                console.log(`Creating route from landfill ${landfill.landfill_id} to sts ${sts.sts_id}`);
+            
                 await modules.createRouteFromLandfillToSTS(landfill.landfill_id, sts.sts_id);
                 await wait(1000);
             }
@@ -186,7 +188,7 @@ modules.recalculateRoutes = async ( ) => {
 
 modules.calculateRoutes = async (req, res) => {
     modules.recalculateRoutes();
-    return res.status(200).json(message:"Recalculating routes");
+    return res.status(200).json({message:"Recalculating routes"});
 }
 
 module.exports = modules;
