@@ -133,7 +133,7 @@ Landfill_entry
 CREATE TABLE public."STS"
 (
     sts_id serial NOT NULL,
-    ward_id integer NOT NULL,
+    ward_id integer NOT NULL UNIQUE,
     capacity double precision NOT NULL,
     latitude double precision NOT NULL,
     longitude double precision NOT NULL,
@@ -190,10 +190,10 @@ CREATE TABLE public."Vehicle"
     disabled boolean DEFAULT false,
     fuel_cost_per_km_loaded double precision NOT NULL,
     fuel_cost_per_km_unloaded double precision NOT NULL,
-    landfill_id integer,
+    sts_id integer,
     PRIMARY KEY (vehicle_id),
-    FOREIGN KEY (landfill_id)
-        REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE SET NULL
 );
@@ -205,7 +205,7 @@ CREATE TABLE public."Landfill_Entry"
     manager_id integer NOT NULL,
     vehicle_id integer NOT NULL,
     entry_time integer NOT NULL,
-    departure_time integer NOT NULL,
+    departure_time integer,
     volume double precision NOT NULL,
     PRIMARY KEY (landfill_entry_id),
     FOREIGN KEY (landfill_id)

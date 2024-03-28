@@ -55,8 +55,8 @@ function STSManagerSideBar(props) {
     });
 
     const dropdownPaths = [
-      { path: "/sts/manage", state: "manageMenuOpen" },
-      // { path: "/sts/documents", state: "documentsMenuOpen" },
+      { path: "/sts/vehicle", state: "vehicleMenuOpen" },
+      { path: "/sts/route", state: "routeMenuOpen" },
     ];
 
     dropdownPaths.forEach((obj) => {
@@ -81,9 +81,7 @@ function STSManagerSideBar(props) {
           >
             <div className="nav-profile-image">
               <img
-                src={
-                  imageURL || require("../../assets/images/faces/face1.jpg")
-                }
+                src={imageURL || require("../../assets/images/faces/face1.jpg")}
                 alt="profile"
               />
               <span className="login-status online"></span>{" "}
@@ -110,33 +108,33 @@ function STSManagerSideBar(props) {
         </li>
         <li
           className={
-            isPathActive("/sts/assistance") ? "nav-item active" : "nav-item"
+            isPathActive("/sts/vehicle") ? "nav-item active" : "nav-item"
           }
         >
           <div
             className={
-              state.assistanceMenuOpen ? "nav-link menu-expanded" : "nav-link"
+              state.vehicleMenuOpen ? "nav-link menu-expanded" : "nav-link"
             }
-            onClick={() => toggleMenuState("assistanceMenuOpen")}
+            onClick={() => toggleMenuState("vehicleMenuOpen")}
             data-toggle="collapse"
           >
-            <span className="menu-title">Assistance</span>
+            <span className="menu-title">Vehicle</span>
             <i className="menu-arrow"></i>
-            <i className="mdi mdi-assistant menu-icon"></i>
+            <i className="mdi mdi-dump-truck menu-icon"></i>
           </div>
-          <Collapse in={state.assistanceMenuOpen}>
+          <Collapse in={state.vehicleMenuOpen}>
             <ul className="nav flex-column sub-menu">
               <li className="nav-item">
                 {" "}
                 <Link
                   className={
-                    isPathActive("/sts/assistance/symptom-checker")
+                    isPathActive("/sts/vehicle/entry")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/sts/assistance/symptom-checker"
+                  to="/sts/vehicle/entry"
                 >
-                  Symptom Checker
+                  Entry
                 </Link>
               </li>
               {/* <li className="nav-item">
@@ -156,13 +154,13 @@ function STSManagerSideBar(props) {
                 {" "}
                 <Link
                   className={
-                    isPathActive("/sts/assistance/analysis")
+                    isPathActive("/sts/vehicle/exit")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/sts/assistance/anlysis"
+                  to="/sts/vehicle/exit"
                 >
-                  Report Analysis
+                  Exit
                 </Link>
               </li>
               {/* <li className="nav-item">
@@ -183,59 +181,59 @@ function STSManagerSideBar(props) {
         </li>
         <li
           className={
-            isPathActive("/sts/collections") ? "nav-item active" : "nav-item"
+            isPathActive("/sts/dump") ? "nav-item active" : "nav-item"
           }
         >
-          <Link className="nav-link" to="/sts/collections">
-            <span className="menu-title">Collections</span>
-            <i className="mdi mdi-folder-file menu-icon"></i>
+          <Link className="nav-link" to="/sts/dump">
+            <span className="menu-title">Add Dump Record</span>
+            <i className="mdi mdi-delete-variant menu-icon"></i>
           </Link>
         </li>
         <li
           className={
-            isPathActive("/sts/documents") ? "nav-item active" : "nav-item"
+            isPathActive("/sts/route") ? "nav-item active" : "nav-item"
           }
         >
           <div
             className={
-              state.documentsMenuOpen ? "nav-link menu-expanded" : "nav-link"
+              state.routeMenuOpen ? "nav-link menu-expanded" : "nav-link"
             }
-            onClick={() => toggleMenuState("documentsMenuOpen")}
+            onClick={() => toggleMenuState("routeMenuOpen")}
             data-toggle="collapse"
           >
-            <span className="menu-title">Documents</span>
+            <span className="menu-title">Routes</span>
             <i className="menu-arrow"></i>
-            <i className="mdi mdi-file-document menu-icon"></i>
+            <i className="mdi mdi-map-marker-distance menu-icon"></i>
           </div>
-          <Collapse in={state.documentsMenuOpen}>
+          <Collapse in={state.routeMenuOpen}>
             <ul className="nav flex-column sub-menu">
               <li className="nav-item">
                 {" "}
                 <Link
                   className={
-                    isPathActive("/sts/documents/add")
+                    isPathActive("/sts/route/find")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/sts/documents/add"
+                  to="/sts/route/find"
                 >
-                  Upload
+                  Find Route
                 </Link>
               </li>
               <li className="nav-item">
                 {" "}
                 <Link
                   className={
-                    isPathActive("/sts/documents/view")
+                    isPathActive("/sts/route/fleet")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/sts/documents/view"
+                  to="/sts/route/fleet"
                 >
-                  View
+                  Deploy Fleet
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 {" "}
                 <Link
                   className={
@@ -247,11 +245,11 @@ function STSManagerSideBar(props) {
                 >
                   Accept
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </Collapse>
         </li>
-        <li
+        {/* <li
           className={
             isPathActive("/sts/shared") ? "nav-item active" : "nav-item"
           }
@@ -260,15 +258,13 @@ function STSManagerSideBar(props) {
             <span className="menu-title">Shared Documents</span>
             <i className="mdi mdi-share menu-icon"></i>
           </Link>
-        </li>
+        </li> */}
         <li
-          className={
-            isPathActive("/sts/logs") ? "nav-item active" : "nav-item"
-          }
+          className={isPathActive("/sts/records") ? "nav-item active" : "nav-item"}
         >
-          <Link className="nav-link" to="/sts/logs">
+          <Link className="nav-link" to="/sts/records">
             <span className="menu-title">Logs</span>
-            <i className="mdi mdi-text-long menu-icon"></i>
+            <i className="mdi mdi-book-open-variant-outline menu-icon"></i>
           </Link>
         </li>
         <li

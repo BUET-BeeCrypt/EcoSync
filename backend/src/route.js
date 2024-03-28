@@ -9,7 +9,7 @@ router.use(checkAuth);
 router.use('/users', require('./api/user/route'),  /*#swagger.tags = ['Users']*/);
 router.use('/profile', require('./api/user/route-profile', /*#swagger.tags = ['Profile']*/));
 
-router.use(requiresAdmin)
+// router.use(requiresAdmin)
 router.use('/rbac', require('./api/rbac/route'), /*#swagger.tags = ['rbac']*/);
 
 router.use('/sts', require('./api/sts/route'), /*#swagger.tags = ['sts']*/);
