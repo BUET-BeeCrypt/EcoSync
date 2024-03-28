@@ -397,5 +397,15 @@ INSERT INTO public."Permission_Role" (role_name, permission_name)VALUES
     ('STS_MANAGER', 'CREATE_STS_ENTRY'),
     ('STS_MANAGER', 'UPDATE_STS_ENTRY');
 
+-- landfill manager permissions
+-- view vehicle, view landfill, view landfill entry, create landfill entry
+INSERT INTO public."Permission_Role" (role_name, permission_name) VALUES 
+    ('LANDFILL_MANAGER', 'VIEW_VEHICLE'),
+    ('LANDFILL_MANAGER', 'VIEW_ALL_VEHICLE'),
+    ('LANDFILL_MANAGER', 'VIEW_LANDFILL'),
+    ('LANDFILL_MANAGER', 'VIEW_LANDFILL_ENTRY'),
+    ('LANDFILL_MANAGER', 'CREATE_LANDFILL_ENTRY'),
+    ('LANDFILL_MANAGER', 'UPDATE_LANDFILL_ENTRY');
+
 
 
