@@ -128,6 +128,11 @@ modules.assignSTSsToLandfills = async (req, res) => {
     if( minLandfillDirection === null ) return res.status(400).json({message: "No landfills available"});
 
     const vehicles = await repository.getVehiclesBySTS(sts_id);
+    vehicles.sort((a,b) => {
+        if( !a.capacity ) a.capacity = 1;
+        if( !b.capacity ) b.capacity = 1;
+        return a.fuel_cost_per_km_loaded/a.capacity - b.fuel_cost_per_km_loaded/b.capacity;
+    });
     let chosenVehicles = [];
     let garbage = sts.amount;
     console.log(`Garbage: ${garbage}`);
