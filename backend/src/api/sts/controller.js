@@ -1,5 +1,5 @@
 const repository = require("./repository");
-const route_service = require("../../service/routing/routing");
+const route_service = require("../routing/controller");
 const modules = {};
 
 

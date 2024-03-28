@@ -19,9 +19,9 @@ CREATE TABLE public."Vehicle_Route"
 );
 */
 
-const createRoute = async (landfill_id, sts_id, route) => {
-    const query = `INSERT INTO public."Vehicle_Route" (landfill_id, sts_id, route) VALUES ($1, $2, $3) RETURNING *`;
-    const values = [landfill_id, sts_id, route];
+const createRoute = async (landfill_id, sts_id, direction, distance, duration) => {
+    const query = `INSERT INTO public."Vehicle_Route" (landfill_id, sts_id, direction, distance, duration) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+    const values = [landfill_id, sts_id, direction, distance, duration];
     const { rows } = await pool.query(query, values);
     return rows[0];
 }
@@ -29,6 +29,12 @@ const createRoute = async (landfill_id, sts_id, route) => {
 const getRoutes = async () => {
     const query = `SELECT * FROM public."Vehicle_Route"`;
     const result = await pool.query(query,[]);
+    return result.rows;
+}
+
+const getRoutesBySTS = async (sts_id) => {
+    const query = `SELECT * FROM public."Vehicle_Route" WHERE sts_id = $1`;
+    const result = await pool.query(query,[sts_id]);
     return result.rows;
 }
 
@@ -68,6 +74,7 @@ const getSTS = async (sts_id) => {
 module.exports = {
     createRoute,
     getRoutes,
+    getRoutesBySTS,
     getRouteByLandfillAndSTS,
     getLandfills,
     getLandfill,
