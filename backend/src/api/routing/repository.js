@@ -17,6 +17,36 @@ CREATE TABLE public."Vehicle_Route"
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
+
+CREATE TABLE public."Fleet"
+(
+    fleet_id serial NOT NULL,
+    route_id integer NOT NULL,
+    time_stamp timestamp NOT NULL,
+    PRIMARY KEY (fleet_id),
+    FOREIGN KEY (route_id)
+        REFERENCES public."Vehicle_Route" (route_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE public."Trip"
+(
+    trip_id serial NOT NULL,
+    fleet_id integer NOT NULL,
+    vehicle_id integer NOT NULL,
+    remaining_trip integer NOT NULL,
+    total_trip integer NOT NULL,
+    PRIMARY KEY (trip_id),
+    FOREIGN KEY (vehicle_id)
+        REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (fleet_id)
+        REFERENCES public."Fleet" (fleet_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
 */
 
 const createRoute = async (landfill_id, sts_id, direction, distance, duration) => {
@@ -78,6 +108,19 @@ const getVehiclesBySTS = async (sts_id) => {
     return result.rows;
 }
 
+const createFleet = async (route_id) => {
+    const query = `INSERT INTO public."Fleet" (route_id, time_stamp) VALUES ($1, NOW()) RETURNING *`;
+    const values = [route_id];
+    const { rows } = await pool.query(query, values);
+    return rows[0];
+}
+
+const createTrip = async (fleet_id, vehicle_id, total_trip) => {
+    const query = `INSERT INTO public."Trip" (fleet_id, vehicle_id, remaining_trip, total_trip) VALUES ($1, $2, $3, $4)`;
+    const values = [fleet_id, vehicle_id, total_trip, total_trip];
+    await pool.query(query, values);
+}
+
 module.exports = {
     createRoute,
     getRoutes,
@@ -87,5 +130,7 @@ module.exports = {
     getLandfill,
     getSTSs,
     getSTS,
-    getVehiclesBySTS
+    getVehiclesBySTS,
+    createFleet,
+    createTrip
 };
