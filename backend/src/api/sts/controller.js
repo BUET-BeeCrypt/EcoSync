@@ -45,6 +45,7 @@ modules.createSTS = async (req, res) => {
   try {
     const createdSTS = await repository.createSTS(sts);
     res.status(201).json(createdSTS);
+    route_service.createRoutesFromSTS(createdSTS.sts_id);
   } catch (error) {
     if(error.message === "duplicate key value violates unique constraint \"STS_name_key\"")
       return res.status(409).json({message:`${sts.name} already exists`})
@@ -55,7 +56,7 @@ modules.createSTS = async (req, res) => {
 
 modules.getSTSs = async (req, res) => {
   // pagination
-  const limit = req.query.limit || 10;
+  const limit = req.query.limit || 500;
   const page = req.query.page || 1;
   const offset = (page - 1) * limit;
   try{

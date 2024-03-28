@@ -7,6 +7,7 @@ router.post("/entries", checkPermission("CREATE_STS_ENTRY"),controller.addEntryT
 router.put("/departures/:sts_entry_id", checkPermission("UPDATE_STS_ENTRY"), controller.addDepartureToSTS);
 router.post("/dump", checkPermission("CREATE_STS_ENTRY"), controller.addDumpEntryToSTS);
 router.get("/records", checkPermission("VIEW_STS_ENTRY"), controller.getEntriesOfSTS);
+router.get("/vehicles", checkPermission("VIEW_VEHICLE"),controller.getVehiclesOfManager);
 
 // create a new STS. Only admin 
 router.post("/", checkPermission("CREATE_STS"), controller.createSTS);
@@ -26,7 +27,6 @@ router.delete("/:sts_id/managers/:user_id", checkPermission("UNASSIGN_STS_MANAGE
 router.post("/:sts_id/vehicles", checkPermission("ASSIGN_VEHCILE"),controller.assignVehicleToSTS);
 // get vehicles of STS
 router.get("/:sts_id/vehicles", checkPermission("VIEW_VEHICLE"),controller.getVehiclesOfSTS);
-router.get("/vehicles", checkPermission("VIEW_VEHICLE"),controller.getVehiclesOfManager);
 // remove vehicle from STS
 router.delete("/:sts_id/vehicles/:vehicle_id", checkPermission("UNASSIGN_VEHICLE"),controller.removeVehicleFromSTS);
 

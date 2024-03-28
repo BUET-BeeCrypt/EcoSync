@@ -7,7 +7,7 @@ modules = {}
 CREATE TABLE public."STS"
 (
     sts_id serial NOT NULL,
-    ward_id integer NOT NULL,
+    ward_no integer NOT NULL,
     capacity double precision NOT NULL,
     latitude double precision NOT NULL,
     longitude double precision NOT NULL,

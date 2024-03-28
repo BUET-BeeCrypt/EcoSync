@@ -17,10 +17,15 @@ import { USER_ROLES } from "../App";
 
 const addStsSample = {
   sts_id: 0,
-  ward_id: 0,
+  ward_no: 0,
+  zone_no: 0,
+  name: "",
   capacity: 0,
+  dump_area: 0,
+  location: "",
   latitude: 0,
   longitude: 0,
+  coverage_area: 0,
   manager_count: 0,
   amount: 0,
 };
@@ -129,9 +134,12 @@ export default function STSFacilities() {
                   <thead>
                     <tr>
                       <th> Ward # </th>
+                      <th> Zone # </th>
+                      <th> Name </th>
                       <th> Amount </th>
                       <th> Capacity </th>
-                      <th> Amount / Capacity </th>
+                      {/* <th> Amount / Capacity </th> */}
+                      <th> Coverage </th>
                       <th> Location </th>
                       <th> No of Managers </th>
                       <th> Action </th>
@@ -140,17 +148,20 @@ export default function STSFacilities() {
                   <tbody>
                     {sts.map((s) => (
                       <tr key={s.sts_id} className={"text-dark"}>
-                        <td> {s.ward_id} </td>
+                        <td> {s.ward_no} </td>
+                        <td> {s.zone_no} </td>
+                        <td> {s.name} </td>
                         <td> {s.amount} </td>
                         <td> {s.capacity} </td>
-                        <td>
+                        {/* <td>
                           <ProgressBar
                             now={(s.amount / s.capacity) * 100}
                             variant="success"
                           />
-                        </td>
+                        </td> */}
+                        <td> {s.coverage_area} </td>
                         <td>
-                          ({s.latitude}, {s.longitude})
+                          {s.location} ({s.latitude}, {s.longitude})
                         </td>
                         <td>
                           <span
@@ -172,7 +183,7 @@ export default function STSFacilities() {
                                     (managers) => {
                                       setSelectedStsManagers({
                                         sts_id: s.sts_id,
-                                        ward_id: s.ward_id,
+                                        ward_no: s.ward_no,
                                         managers,
                                       });
                                     }
@@ -226,7 +237,7 @@ export default function STSFacilities() {
         <Modal.Header closeButton>
           <Modal.Title>
             Are you sure you want to delete STS from Ward "
-            {selectedDeleteSTS?.ward_id}"?
+            {selectedDeleteSTS?.ward_no}"?
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -273,7 +284,7 @@ export default function STSFacilities() {
           <Modal.Title>
             {selectedEditSts?.sts_id === 0
               ? "Add STS"
-              : `Edit STS in Ward #${selectedEditSts?.ward_id}`}
+              : `Edit STS in Ward #${selectedEditSts?.ward_no}`}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -284,16 +295,50 @@ export default function STSFacilities() {
                 <input
                   type="number"
                   className="form-control"
-                  value={selectedEditSts?.ward_id}
+                  value={selectedEditSts?.ward_no}
                   onChange={(e) => {
                     setSelectedEditSts({
                       ...selectedEditSts,
-                      ward_id: Number.parseInt(e.target.value),
+                      ward_no: Number.parseInt(e.target.value),
                     });
                   }}
                 />
               </div>
             </div>
+            <div className="col-md-6">
+              <div className="form-group">
+                <label>Zone #</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={selectedEditSts?.zone_no}
+                  onChange={(e) => {
+                    setSelectedEditSts({
+                      ...selectedEditSts,
+                      zone_no: Number.parseInt(e.target.value),
+                    });
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-12">
+              <div className="form-group">
+                <label>Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={selectedEditSts?.name}
+                  onChange={(e) => {
+                    setSelectedEditSts({
+                      ...selectedEditSts,
+                      name: e.target.value,
+                    });
+                  }}
+                />
+              </div>
+            </div>
+
             <div className="col-md-6">
               <div className="form-group">
                 <label>Capacity (in Tons)</label>
@@ -310,6 +355,60 @@ export default function STSFacilities() {
                 />
               </div>
             </div>
+
+            <div className="col-md-6">
+              <div className="form-group">
+                <label>Coverage Area</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={selectedEditSts?.coverage_area}
+                  onChange={(e) => {
+                    setSelectedEditSts({
+                      ...selectedEditSts,
+                      coverage_area: Number.parseInt(e.target.value),
+                    });
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* location */}
+            <div className="col-md-6">
+              <div className="form-group">
+                <label>Location</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={selectedEditSts?.location}
+                  onChange={(e) => {
+                    setSelectedEditSts({
+                      ...selectedEditSts,
+                      location: e.target.value,
+                    });
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* dump area */}
+            <div className="col-md-6">
+              <div className="form-group">
+                <label>Dump Area</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={selectedEditSts?.dump_area}
+                  onChange={(e) => {
+                    setSelectedEditSts({
+                      ...selectedEditSts,
+                      dump_area: Number.parseInt(e.target.value),
+                    });
+                  }}
+                />
+              </div>
+            </div>
+
             <div className="col-md-6">
               <div className="form-group">
                 <label>Latitude</label>
@@ -355,20 +454,30 @@ export default function STSFacilities() {
                   toast.promise(
                     selectedEditSts?.sts_id === 0
                       ? addSTS(
-                          selectedEditSts.ward_id,
-                          selectedEditSts.capacity,
+                          selectedEditSts.zone_no,
+                          selectedEditSts.ward_no,
+                          selectedEditSts.name,
+                          selectedEditSts.location,
                           selectedEditSts.latitude,
-                          selectedEditSts.longitude
+                          selectedEditSts.longitude,
+                          selectedEditSts.capacity,
+                          selectedEditSts.dump_area,
+                          selectedEditSts.coverage_area
                         ).then((e) => {
                           setSts([...sts, { ...selectedEditSts, ...e }]);
                           setSelectedEditSts(null);
                         })
                       : updateSTS(
                           selectedEditSts.sts_id,
-                          selectedEditSts.ward_id,
-                          selectedEditSts.capacity,
+                          selectedEditSts.zone_no,
+                          selectedEditSts.ward_no,
+                          selectedEditSts.name,
+                          selectedEditSts.location,
                           selectedEditSts.latitude,
-                          selectedEditSts.longitude
+                          selectedEditSts.longitude,
+                          selectedEditSts.capacity,
+                          selectedEditSts.dump_area,
+                          selectedEditSts.coverage_area
                         ).then((e) => {
                           setSts(
                             sts.map((u) =>
@@ -400,7 +509,7 @@ export default function STSFacilities() {
       <Modal show={selectedStsManagers} onHide={closeManagerModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>
-            Managers of STS in Ward #{selectedStsManagers?.ward_id}
+            Managers of STS in Ward #{selectedStsManagers?.ward_no}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -410,6 +519,7 @@ export default function STSFacilities() {
                 <label>Add New STS Manager</label>
                 <Typeahead
                   onChange={(selected) => {
+                    if (selected.length === 0) return;
                     toast.promise(
                       addManagerToSTS(
                         selectedStsManagers.sts_id,

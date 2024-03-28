@@ -2,6 +2,7 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { addSTSEntry, getSTSVehicles } from "../api/sts";
+import { getVehicles } from "../api/landfill";
 
 export const formatDateFromTimestamp = (
   timestamp,
@@ -24,7 +25,7 @@ export default function VehicleEntry() {
 
   useEffect(() => {
     toast.promise(
-      getSTSVehicles().then((vehicles) => setVehicles(vehicles)),
+      getVehicles().then((vehicles) => setVehicles(vehicles)),
       {
         loading: "Loading vehicles...",
         success: "Vehicles loaded!",

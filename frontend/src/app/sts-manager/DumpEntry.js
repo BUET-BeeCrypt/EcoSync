@@ -43,7 +43,7 @@ export default function DumpEntry() {
           <div className={`col-md-6 grid-margin stretch-card`}>
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title">Ward #{mySTS.ward_id}</h4>
+                <h4 className="card-title">Ward #{mySTS.ward_no}</h4>
                 <p className="card-description">STS Details</p>
                 <div className="row">
                   <div className="col-md-6">
