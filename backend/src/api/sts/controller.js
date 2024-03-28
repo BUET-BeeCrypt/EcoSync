@@ -317,7 +317,10 @@ modules.getEntriesOfSTS = async (req, res) => {
       .json({ message: "Manager is not assigned to any sts" });
   }
 
-  const entries = await repository.getEntriesOfSTS(sts_id);
+  const page = Number.parseInt(req.query.page) || 1;
+  const limit = 50;
+
+  const entries = await repository.getEntriesOfSTS(sts_id, page, limit);
   res.status(200).json(entries);
 };
 
@@ -372,5 +375,12 @@ modules.addDumpEntryToSTS = async (req, res) => {
   res.status(200).json({ message: "Dump entry added to sts" });
 };
 
+
+modules.getSTSOfManager = async (req, res) => {
+  const manager_id = req.user.user_id;
+  const sts_id = await repository.getSTSIDfromManagerID(manager_id);
+  const sts = await repository.getSTS(sts_id);
+  res.status(200).json(sts);
+}
 
 module.exports = modules;
