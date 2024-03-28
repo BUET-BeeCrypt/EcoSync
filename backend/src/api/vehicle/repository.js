@@ -10,19 +10,19 @@ CREATE TABLE public."Vehicle"
     disabled boolean DEFAULT false,
     fuel_cost_per_km_loaded double precision NOT NULL,
     fuel_cost_per_km_unloaded double precision NOT NULL,
-    landfill_id integer,
+    sts_id integer,
     PRIMARY KEY (vehicle_id),
-    FOREIGN KEY (landfill_id)
-        REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
 */
 
 const createVehicle = async (vehicle) => {
-	const { registration, type, capacity, disabled, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded, landfill_id } = vehicle;
-	const query = `INSERT INTO public."Vehicle" (registration, type, capacity, disabled, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded, landfill_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
-	const values = [registration, type, capacity, disabled, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded, landfill_id];
+	const { registration, type, capacity, disabled, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded, sts_id } = vehicle;
+	const query = `INSERT INTO public."Vehicle" (registration, type, capacity, disabled, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded, sts_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
+	const values = [registration, type, capacity, disabled, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded, sts_id];
 	const { rows } = await pool.query(query, values);
 	return rows[0];
 }
@@ -41,9 +41,9 @@ const getVehicle = async (vehicle_id) => {
 }
 
 const updateVehicle = async (vehicle_id, vehicle) => {
-	const { registration, type, capacity, disabled, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded, landfill_id } = vehicle;
-	const query = `UPDATE public."Vehicle" SET registration = $1, type = $2, capacity = $3, disabled = $4, fuel_cost_per_km_loaded = $5, fuel_cost_per_km_unloaded = $6, landfill_id = $7 WHERE vehicle_id = $8 RETURNING *`;
-	const values = [registration, type, capacity, disabled, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded, landfill_id, vehicle_id];
+	const { registration, type, capacity, disabled, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded, sts_id } = vehicle;
+	const query = `UPDATE public."Vehicle" SET registration = $1, type = $2, capacity = $3, disabled = $4, fuel_cost_per_km_loaded = $5, fuel_cost_per_km_unloaded = $6, sts_id = $7 WHERE vehicle_id = $8 RETURNING *`;
+	const values = [registration, type, capacity, disabled, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded, sts_id, vehicle_id];
 	const result = await pool.query(query, values);
 	if( result.rows.length === 0 ) return null;
 	return result.rows[0];

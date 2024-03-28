@@ -127,7 +127,7 @@ export const updateVehicle = async (
   disabled,
   fuel_cost_per_km_loaded,
   fuel_cost_per_km_unloaded,
-  landfill_id
+  sts_id
 ) =>
   axios
     .put(api_url(`/vehicles/${vehicle_id}`), {
@@ -137,7 +137,7 @@ export const updateVehicle = async (
       disabled,
       fuel_cost_per_km_loaded,
       fuel_cost_per_km_unloaded,
-      landfill_id,
+      sts_id,
     })
     .then((res) => res.data);
 
