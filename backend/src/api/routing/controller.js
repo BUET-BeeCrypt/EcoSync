@@ -158,4 +158,35 @@ modules.assignSTSsToLandfills = async (req, res) => {
     return res.status(200).json({landfill:minLandfill,direction: minLandfillDirection, vehicles: chosenVehicles});
 }
 
+modules.recalculateRoutes = async ( ) => {
+    
+    let routes = await repository.getRoutesBySTS(sts_id);
+    const STSs = await stsRepository.getSTSs();
+    const landfills = await repository.getLandfills();
+
+    let distances = {};
+    for( const route of routes ){
+        if( distances[route.landfill_id] === undefined ) distances[route.landfill_id] = {};
+        distances[route.landfill_id][route.sts_id] = route.distance;
+    }
+    // checking if all assignment between landfill and sts is used
+    
+    for( const landfill of landfills ){
+        if( distances[landfill.landfill_id] === undefined ){
+            distances[landfill.landfill_id] = {};
+        }
+        for( const sts of STSs ){
+            if( distances[landfill.landfill_id][sts.sts_id] === undefined ){
+                await modules.createRouteFromLandfillToSTS(landfill.landfill_id, sts.sts_id);
+                await wait(1000);
+            }
+        }
+    }
+}
+
+modules.calculateRoutes = async (req, res) => {
+    modules.recalculateRoutes();
+    return res.status(200).json(message:"Recalculating routes");
+}
+
 module.exports = modules;
