@@ -1,26 +1,24 @@
 import { Typeahead } from "react-bootstrap-typeahead";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import {
-  addSTSDeparture,
-  addSTSEntry,
-  getSTSEntries,
-  getSTSVehicles,
-} from "../api/sts";
 import { formatDateFromTimestamp } from "./VehicleEntry";
+import {
+  addLandfillDeparture,
+  getLandfillEntries,
+  getVehicles,
+} from "../api/landfill";
 
 export default function VehicleExit() {
   const [entries, setEntries] = useState([]);
   const [entry, setEntry] = useState(null);
-  const [volume, setVolume] = useState(0);
   const [exitTime, setExitTime] = useState(
     new Date().getTime() + 1000 * 60 * 60 * 6
   );
 
   useEffect(() => {
     toast.promise(
-      getSTSVehicles().then((vehicles) => {
-        getSTSEntries().then((entries) => {
+      getVehicles().then((vehicles) => {
+        getLandfillEntries().then((entries) => {
           setEntries(
             entries.map((e) => ({
               ...e,
@@ -60,6 +58,7 @@ export default function VehicleExit() {
           <div className="d-flex justify-content-center">
             <Typeahead
               onChange={(selected) => {
+                if (selected.length === 0) return;
                 setEntry(selected[0]);
               }}
               options={entries}
@@ -111,6 +110,10 @@ export default function VehicleExit() {
                 <p className="card-description">Add Vehicle exit details</p>
                 <div className="row">
                   <div className="col-md-12">
+                    <p className="text-muted">Entry Volume</p>
+                    <p>{entry.volume} Tons</p>
+                  </div>
+                  <div className="col-md-12">
                     <p className="text-muted">Entry Time</p>
                     <p>{formatDateFromTimestamp(entry.entry_time)}</p>
                   </div>
@@ -130,20 +133,7 @@ export default function VehicleExit() {
                       />
                     </p>
                   </div>
-                  <div className="col-md-12">
-                    <p className="text-muted">Volume (Tons)</p>
-                    <p>
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={volume}
-                        onChange={(e) =>
-                          setVolume(Number.parseFloat(e.target.value))
-                        }
-                      />
-                    </p>
-                  </div>
-                  <div className="col-md-3">
+                  <div className="col-md-6">
                     <p className="text-muted"> </p>
                     <p>
                       <button
@@ -151,10 +141,7 @@ export default function VehicleExit() {
                         onClick={(e) => {
                           e.preventDefault();
 
-                          if (volume <= 0) {
-                            toast.error("Volume must be greater than 0");
-                            return;
-                          } else if (exitTime <= entry.entry_time) {
+                          if (exitTime <= entry.entry_time) {
                             toast.error(
                               "Exit time must be greater than entry time"
                             );
@@ -175,27 +162,22 @@ export default function VehicleExit() {
                               "Exit time must be within 24 hours of entry time"
                             );
                             return;
-                          } else if (volume > entry.vehicle.capacity) {
-                            toast.error(
-                              "Volume must be less than vehicle capacity"
-                            );
-                            return;
                           }
 
                           toast.promise(
-                            addSTSDeparture(
-                              entry.sts_entry_id,
-                              exitTime - 1000 * 60 * 60 * 6,
-                              volume
+                            addLandfillDeparture(
+                              entry.landfill_entry_id,
+                              exitTime - 1000 * 60 * 60 * 6
                             ).then(() => {
                               setEntry(null);
-                              setVolume(0);
                               setExitTime(
                                 new Date().getTime() + 1000 * 60 * 60 * 6
                               );
                               setEntries(
                                 entries.filter(
-                                  (e) => e.sts_entry_id !== entry.sts_entry_id
+                                  (e) =>
+                                    e.landfill_entry_id !==
+                                    entry.landfill_entry_id
                                 )
                               );
                             }),

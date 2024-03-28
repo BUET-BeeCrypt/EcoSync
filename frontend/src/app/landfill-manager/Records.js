@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { getSTSRecords } from "../api/sts";
 import { formatDateFromTimestamp } from "./VehicleEntry";
+import { getLandfillRecords } from "../api/landfill";
 
 export default function STSRecords() {
   const [page, setPage] = useState(1);
@@ -10,7 +11,7 @@ export default function STSRecords() {
   const loadMore = () => {
     if (page === null) return;
     toast.promise(
-      getSTSRecords(page).then((data) => {
+      getLandfillRecords(page).then((data) => {
         setRecords([...records, ...data]);
         if (data.length === 0) setPage(null);
         else setPage(page + 1);
@@ -28,12 +29,12 @@ export default function STSRecords() {
   return (
     <div>
       <div className="page-header">
-        <h3 className="page-title"> STS Records</h3>
+        <h3 className="page-title"> Landfill Records</h3>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
               <a href="!#" onClick={(event) => event.preventDefault()}>
-                STS
+                Landfill
               </a>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
@@ -71,22 +72,8 @@ export default function STSRecords() {
                     <br />
                   </p>
                 )}
-                <p
-                  className={
-                    "card-text " +
-                    (record.volume == 0
-                      ? " text-dark "
-                      : record.volume > 0
-                      ? "text-success"
-                      : "text-danger")
-                  }
-                >
-                  <strong>Volume:</strong>{" "}
-                  {record.volume === 0
-                    ? "Waiting for departure"
-                    : record.volume > 0
-                    ? record.volume
-                    : -record.volume}
+                <p>
+                  <strong>Volume:</strong> {record.volume} Tons
                 </p>
               </div>
             </div>

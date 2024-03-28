@@ -4,21 +4,23 @@ import axios from "axios";
 export const getVehicles = async () =>
   axios.get(api_url(`/vehicles`)).then((res) => res.data);
 
-export const addSTSEntry = async (vehicle_id, entry_time) =>
+export const addLandfillEntry = async (vehicle_id, entry_time, weight) =>
   axios
-    .post(api_url(`/landfill/entries`), { entry_time, vehicle_id })
+    .post(api_url(`/landfill/entries`), { entry_time, vehicle_id, weight })
     .then((res) => res.data);
 
-export const getSTSEntries = async () =>
+export const getLandfillEntries = async () =>
   axios.get(api_url(`/landfill/entries`)).then((res) => res.data);
 
-export const addSTSDeparture = async (sts_entry_id, departure_time, volume) =>
+export const addLandfillDeparture = async (landfill_entry_id, departure_time) =>
   axios
-    .put(api_url(`/landfill/departures/${sts_entry_id}`), { departure_time, volume })
+    .put(api_url(`/landfill/departures/${landfill_entry_id}`), {
+      departure_time,
+    })
     .then((res) => res.data);
 
-export const getSTSRecords = async (page) =>
+export const getLandfillRecords = async (page) =>
   axios.get(api_url(`/landfill/records?page=${page}`)).then((res) => res.data);
 
-export const getMySTS = async () =>
+export const getMyLandfill = async () =>
   axios.get(api_url(`/landfill/my`)).then((res) => res.data);

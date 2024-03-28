@@ -60,6 +60,7 @@ export default function VehicleExit() {
           <div className="d-flex justify-content-center">
             <Typeahead
               onChange={(selected) => {
+                if (selected.length === 0) return;
                 setEntry(selected[0]);
               }}
               options={entries}
