@@ -1,7 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxMTU1OTc0MiwiZXhwIjoxNzExNTYzMzQyfQ.y7e0hepZfpCGXtfSGdkiUOKwXwsPM-8mWOXWJBVGeWQ
-
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTU3Nzg2OSwiZXhwIjoxNzExNTgxNDY5fQ.jbb0LysfVvPKqU8vsASk5T70H27jm2Uvm8ah3CsLaTA
 @refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzExNDg1ODcxLCJleHAiOjE3MTIwOTA2NzF9.yquv251X2ze43Th7BSK0lRZ52BZw5T0gf2W-1M0CY5I
 
 ### health
@@ -12,7 +11,7 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "admin",
+  "username": "landfill_manager",
   "password": "12345678"
 }
 
@@ -69,8 +68,69 @@ Authorization: {{access}}
 Content-Type: application/json
 
 {
-  "role_name": "STS_MANAGER"
+  "role_name": "STS_MANAGER2"
 }
+
+###  Create role
+POST {{url}}/api/rbac/roles HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "role_name": "STS_MANAGER2",
+  "description": "STS Manager2"
+}
+
+### Update role
+PUT {{url}}/api/rbac/roles/STS_MANAGER2 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "role_name": "STS_MANAGER_U",
+  "description": "STS Manager2 udpated"
+}
+
+### delete role
+DELETE {{url}}/api/rbac/roles/STS_MANAGER2 HTTP/1.1
+Authorization: {{access}}
+
+### Create permission
+POST {{url}}/api/rbac/permissions HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "permission_name": "VIEW_BILLS",
+  "description": "View all bills"
+}
+
+
+### get permissions using pagination
+GET {{url}}/api/rbac/permissions?page=5&limit=10 HTTP/1.1
+Authorization: {{access}}
+
+
+### Assign permission to role
+POST {{url}}/api/rbac/roles/STS_MANAGER/permissions HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "permission_name": "VIEW_BILLS"
+}
+
+### get all permissions of role with pagination
+GET {{url}}/api/rbac/roles/STS_MANAGER/permissions?page=1&limit=10 HTTP/1.1
+Authorization: {{access}}
+
+### delete a permission
+DELETE {{url}}/api/rbac/permissions/VIEW_BILLS HTTP/1.1
+Authorization: {{access}}
+
+### delete permission from role
+DELETE {{url}}/api/rbac/roles/STS_MANAGER/permissions/VIEW_BILLS HTTP/1.1
+Authorization: {{access}}
 
 ### update user
 PUT {{url}}/api/users/5 HTTP/1.1
@@ -97,6 +157,21 @@ Content-Type: application/json
   "longitude": 0
 }
 
-### Get all STS
-GET {{url}}/api/sts HTTP/1.1
+### Get all Vehicle
+GET {{url}}/api/vehicles HTTP/1.1
 Authorization: {{access}}
+
+### Insert Vehicle - registration, type, capacity, disabled, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded, landfill_id
+POST {{url}}/api/vehicles HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "registration": "test",
+  "type": "Truck",
+  "capacity": 0,
+  "disabled": false,
+  "fuel_cost_per_km_loaded": 0,
+  "fuel_cost_per_km_unloaded": 0,
+  "landfill_id": null
+}

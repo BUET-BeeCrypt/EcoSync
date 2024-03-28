@@ -25,7 +25,7 @@ const requiresAdmin = (req, res, next) => {
     if( role !== "SYSTEM_ADMIN" )
       return res.status(403)
           .json({ 
-            message:`Access Denied! ${role} role have no permission for this endpoint!`
+            message:`Access Denied! ${role} role have no permission for this endpoint! Only admin can access this endpoint!`
           });
     next();
   } catch(error) {

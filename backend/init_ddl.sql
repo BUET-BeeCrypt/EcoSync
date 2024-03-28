@@ -41,8 +41,8 @@ CREATE TABLE public."User"
     PRIMARY KEY (user_id),
     FOREIGN KEY (role_name)
         REFERENCES public."Role" (name) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 -- Insert admin user
@@ -61,8 +61,8 @@ CREATE TABLE public."Refresh_Token"
     PRIMARY KEY (user_id,token),
     FOREIGN KEY (user_id)
         REFERENCES public."User" (user_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 
@@ -80,12 +80,12 @@ CREATE TABLE public."Permission_Role"
     PRIMARY KEY (role_name, permission_name),
     FOREIGN KEY (role_name)
         REFERENCES public."Role" (name) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (permission_name)
         REFERENCES public."Permission" (name) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 /***
@@ -165,6 +165,8 @@ CREATE TABLE public."Landfill"
     PRIMARY KEY (landfill_id)
 );
 
+INSERT INTO public."Landfill" (name, latitude, longitude) VALUES ('Amin Bazar Landfill site', 23.7864832,90.3304932);
+
 CREATE TABLE public."Landfill_Manager"
 (
     landfill_id integer NOT NULL,
@@ -197,6 +199,15 @@ CREATE TABLE public."Vehicle"
         ON UPDATE CASCADE
         ON DELETE SET NULL
 );
+
+INSERT INTO public."Vehicle" (registration, type, capacity, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded) 
+    VALUES ('Dhaka Metro 1', 'Open Truck', 3, 10, 5);
+INSERT INTO public."Vehicle" (registration, type, capacity, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded)
+    VALUES ('Dhaka Metro 2', 'Dump Truck', 5, 10, 5);
+INSERT INTO public."Vehicle" (registration, type, capacity, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded)
+    VALUES ('Dhaka Metro 3', 'Compactor', 7, 10, 5);
+INSERT INTO public."Vehicle" (registration, type, capacity, fuel_cost_per_km_loaded, fuel_cost_per_km_unloaded)
+    VALUES ('Dhaka Metro 4', 'Container Carrier', 7, 10, 5);
 
 CREATE TABLE public."Landfill_Entry"
 (
@@ -329,6 +340,17 @@ INSERT INTO public."Permission_Role" (role_name, permission_name)
 -- nested query to get all permissions and give them to system admin
 INSERT INTO public."Permission_Role" (role_name, permission_name)
     SELECT 'SYSTEM_ADMIN', name FROM public."Permission";
+
+-- sts manager permissions
+-- view vehicle, view sts, view sts entry, create sts entry
+INSERT INTO public."Permission_Role" (role_name, permission_name)
+    VALUES ('STS_MANAGER', 'VIEW_VEHICLE');
+INSERT INTO public."Permission_Role" (role_name, permission_name)
+    VALUES ('STS_MANAGER', 'VIEW_STS');
+INSERT INTO public."Permission_Role" (role_name, permission_name)
+    VALUES ('STS_MANAGER', 'VIEW_STS_ENTRY');
+INSERT INTO public."Permission_Role" (role_name, permission_name)
+    VALUES ('STS_MANAGER', 'CREATE_STS_ENTRY');
 
 
 
