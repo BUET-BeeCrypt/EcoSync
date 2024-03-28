@@ -179,9 +179,14 @@ modules.getArrivalEntriesOfSTS = async (sts_id) => {
   return result.rows;
 };
 
-modules.getEntriesOfSTS = async (sts_id) => {
-  const query = `SELECT * FROM public."STS_Entry" WHERE sts_id = $1 ORDER BY entry_time DESC`;
-  const result = await pool.query(query, [sts_id]);
+modules.getEntriesOfSTS = async (sts_id, page, limit) => {
+  page = page - 1;
+  const query = `SELECT se.*,
+  (SELECT username FROM public."User" WHERE user_id = se.manager_id) as manager_name,
+  (SELECT registration FROM public."Vehicle" WHERE vehicle_id = se.vehicle_id) as registration
+  FROM public."STS_Entry" se WHERE se.sts_id = $1 ORDER BY entry_time DESC
+    LIMIT $2 OFFSET $3`;
+  const result = await pool.query(query, [sts_id, limit, page * limit]);
   return result.rows;
 };
 
@@ -193,7 +198,13 @@ modules.addDepartureToSTS = async (
   volume
 ) => {
   const query = `UPDATE public."STS_Entry" SET departure_time = $1, volume = $2, manager_id = $3 WHERE sts_entry_id = $4 AND sts_id = $5 AND departure_time IS NULL`;
-  const values = [new Date(departure_time), volume, manager_id, sts_entry_id, sts_id];
+  const values = [
+    new Date(departure_time),
+    -volume,
+    manager_id,
+    sts_entry_id,
+    sts_id,
+  ];
   await pool.query(query, values);
 };
 
