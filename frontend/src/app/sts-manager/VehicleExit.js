@@ -65,9 +65,9 @@ export default function VehicleExit() {
               }}
               options={entries}
               labelKey={(option) =>
-                `[${formatDateFromTimestamp(option.entry_time)}] ${
-                  option.vehicle.registration
-                } (${option.vehicle.type})`
+                `[${formatDateFromTimestamp(option?.entry_time)}] ${
+                  option?.vehicle?.registration
+                } (${option?.vehicle?.type})`
               }
               filterBy={["text", "name"]}
               placeholder="Choose vehicle..."

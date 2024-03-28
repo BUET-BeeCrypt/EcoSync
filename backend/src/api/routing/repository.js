@@ -127,6 +127,25 @@ const getRoute = async (sts_id) => {
     return result.rows;
 }
 
+const getLastFleetOfSTS = async (sts_id) => {
+    const query = `SELECT * FROM public."Fleet" WHERE route_id IN (SELECT route_id FROM public."Vehicle_Route" WHERE sts_id = $1) ORDER BY time_stamp DESC LIMIT 1`;
+    const result = await pool.query(query, [sts_id]);
+    return result.rows.length === 0 ? null : result.rows[0];
+}
+
+const getVehiclesOfFleet = async (fleet_id) => {
+    const query = `SELECT v.*,
+    (SELECT remaining_trip FROM public."Trip" WHERE fleet_id = $1 AND vehicle_id = v.vehicle_id) AS remaining_trip
+    FROM public."Vehicle" v WHERE vehicle_id IN (SELECT vehicle_id FROM public."Trip" WHERE fleet_id = $1)`;
+    const result = await pool.query(query, [fleet_id]);
+    return result.rows;
+}
+
+const decreaseRemainingTrip = async (fleet_id, vehicle_id) => {
+    const query = `UPDATE public."Trip" SET remaining_trip = remaining_trip - 1 WHERE fleet_id = $1 AND vehicle_id = $2`;
+    await pool.query(query, [fleet_id, vehicle_id]);
+}
+
 module.exports = {
     createRoute,
     getRoutes,
@@ -139,5 +158,8 @@ module.exports = {
     getSTS,
     getVehiclesBySTS,
     createFleet,
-    createTrip
+    createTrip,
+    getLastFleetOfSTS,
+    getVehiclesOfFleet,
+    decreaseRemainingTrip
 };

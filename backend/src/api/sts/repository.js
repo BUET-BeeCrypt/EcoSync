@@ -1,7 +1,7 @@
 const { get } = require("../../../app");
 const pool = require(`../../db/pool`);
 
-modules = {}
+modules = {};
 
 /*
 CREATE TABLE public."STS"
@@ -56,9 +56,29 @@ CREATE TABLE public."STS_Entry"
 */
 
 modules.createSTS = async (sts) => {
-  const { zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area } = sts;
+  const {
+    zone_no,
+    ward_no,
+    name,
+    location,
+    latitude,
+    longitude,
+    capacity,
+    dump_area,
+    coverage_area,
+  } = sts;
   const query = `INSERT INTO public."STS" (zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`;
-  const values = [zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area];
+  const values = [
+    zone_no,
+    ward_no,
+    name,
+    location,
+    latitude,
+    longitude,
+    capacity,
+    dump_area,
+    coverage_area,
+  ];
   const result = await pool.query(query, values);
   return result.rows[0];
 };
@@ -87,18 +107,39 @@ modules.getSTS = async (sts_id) => {
 	FROM public."STS" WHERE sts_id = $1`;
   const result = await pool.query(query, [sts_id]);
   if (result.rows.length === 0) {
-    throw {code: 404, message: "STS not found"};
+    throw { code: 404, message: "STS not found" };
   }
   return result.rows[0];
 };
 
 modules.updateSTS = async (sts_id, sts) => {
-  const { zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area } = sts;
+  const {
+    zone_no,
+    ward_no,
+    name,
+    location,
+    latitude,
+    longitude,
+    capacity,
+    dump_area,
+    coverage_area,
+  } = sts;
   const query = `UPDATE public."STS" SET zone_no = $1, ward_no = $2, name = $3, location = $4, latitude = $5, longitude = $6, capacity = $7, dump_area = $8, coverage_area = $9 WHERE sts_id = $10 RETURNING *`;
-  const values = [zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area, sts_id];
+  const values = [
+    zone_no,
+    ward_no,
+    name,
+    location,
+    latitude,
+    longitude,
+    capacity,
+    dump_area,
+    coverage_area,
+    sts_id,
+  ];
   const result = await pool.query(query, values);
   if (result.rows.length === 0) {
-    throw {code: 404, message: "STS not found"};
+    throw { code: 404, message: "STS not found" };
   }
   return result.rows[0];
 };
@@ -134,8 +175,8 @@ modules.removeManagerFromSTS = async (sts_id, user_id) => {
   await pool.query(query, values);
 };
 // =====================
-/// vechile assignment 
-// =====================  
+/// vechile assignment
+// =====================
 modules.isAlreadyAssigned = async (sts_id, vehicle_id) => {
   const query = `SELECT 1 FROM public."Vehicle" WHERE sts_id = $1 AND vehicle_id = $2`;
   const result = await pool.query(query, [sts_id, vehicle_id]);
@@ -147,7 +188,7 @@ modules.assignVehicleToSTS = async (sts_id, vehicle_id) => {
   const values = [sts_id, vehicle_id];
   const result = await pool.query(query, values);
   if (result.rowCount === 0) {
-    throw {code: 404, message: "Vehicle not found"};
+    throw { code: 404, message: "Vehicle not found" };
   }
   return;
 };
@@ -174,7 +215,7 @@ modules.addEntryToSTS = async (sts_id, manager_id, entry_time, vehicle_id) => {
 };
 
 modules.getArrivalEntriesOfSTS = async (sts_id) => {
-  const query = `SELECT * FROM public."STS_Entry" WHERE sts_id = $1 AND departure_time IS NULL`;
+  const query = `SELECT * FROM public."STS_Entry" WHERE sts_id = $1 AND departure_time IS NULL AND vehicle_id IS NOT NULL ORDER BY entry_time DESC`;
   const result = await pool.query(query, [sts_id]);
   return result.rows;
 };
