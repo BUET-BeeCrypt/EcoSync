@@ -2,22 +2,13 @@ import { useState } from "react";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { Modal } from "react-bootstrap";
-import { Typeahead } from "react-bootstrap-typeahead";
 import {
-  addLandfill,
-  addManagerToLandfill,
   addVehicle,
-  deleteLandfill,
   deleteVehicle,
-  getLandfills,
-  getManagersOfLandfill,
-  getUsers,
+  getSTSs,
   getVehicles,
-  removeManagerFromLandfill,
-  updateLandfill,
   updateVehicle,
 } from "../api/admin";
-import { USER_ROLES } from "../App";
 
 const VEHICLE_TYPES = [
   "Open Truck",
@@ -34,7 +25,7 @@ const defaultVehicle = {
   disabled: false,
   fuel_cost_per_km_loaded: 0.0,
   fuel_cost_per_km_unloaded: 0.0,
-  landfill_id: null,
+  sts_id: null,
 };
 
 export default function Vehicles() {
@@ -47,10 +38,8 @@ export default function Vehicles() {
 
   const [selectedEditVehicle, setSelectedEditVehicle] = useState(null);
   const [selectedDeleteVehicle, setSelectedDeleteVehicle] = useState(null);
-  const [selectedLandfillManagers, setSelectedLandfillManagers] =
-    useState(null);
 
-  const [landfills, setLandfills] = useState([]);
+  const [STSs, setSTSs] = useState([]);
 
   useEffect(() => {
     toast.promise(
@@ -58,27 +47,15 @@ export default function Vehicles() {
         setVehicles(v);
       }),
       {
-        loading: "Loading Landfills",
-        success: "Loaded Landfills",
-        error: "Failed loading Landfills",
+        loading: "Loading Vehicles",
+        success: "Loaded Vehicles",
+        error: "Failed loading Vehicles",
       }
     );
-    getLandfills().then((lfs) => {
-      setLandfills(lfs);
+    getSTSs().then((sts) => {
+      setSTSs(sts);
     });
   }, []);
-
-  const closeManagerModal = () =>
-    setSelectedLandfillManagers((m) => {
-      setVehicles(
-        vehicles.map((s) =>
-          s.landfill_id === m.landfill_id
-            ? { ...s, manager_count: `${m.managers.length}` }
-            : s
-        )
-      );
-      return null;
-    });
 
   return (
     <div>
@@ -88,7 +65,7 @@ export default function Vehicles() {
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
               <a href="!#" onClick={(event) => event.preventDefault()}>
-                Landfills
+                STS
               </a>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
@@ -144,7 +121,7 @@ export default function Vehicles() {
                       <th> Capacity </th>
                       <th> Cost/km (loaded / unloaded) </th>
                       <th> Disabled </th>
-                      <th> Associated Landfill </th>
+                      <th> Associated STS </th>
                       <th> Action </th>
                     </tr>
                   </thead>
@@ -172,17 +149,17 @@ export default function Vehicles() {
                           <span
                             className={
                               "mdi mdi-delete-variant mr-2 " +
-                              (s.landfill_id === null
+                              (s.sts_id === null
                                 ? " text-danger"
                                 : "text-dark")
                             }
                           >
                             {" "}
-                            {s.landfill_id === null
-                              ? "No Landfill"
-                              : landfills.find(
-                                  (l) => l.landfill_id === s.landfill_id
-                                )?.name}{" "}
+                            {s.sts_id === null
+                              ? "No STS"
+                              : `Ward #${STSs.find(
+                                  (l) => l.sts_id === s.sts_id
+                                )?.ward_id}`}{" "}
                           </span>
                         </td>
                         <td>
@@ -391,21 +368,21 @@ export default function Vehicles() {
 
             <div className="col-md-12">
               <div className="form-group">
-                <label>Landfill</label>
+                <label>STS</label>
                 <select
                   className="form-control"
-                  value={selectedEditVehicle?.landfill_id}
+                  value={selectedEditVehicle?.sts_id}
                   onChange={(e) => {
                     setSelectedEditVehicle({
                       ...selectedEditVehicle,
-                      landfill_id: e.target.value,
+                      sts_id: Number.parseInt(e.target.value),
                     });
                   }}
                 >
-                  <option value={null}>No Landfill</option>
-                  {landfills.map((l) => (
-                    <option key={l.landfill_id} value={l.landfill_id}>
-                      {l.name}
+                  <option value={null}>No STS</option>
+                  {STSs.map((l) => (
+                    <option key={l.sts_id} value={l.sts_id}>
+                      Ward #{l.ward_id}
                     </option>
                   ))}
                 </select>
@@ -431,7 +408,7 @@ export default function Vehicles() {
                           selectedEditVehicle.disabled,
                           selectedEditVehicle.fuel_cost_per_km_loaded,
                           selectedEditVehicle.fuel_cost_per_km_unloaded,
-                          selectedEditVehicle.landfill_id
+                          selectedEditVehicle.sts_id
                         ).then((e) => {
                           setVehicles([...vehicles, e]);
                           setSelectedEditVehicle(null);
@@ -444,7 +421,7 @@ export default function Vehicles() {
                           selectedEditVehicle.disabled,
                           selectedEditVehicle.fuel_cost_per_km_loaded,
                           selectedEditVehicle.fuel_cost_per_km_unloaded,
-                          selectedEditVehicle.landfill_id
+                          selectedEditVehicle.sts_id
                         ).then((e) => {
                           setVehicles(
                             vehicles.map((v) =>

@@ -7,7 +7,7 @@ import Footer from "./shared/Footer";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import { api_url, BASE_URL, FORBIDDEN, UNAUTHORIZED } from "./api";
 import { toast } from "react-hot-toast";
-import UserSidebar from "./user/UserSidebar";
+import STSManagerSidebar from "./sts-manager/STSManagerSidebar";
 import AdminSidebar from "./system-admin/SystemAdminSidebar";
 import DoctorSidebar from "./doctor/DoctorSidebar";
 
@@ -107,8 +107,8 @@ function App() {
 
   let navbarComponent = !isFullPageLayout ? <Navbar /> : "";
   let sidebarComponent = !isFullPageLayout ? (
-    user?.role === "ROLE_USER" ? (
-      <UserSidebar />
+    user?.role === USER_ROLES.STS_MANAGER ? (
+      <STSManagerSidebar />
     ) : user?.role === USER_ROLES.SYSTEM_ADMIN ? (
       <AdminSidebar />
     ) : user?.role === "ROLE_DOCTOR" ? (

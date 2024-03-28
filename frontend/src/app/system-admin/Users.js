@@ -121,6 +121,7 @@ export default function Users() {
                             className="form-control form-control-sm"
                             value={user?.role_name}
                             onChange={(e) => {
+                              const role = e.target.value;
                               toast.promise(
                                 changeUserRole(
                                   user.user_id,
@@ -131,7 +132,7 @@ export default function Users() {
                                       if (u.user_id === user.user_id) {
                                         return {
                                           ...user,
-                                          role_name: e.role_name,
+                                          role_name: role,
                                         };
                                       }
                                       return u;

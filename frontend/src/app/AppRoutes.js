@@ -19,6 +19,8 @@ const LandfillFacilities = lazy(() =>
 );
 const Vehicles = lazy(() => import("./system-admin/Vehicles"));
 
+const VehicleEntry = lazy(() => import("./sts-manager/VehicleEntry"));
+
 // const Activate = lazy(() => import("./user-pages/Activate"));
 // const ActivateDoctor = lazy(() => import("./user-pages/RegisterDoctor"));
 
@@ -57,29 +59,18 @@ export default function AppRoutes() {
           <Switch>
             {/* <Route path="/security-settings" component={SecuritySettings} /> */}
 
-            {user?.role === "ROLE_USER" && (
+            {user?.role === USER_ROLES.STS_MANAGER && (
               <Switch>
-                {/* <Route path="/user/dashboard" component={UserHome} />
-                <Route path="/user/documents/add" component={AddDocument} />
-                <Route path="/user/documents/view" component={ViewDocuments} />
-                <Route
-                  path="/user/documents/accept"
-                  component={PendingDocuments}
-                />
-                <Route path="/user/collections" component={Collections} exact />
-                <Route path="/user/collections/:id" component={Collections} />
-                <Route path="/user/shared" component={SharedByMe} />
-                <Route path="/user/settings" component={UserSettings} />
-                <Route
-                  path="/user/assistance/symptom-checker"
-                  component={SymptomChecker}
-                />
-                <Route
-                  path="/user/assistance/anlysis"
-                  component={PDFAnalyzer}
-                />
-                <Route path="/user/logs" component={Logs} /> */}
-                <Redirect to="/user/dashboard" />
+                <Route path="/sts/dashboard" component={SystemAdminHome} />
+                <Route path="/sts/vehicle/entry" component={VehicleEntry} />
+                <Redirect to="/sts/dashboard" />
+              </Switch>
+            )}
+
+            {user?.role === USER_ROLES.LANDFILL_MANAGER && (
+              <Switch>
+                <Route path="/landfill/dashboard" component={SystemAdminHome} />
+                <Redirect to="/landfill/dashboard" />
               </Switch>
             )}
 
