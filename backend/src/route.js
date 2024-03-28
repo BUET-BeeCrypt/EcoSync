@@ -15,4 +15,8 @@ router.use('/sts', require('./api/sts/route'), /*#swagger.tags = ['sts']*/);
 router.use('/landfill', require('./api/landfill/route'), /*#swagger.tags = ['landfill']*/);
 router.use('/vehicles', require('./api/vehicle/route'), /*#swagger.tags = ['vehicle']*/);
 
+router.use('/routes', require('./api/routing/route'), /*#swagger.tags = ['vehicle']*/);
+
+
+
 module.exports = router;

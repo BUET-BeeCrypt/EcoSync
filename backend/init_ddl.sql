@@ -222,7 +222,7 @@ CREATE TABLE public."Landfill"
     PRIMARY KEY (landfill_id)
 );
 
-INSERT INTO public."Landfill" (name, latitude, longitude) VALUES ('Amin Bazar Landfill site', 23.7864832,90.3304932);
+INSERT INTO public."Landfill" (name, latitude, longitude) VALUES ('Amin Bazar Landfill site', 23.797947, 90.300300);
 
 CREATE TABLE public."Landfill_Manager"
 (
@@ -325,6 +325,27 @@ CREATE TABLE public."Bill"
 
 );
 
+
+CREATE TABLE public."Vehicle_Route"
+(
+    route_id serial NOT NULL,
+    landfill_id integer NOT NULL,
+    sts_id integer NOT NULL,
+    direction text NOT NULL,
+    distance double precision NOT NULL,
+    duration double precision NOT NULL,
+    PRIMARY KEY (route_id),
+    FOREIGN KEY (landfill_id)
+        REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+
 INSERT INTO public."Permission" ("name",details) VALUES
         ('LOGIN','Login permission'),
         ('CREATE_USER','Create User permission'),
@@ -377,6 +398,7 @@ INSERT INTO public."Permission" ("name",details) VALUES
         ('UPDATE_BILL','Update Bill permission'),
         ('DELETE_BILL','Delete Bill permission'),
         ('VIEW_BILL','View Bill permission');
+
 
 -- login permission to all user except unassigned
 INSERT INTO public."Permission_Role" (role_name, permission_name) VALUES 

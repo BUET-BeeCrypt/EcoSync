@@ -1,16 +1,14 @@
 const repository = require("./repository");
+
+const route_service = require("../routing/controller");
 const userRepository = require("../user/repository");
 const modules = {};
 
-// modules.addUser = async (req, res) => {
-//   const user = req.body;
-//   const createdUser = await repository.createUser(user);
-//   res.status(201).json(createdUser);
-// };
 
 modules.createLandfill = async (req, res) => {
   const landfill = req.body;
   const createdLandfill = await repository.createLandfill(landfill);
+  route_service.createRoutesFromLandfill(createdLandfill.landfill_id);
   res.status(201).json(createdLandfill);
 }
 

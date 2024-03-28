@@ -1,12 +1,9 @@
 const repository = require("./repository");
+const route_service = require("../routing/controller");
 const userRepository = require("../user/repository");
+
 const modules = {};
 
-// modules.addUser = async (req, res) => {
-//   const user = req.body;
-//   const createdUser = await repository.createUser(user);
-//   res.status(201).json(createdUser);
-// };
 
 modules.createSTS = async (req, res) => {
   const sts = req.body;
@@ -54,6 +51,7 @@ modules.createSTS = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 modules.getSTSs = async (req, res) => {
   // pagination
