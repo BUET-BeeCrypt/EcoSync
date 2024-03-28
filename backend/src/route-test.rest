@@ -1,6 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxMTY1MDAxMSwiZXhwIjoxNzExNjUzNjExfQ.1REaWNakjltBFgpa4S4ic5raWgqZe1Zu0zXJSh5OzFo
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VybmFtZSI6InN0c19tYW5hZ2VyIiwicm9sZSI6IlNUU19NQU5BR0VSIiwiaWF0IjoxNzExNjU4ODQxLCJleHAiOjE3MTE2NjI0NDF9.DzRNfGO1I3f_AfjTlJ0vP8pnSleqiMXYU2nvKRADbsI
 
 @refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJpYXQiOjE3MTE2NDc0MjYsImV4cCI6MTcxMjI1MjIyNn0.dB8uUaTcOu_84lXxoHSZbBTt2NpXMi5l8X8asXDb14M
 
@@ -12,7 +12,7 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "admin",
+  "username": "sts_manager",
   "password": "12345678"
 }
 
@@ -267,4 +267,8 @@ Authorization: {{access}}
 
 ### get all managers of landfill
 GET {{url}}/api/landfill/1/managers HTTP/1.1
+Authorization: {{access}}
+
+### get fleet information
+GET {{url}}/api/routes/fleet/suggest HTTP/1.1
 Authorization: {{access}}

@@ -8,6 +8,7 @@ router.put("/departures/:sts_entry_id", checkPermission("UPDATE_STS_ENTRY"), con
 router.post("/dump", checkPermission("CREATE_STS_ENTRY"), controller.addDumpEntryToSTS);
 router.get("/records", checkPermission("VIEW_STS_ENTRY"), controller.getEntriesOfSTS);
 router.get("/vehicles", checkPermission("VIEW_VEHICLE"),controller.getVehiclesOfManager);
+router.get("/my", checkPermission("VIEW_STS_ENTRY"), controller.getSTSOfManager);
 
 // create a new STS. Only admin 
 router.post("/", checkPermission("CREATE_STS"), controller.createSTS);

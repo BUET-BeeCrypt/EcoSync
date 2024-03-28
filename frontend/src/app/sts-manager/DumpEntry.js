@@ -43,9 +43,17 @@ export default function DumpEntry() {
           <div className={`col-md-6 grid-margin stretch-card`}>
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title">Ward #{mySTS.ward_no}</h4>
+                <h4 className="card-title">{mySTS.name}</h4>
                 <p className="card-description">STS Details</p>
                 <div className="row">
+                <div className="col-md-6">
+                    <p className="text-muted">Ward # </p>
+                    <p>{mySTS.ward_no}</p>
+                  </div>
+                  <div className="col-md-6">
+                    <p className="text-muted">Zone # </p>
+                    <p>{mySTS.zone_no}</p>
+                  </div>
                   <div className="col-md-6">
                     <p className="text-muted">Amount (Tons)</p>
                     <p>{mySTS.amount}</p>
@@ -54,13 +62,9 @@ export default function DumpEntry() {
                     <p className="text-muted">Capacity (Tons)</p>
                     <p>{mySTS.capacity}</p>
                   </div>
-                  <div className="col-md-6">
-                    <p className="text-muted">Latittude</p>
-                    <p>{mySTS.latitude}</p>
-                  </div>
-                  <div className="col-md-6">
-                    <p className="text-muted">Longitude</p>
-                    <p>{mySTS.longitude}</p>
+                  <div className="col-md-12">
+                    <p className="text-muted">Location</p>
+                    <p>{mySTS.location}</p>
                   </div>
                 </div>
               </div>
