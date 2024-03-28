@@ -6,8 +6,8 @@ router.post("/entries", controller.addEntryToSTS);
 router.put("/departures/:sts_entry_id", controller.addDepartureToSTS);
 router.post("/dump", controller.addDumpEntryToSTS);
 router.get("/records", controller.getEntriesOfSTS);
-
 router.get("/vehicles", controller.getVehiclesOfSTS);
+router.get("/my", controller.getSTSOfManager);
 
 router.post("/", controller.createSTS);
 router.get("/", controller.getSTSs);

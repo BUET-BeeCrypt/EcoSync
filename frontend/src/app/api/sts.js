@@ -24,3 +24,6 @@ export const addSTSDumpEntry = async (entry_time, volume) =>
 
 export const getSTSRecords = async () =>
   axios.get(api_url(`/sts/records`)).then((res) => res.data);
+
+export const getMySTS = async () =>
+  axios.get(api_url(`/sts/my`)).then((res) => res.data);

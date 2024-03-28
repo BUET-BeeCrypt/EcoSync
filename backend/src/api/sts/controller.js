@@ -141,4 +141,11 @@ modules.getVehiclesOfSTS = async (req, res) => {
   res.status(200).json(vehicles);
 };
 
+modules.getSTSOfManager = async (req, res) => {
+  const manager_id = req.user.user_id;
+  const sts_id = await repository.getSTSIDfromManagerID(manager_id);
+  const sts = await repository.getSTS(sts_id);
+  res.status(200).json(sts);
+}
+
 module.exports = modules;

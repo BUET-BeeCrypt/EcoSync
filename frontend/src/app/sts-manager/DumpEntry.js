@@ -1,38 +1,21 @@
-import { Typeahead } from "react-bootstrap-typeahead";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import {
-  addSTSDeparture,
-  addSTSEntry,
-  getSTSEntries,
-  getSTSVehicles,
-} from "../api/sts";
-import { formatDateFromTimestamp } from "./VehicleEntry";
+import { addSTSDumpEntry, getMySTS } from "../api/sts";
 
-export default function VehicleExit() {
-  const [entries, setEntries] = useState([]);
-  const [entry, setEntry] = useState(null);
+export default function DumpEntry() {
+  const [mySTS, setMySTS] = useState(null);
   const [volume, setVolume] = useState(0);
-  const [exitTime, setExitTime] = useState(
+  const [entryTime, setEntryTime] = useState(
     new Date().getTime() + 1000 * 60 * 60 * 6
   );
 
   useEffect(() => {
     toast.promise(
-      getSTSVehicles().then((vehicles) => {
-        getSTSEntries().then((entries) => {
-          setEntries(
-            entries.map((e) => ({
-              ...e,
-              vehicle: vehicles.find((v) => v.vehicle_id === e.vehicle_id),
-            }))
-          );
-        });
-      }),
+      getMySTS().then((sts) => setMySTS(sts)),
       {
-        loading: "Loading entriess...",
-        success: "Entries loaded!",
-        error: "Failed to load entries",
+        loading: "Loading STS Details...",
+        success: "STS Details loaded!",
+        error: "Failed to load STS Details",
       }
     );
   }, []);
@@ -40,65 +23,44 @@ export default function VehicleExit() {
   return (
     <div>
       <div className="page-header">
-        <h3 className="page-title"> Vehicle Exit </h3>
+        <h3 className="page-title"> Dump Entry </h3>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
               <a href="!#" onClick={(event) => event.preventDefault()}>
-                Vehicle
+                STS
               </a>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              Exit Entry
+              Dump Entry
             </li>
           </ol>
         </nav>
       </div>
 
-      <div className="d-flex justify-content-center mb-5">
-        <div className="col-md-6">
-          <div className="d-flex justify-content-center">
-            <Typeahead
-              onChange={(selected) => {
-                setEntry(selected[0]);
-              }}
-              options={entries}
-              labelKey={(option) =>
-                `[${formatDateFromTimestamp(option.entry_time)}] ${
-                  option.vehicle.registration
-                } (${option.vehicle.type})`
-              }
-              filterBy={["text", "name"]}
-              placeholder="Choose vehicle..."
-              className="flex-grow-1"
-            />
-          </div>
-        </div>
-      </div>
-
-      {entry && (
+      {mySTS && (
         <div className="row">
           <div className={`col-md-6 grid-margin stretch-card`}>
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title">{entry.vehicle.registration}</h4>
-                <p className="card-description">Vehicle Details</p>
+                <h4 className="card-title">Ward #{mySTS.ward_id}</h4>
+                <p className="card-description">STS Details</p>
                 <div className="row">
                   <div className="col-md-6">
-                    <p className="text-muted">Type</p>
-                    <p>{entry.vehicle.type}</p>
+                    <p className="text-muted">Amount (Tons)</p>
+                    <p>{mySTS.amount}</p>
                   </div>
                   <div className="col-md-6">
                     <p className="text-muted">Capacity (Tons)</p>
-                    <p>{entry.vehicle.capacity}</p>
+                    <p>{mySTS.capacity}</p>
                   </div>
                   <div className="col-md-6">
-                    <p className="text-muted">Loaded Cost/km</p>
-                    <p>{entry.vehicle.fuel_cost_per_km_loaded}</p>
+                    <p className="text-muted">Latittude</p>
+                    <p>{mySTS.latitude}</p>
                   </div>
                   <div className="col-md-6">
-                    <p className="text-muted">Unloaded Cost/km</p>
-                    <p>{entry.vehicle.fuel_cost_per_km_unloaded}</p>
+                    <p className="text-muted">Longitude</p>
+                    <p>{mySTS.longitude}</p>
                   </div>
                 </div>
               </div>
@@ -107,22 +69,18 @@ export default function VehicleExit() {
           <div className={`col-md-6 grid-margin stretch-card`}>
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title">Vehicle Departure</h4>
-                <p className="card-description">Add Vehicle exit details</p>
+                <h4 className="card-title">Dump Entry</h4>
+                <p className="card-description">Add dump information</p>
                 <div className="row">
                   <div className="col-md-12">
                     <p className="text-muted">Entry Time</p>
-                    <p>{formatDateFromTimestamp(entry.entry_time)}</p>
-                  </div>
-                  <div className="col-md-12">
-                    <p className="text-muted">Exit Time</p>
                     <p>
                       <input
                         type="datetime-local"
                         className="form-control"
-                        value={new Date(exitTime).toISOString().slice(0, 16)}
+                        value={new Date(entryTime).toISOString().slice(0, 16)}
                         onChange={(e) =>
-                          setExitTime(
+                          setEntryTime(
                             new Date(e.target.value).getTime() +
                               1000 * 60 * 60 * 6
                           )
@@ -143,7 +101,7 @@ export default function VehicleExit() {
                       />
                     </p>
                   </div>
-                  <div className="col-md-3">
+                  <div className="col-md-6">
                     <p className="text-muted"> </p>
                     <p>
                       <button
@@ -154,50 +112,34 @@ export default function VehicleExit() {
                           if (volume <= 0) {
                             toast.error("Volume must be greater than 0");
                             return;
-                          } else if (exitTime <= entry.entry_time) {
-                            toast.error(
-                              "Exit time must be greater than entry time"
-                            );
-                            return;
                           } else if (
-                            exitTime >
+                            entryTime >
                             new Date().getTime() + 1000 * 60 * 60 * 6
                           ) {
                             toast.error(
                               "Exit time must be less than current time"
                             );
                             return;
-                          } else if (
-                            exitTime - entry.entry_time >
-                            1000 * 60 * 60 * 24
-                          ) {
+                          } else if (volume > mySTS.capacity - mySTS.amount) {
                             toast.error(
-                              "Exit time must be within 24 hours of entry time"
-                            );
-                            return;
-                          } else if (volume > entry.vehicle.capacity) {
-                            toast.error(
-                              "Volume must be less than vehicle capacity"
+                              "Volume must be less than capacity - amount"
                             );
                             return;
                           }
 
                           toast.promise(
-                            addSTSDeparture(
-                              entry.sts_entry_id,
-                              exitTime - 1000 * 60 * 60 * 6,
+                            addSTSDumpEntry(
+                              entryTime - 1000 * 60 * 60 * 6,
                               volume
                             ).then(() => {
-                              setEntry(null);
                               setVolume(0);
-                              setExitTime(
+                              setEntryTime(
                                 new Date().getTime() + 1000 * 60 * 60 * 6
                               );
-                              setEntries(
-                                entries.filter(
-                                  (e) => e.sts_entry_id !== entry.sts_entry_id
-                                )
-                              );
+                              setMySTS({
+                                ...mySTS,
+                                amount: mySTS.amount + volume,
+                              });
                             }),
                             {
                               loading: "Adding entry...",
@@ -207,7 +149,7 @@ export default function VehicleExit() {
                           );
                         }}
                       >
-                        Record Entry
+                        Dump Entry
                       </button>
                     </p>
                   </div>
