@@ -1,4 +1,5 @@
 const repository = require("./repository");
+const userRepository = require("../user/repository");
 const modules = {};
 
 // modules.addUser = async (req, res) => {
@@ -93,7 +94,7 @@ modules.updateSTS = async (req, res) => {
   if(sts.coverage_area && isNaN(sts.coverage_area)) err_msg = "Coverage area must be a number"
 
   if(err_msg) return res.status(400).json({message:err_msg})
-  console.log(sts)
+  //console.log(sts)
   try{
     const old_sts = await repository.getSTS(sts_id);
     if(!sts.zone_no) sts.zone_no = old_sts.zone_no
@@ -129,23 +130,85 @@ modules.deleteSTS = async (req, res) => {
   }
 };
 
-modules.addManagerToSTS = async (req, res) => {
-  const { sts_id } = req.params;
+modules.assignManagerToSTS = async (req, res) => {
+  const sts_id = req.params.sts_id;
   const { user_id } = req.body;
-  await repository.addManagerToSTS(sts_id, user_id);
-  res.status(200).json({ message: "Manager added to sts" });
+
+  // check if number
+  if(isNaN(sts_id)) return res.status(400).json({message:"STS id must be a number"})
+  // check negative
+  if(sts_id < 0) return res.status(400).json({message:"STS id cannot be negative"})
+  // check user id
+  if(!user_id) return res.status(400).json({message:"User id is required"})
+
+  try{
+    const exists = await repository.existsSTS(sts_id);
+    if(!exists) return res.status(404).json({message:"STS not found"})
+
+    const user = await userRepository.getUser(user_id);
+    if(!user) return res.status(404).json({message:"User not found"})
+
+    // check if user has STS_MANAGER role
+    if(user.role_name !== "STS_MANAGER") 
+      return res.status(400).json({message:"User must have STS_MANAGER role"})
+
+    await repository.addManagerToSTS(sts_id, user_id);
+    res.status(200).json({ message: "Manager assigned to sts" });
+  }catch(err){
+    if(err.code === 404)
+      return res.status(404).json({message:err.message})
+    res.status(500).json({ message: err.message });
+  }
 };
 
 modules.getManagersOfSTS = async (req, res) => {
   const sts_id = req.params.sts_id;
-  const managers = await repository.getManagersOfSTS(sts_id);
-  res.status(200).json(managers);
+  // check if number
+  if(isNaN(sts_id)) return res.status(400).json({message:"STS id must be a number"})
+  // check negative
+  if(sts_id < 0) return res.status(400).json({message:"STS id cannot be negative"})
+
+  try{
+    const exists = await repository.existsSTS(sts_id);
+    if(!exists) return res.status(404).json({message:"STS not found"})
+
+    const managers = await repository.getManagersOfSTS(sts_id);
+    res.status(200).json(managers);
+  }catch(err){
+    if(err.code === 404)
+      return res.status(404).json({message:err.message})
+    res.status(500).json({ message: err.message });
+  }
 };
 
 modules.removeManagerFromSTS = async (req, res) => {
   const { sts_id, user_id } = req.params;
-  await repository.removeManagerFromSTS(sts_id, user_id);
-  res.status(200).json({ message: "Manager removed from sts" });
+  // check if number
+  if(isNaN(sts_id)) return res.status(400).json({message:"STS id must be a number"})
+  // check negative
+  if(sts_id < 0) return res.status(400).json({message:"STS id cannot be negative"})
+  // check if number
+  if(isNaN(user_id)) return res.status(400).json({message:"User id must be a number"})
+  // check negative
+  if(user_id < 0) return res.status(400).json({message:"User id cannot be negative"})
+
+  try{
+    const exists = await repository.existsSTS(sts_id);
+    if(!exists) return res.status(404).json({message:"STS not found"})
+
+    const user = await userRepository.getUser(user_id);
+    if(!user) return res.status(404).json({message:"User not found"})
+
+    const isManager = await repository.isManagerOfSTS(sts_id, user_id);
+    if(!isManager) return res.status(404).json({message:"User is not a manager of this sts"})
+
+    await repository.removeManagerFromSTS(sts_id, user_id);
+    res.status(200).json({ message: "Manager removed from sts" });
+  }catch(err){
+    if(err.code === 404)
+      return res.status(404).json({message:err.message})
+    res.status(500).json({ message: err.message });
+  }
 };
 
 modules.addEntryToSTS = async (req, res) => {

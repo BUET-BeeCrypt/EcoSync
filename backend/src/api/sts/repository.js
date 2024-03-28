@@ -107,15 +107,23 @@ const deleteSTS = async (sts_id) => {
 };
 
 const addManagerToSTS = async (sts_id, user_id) => {
-  const query = `INSERT INTO public."STS_Manager" (sts_id, user_id) VALUES ($1, $2)`;
+  const query = `INSERT INTO public."STS_Manager" (sts_id, user_id) VALUES ($1, $2) RETURNING *`;
   const values = [sts_id, user_id];
-  await pool.query(query, values);
+  result = await pool.query(query, values);
+  return result.rows[0];
 };
 
 const getManagersOfSTS = async (sts_id) => {
-  const query = `SELECT * FROM public."User" WHERE user_id IN (SELECT user_id FROM public."STS_Manager" WHERE sts_id = $1)`;
+  const query = `SELECT user_id, "name", username, email
+  FROM public."User" WHERE user_id IN (SELECT user_id FROM public."STS_Manager" WHERE sts_id = $1)`;
   const result = await pool.query(query, [sts_id]);
   return result.rows;
+};
+
+const isManagerOfSTS = async (sts_id, user_id) => {
+  const query = `SELECT 1 FROM public."STS_Manager" WHERE sts_id = $1 AND user_id = $2`;
+  const result = await pool.query(query, [sts_id, user_id]);
+  return result.rows.length > 0;
 };
 
 const removeManagerFromSTS = async (sts_id, user_id) => {
@@ -181,6 +189,7 @@ module.exports = {
   updateSTS,
   deleteSTS,
   addManagerToSTS,
+  isManagerOfSTS,
   getManagersOfSTS,
   removeManagerFromSTS,
   addEntryToSTS,
