@@ -1,5 +1,7 @@
 const repository = require("./repository");
+
 const route_service = require("../routing/controller");
+const userRepository = require("../user/repository");
 const modules = {};
 
 
@@ -37,8 +39,25 @@ modules.deleteLandfill = async (req, res) => {
 modules.addManagerToLandfill = async (req, res) => {
   const { landfill_id } = req.params;
   const { user_id } = req.body;
-  await repository.addManagerToLandfill(landfill_id, user_id);
-  res.status(200).json({ message: "Manager added to landfill" });
+
+  try{
+    const exists = await repository.existsLandfill(landfill_id);
+    if(!exists) return res.status(404).json({ message: "Landfill not found" });
+
+    const user = await userRepository.getUser(user_id);
+    if(!user) return res.status(404).json({ message: "User not found" });
+
+    // check role
+    if( user.role_name !== "LANDFILL_MANAGER") return res.status(400).json({ message: "User is not a landfill manager" });
+
+    const isManager = await repository.isManagerOfLandfill(landfill_id, user_id);
+    if(isManager) return res.status(400).json({ message: "Manager is already assigned to landfill" });  
+
+    await repository.addManagerToLandfill(landfill_id, user_id);
+    res.status(200).json({ message: "Manager assigned to landfill" });
+  }catch(err){
+    return res.status(404).json({ message: "Manager or landfill not found" });
+  }
 }
 
 modules.getManagersOfLandfill = async (req, res) => {
@@ -49,8 +68,24 @@ modules.getManagersOfLandfill = async (req, res) => {
 
 modules.removeManagerFromLandfill = async (req, res) => {
   const { landfill_id, user_id } = req.params;
-  await repository.removeManagerFromLandfill(landfill_id, user_id);
-  res.status(200).json({ message: "Manager removed from landfill" });
+  try{
+    const exists = await repository.existsLandfill(landfill_id);
+    if(!exists) return res.status(404).json({message:"STS not found"})
+
+    const user = await userRepository.getUser(user_id);
+    if(!user) return res.status(404).json({message:"User not found"})
+
+    const isManager = await repository.isManagerOfLandfill(landfill_id, user_id);
+    if(!isManager) return res.status(404).json({message:"User is not a manager of this landfill"})
+
+    await repository.removeManagerFromLandfill(landfill_id, user_id);
+    res.status(200).json({ message: "Manager removed from landfill" });
+  }catch(err){
+    if(err.code === 404)
+      return res.status(404).json({message:err.message})
+    res.status(500).json({ message: err.message });
+  }
+  
 }
 
 
@@ -76,11 +111,14 @@ modules.getEntriesOfLandfill = async (req, res) => {
     return res.status(404).json({ message: "Manager is not assigned to any landfill" });
   }
 
-  const entries = await repository.getEntriesOfLandfill(landfill_id);
+  const page = Number.parseInt(req.query.page) || 1;
+  const limit = Number.parseInt(req.query.limit) || 50;
+
+  const entries = await repository.getEntriesOfLandfill(landfill_id, page, limit);
   res.status(200).json(entries);
 }
 
-modules.getOnlyEntriesOfLandfill = async (req, res) => {
+modules.getArrivalEntriesOfLandfill = async (req, res) => {
   const landfill_id = await repository.getLandfillIdfromManagerId(req.user.user_id);
 
   if( landfill_id === null){

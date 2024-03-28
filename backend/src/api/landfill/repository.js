@@ -82,6 +82,12 @@ const getLandfill = async (landfill_id) => {
 	return result.rows[0];
 }
 
+const existsLandfill = async (landfill_id) => {
+    const query = `SELECT 1 FROM public."Landfill" WHERE landfill_id = $1`;
+    const result = await pool.query(query, [landfill_id]);
+    return result.rows.length > 0;
+}
+
 const updateLandfill = async (landfill_id, landfill) => {
 	const { name, latitude, longitude } = landfill;
 	const query = `UPDATE public."Landfill" SET name = $1, latitude = $2, longitude = $3 WHERE landfill_id = $4 RETURNING *`;
@@ -103,9 +109,16 @@ const addManagerToLandfill = async (landfill_id, user_id) => {
 }
 
 const getManagersOfLandfill = async (landfill_id) => {
-	const query = `SELECT * FROM "User" WHERE user_id IN (SELECT user_id FROM public."Landfill_Manager" WHERE landfill_id = $1)`;
+	const query = `SELECT user_id, "name", username, email 
+    FROM "User" WHERE user_id IN (SELECT user_id FROM public."Landfill_Manager" WHERE landfill_id = $1)`;
 	const result = await pool.query(query,[landfill_id]);
 	return result.rows;
+}
+
+const isManagerOfLandfill = async (landfill_id, user_id) => {
+    const query = `SELECT 1 FROM public."Landfill_Manager" WHERE landfill_id = $1 AND user_id = $2`;
+    const result = await pool.query(query, [landfill_id, user_id]);
+    return result.rows.length > 0;
 }
 
 const removeManagerFromLandfill = async (landfill_id, user_id) => {
@@ -122,10 +135,15 @@ const addEntryToLandfill = async (landfill_id, manager_id, vehicle_id, entry_tim
     return rows[0];
 }
 
-const getEntriesOfLandfill = async (landfill_id) => {
-    const query = `SELECT * FROM public."Landfill_Entry" WHERE landfill_id = $1 ORDER BY entry_time DESC`;
-    const { rows } = await pool.query(query, [landfill_id]);
-    return rows;
+const getEntriesOfLandfill = async (landfill_id, page, limit) => {
+    page = page - 1;
+    const query = `SELECT le.*,
+    (SELECT username FROM public."User" WHERE user_id = le.manager_id) as manager_name,
+    (SELECT registration FROM public."Vehicle" WHERE vehicle_id = le.vehicle_id) as registration
+    FROM public."Landfill_Entry" le WHERE le.landfill_id = $1 ORDER BY entry_time DESC
+    LIMIT $2 OFFSET $3`;
+  const result = await pool.query(query, [landfill_id, limit, page * limit]);
+  return result.rows;
 }
 
 const getOnlyEntriesOfLandfill = async (landfill_id) => {
@@ -151,11 +169,13 @@ const getLandfillIdfromManagerId = async (user_id) => {
 
 module.exports = {
     createLandfill,
+    existsLandfill,
     getLandfills,
     getLandfill,
     updateLandfill,
     deleteLandfill,
     addManagerToLandfill,
+    isManagerOfLandfill,
     getManagersOfLandfill,
     removeManagerFromLandfill,
     addEntryToLandfill,
