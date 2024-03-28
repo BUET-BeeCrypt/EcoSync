@@ -29,7 +29,7 @@ const getRefreshToken = async () => {
     removeTokenFromStorage("refreshToken");
     return Promise.reject("Failed to refresh token");
   }
-  return response.data.token;
+  return response.data.accessToken;
 };
 
 axios.interceptors.response.use(

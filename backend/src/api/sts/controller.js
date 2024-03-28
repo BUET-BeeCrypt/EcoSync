@@ -79,7 +79,10 @@ modules.getEntriesOfSTS = async (req, res) => {
       .json({ message: "Manager is not assigned to any sts" });
   }
 
-  const entries = await repository.getEntriesOfSTS(sts_id);
+  const page = Number.parseInt(req.query.page) || 1;
+  const limit = 50;
+
+  const entries = await repository.getEntriesOfSTS(sts_id, page, limit);
   res.status(200).json(entries);
 };
 
