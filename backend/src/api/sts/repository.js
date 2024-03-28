@@ -173,7 +173,7 @@ modules.addEntryToSTS = async (sts_id, manager_id, entry_time, vehicle_id) => {
   await pool.query(query, values);
 };
 
-modules.getOnlyEntriesOfSTS = async (sts_id) => {
+modules.getArrivalEntriesOfSTS = async (sts_id) => {
   const query = `SELECT * FROM public."STS_Entry" WHERE sts_id = $1 AND departure_time IS NULL`;
   const result = await pool.query(query, [sts_id]);
   return result.rows;

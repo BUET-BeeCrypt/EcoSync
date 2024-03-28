@@ -330,7 +330,7 @@ modules.getOnlyEntriesOfSTS = async (req, res) => {
       .json({ message: "Manager is not assigned to any sts" });
   }
 
-  const entries = await repository.getOnlyEntriesOfSTS(sts_id);
+  const entries = await repository.getArrivalEntriesOfSTS(sts_id);
   res.status(200).json(entries);
 };
 

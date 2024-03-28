@@ -2,6 +2,12 @@ const controller = require("./controller");
 const router = require("express-promise-router")();
 const checkPermission = require("../../middlewares/check-permission");
 
+router.get("/entries", checkPermission("VIEW_STS_ENTRY"),controller.getOnlyEntriesOfSTS);
+router.post("/entries", checkPermission("CREATE_STS_ENTRY"),controller.addEntryToSTS);
+router.put("/departures/:sts_entry_id", checkPermission("UPDATE_STS_ENTRY"), controller.addDepartureToSTS);
+router.post("/dump", checkPermission("CREATE_STS_ENTRY"), controller.addDumpEntryToSTS);
+router.get("/records", checkPermission("VIEW_STS_ENTRY"), controller.getEntriesOfSTS);
+
 // create a new STS. Only admin 
 router.post("/", checkPermission("CREATE_STS"), controller.createSTS);
 router.get("/", checkPermission("VIEW_ALL_STS"),controller.getSTSs);
@@ -23,15 +29,6 @@ router.get("/:sts_id/vehicles", checkPermission("VIEW_VEHICLE"),controller.getVe
 router.get("/vehicles", checkPermission("VIEW_VEHICLE"),controller.getVehiclesOfManager);
 // remove vehicle from STS
 router.delete("/:sts_id/vehicles/:vehicle_id", checkPermission("UNASSIGN_VEHICLE"),controller.removeVehicleFromSTS);
-
-
-router.get("/entries", controller.getOnlyEntriesOfSTS);
-router.post("/entries", controller.addEntryToSTS);
-router.put("/departures/:sts_entry_id", controller.addDepartureToSTS);
-router.post("/dump", controller.addDumpEntryToSTS);
-router.get("/records", controller.getEntriesOfSTS);
-
-
 
 
 module.exports = router;
