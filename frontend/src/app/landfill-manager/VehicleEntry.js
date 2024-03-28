@@ -1,8 +1,7 @@
 import { Typeahead } from "react-bootstrap-typeahead";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { addSTSEntry, getSTSVehicles } from "../api/sts";
-import { getVehicles } from "../api/landfill";
+import { addLandfillEntry, getVehicles } from "../api/landfill";
 
 export const formatDateFromTimestamp = (
   timestamp,
@@ -19,6 +18,7 @@ export const formatDateFromTimestamp = (
 export default function VehicleEntry() {
   const [vehicles, setVehicles] = useState([]);
   const [vehicle, setVehicle] = useState(null);
+  const [volume, setVolume] = useState(0);
   const [entryTime, setEntryTime] = useState(
     new Date().getTime() + 1000 * 60 * 60 * 6
   );
@@ -57,11 +57,12 @@ export default function VehicleEntry() {
           <div className="d-flex justify-content-center">
             <Typeahead
               onChange={(selected) => {
+                if (selected.length === 0) return;
                 setVehicle(selected[0]);
               }}
               options={vehicles}
               labelKey={(option) => `[${option.type}] ${option.registration}`}
-              filterBy={["text", "name"]}
+              filterBy={["type", "registration"]}
               placeholder="Choose vehicle..."
               className="flex-grow-1"
             />
@@ -119,7 +120,20 @@ export default function VehicleEntry() {
                       />
                     </p>
                   </div>
-                  <div className="col-md-3">
+                  <div className="col-md-12">
+                    <p className="text-muted">Volume (Tons)</p>
+                    <p>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={volume}
+                        onChange={(e) =>
+                          setVolume(Number.parseFloat(e.target.value))
+                        }
+                      />
+                    </p>
+                  </div>
+                  <div className="col-md-6">
                     <p className="text-muted"> </p>
                     <p>
                       <button
@@ -127,10 +141,22 @@ export default function VehicleEntry() {
                         onClick={(e) => {
                           e.preventDefault();
 
+                          if (volume <= 0) {
+                            toast.error("Volume must be greater than 0");
+                            return;
+                          } else if ( isNaN(volume) ) {
+                            toast.error("Volume must be a number");
+                            return;
+                          } else if (volume > vehicle.capacity) {
+                            toast.error("Volume must be less than or equal to vehicle capacity");
+                            return;
+                          }
+
                           toast.promise(
-                            addSTSEntry(
+                            addLandfillEntry(
                               vehicle.vehicle_id,
-                              entryTime - 1000 * 60 * 60 * 6
+                              entryTime - 1000 * 60 * 60 * 6,
+                              volume
                             ).then(() => {
                               toast.success("Entry added successfully");
                               setVehicle(null);

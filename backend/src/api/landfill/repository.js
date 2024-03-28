@@ -128,9 +128,9 @@ const removeManagerFromLandfill = async (landfill_id, user_id) => {
 }
 
 
-const addEntryToLandfill = async (landfill_id, manager_id, vehicle_id, entry_time) => {
-    const query = `INSERT INTO public."Landfill_Entry" (landfill_id, manager_id, vehicle_id, entry_time, departure_time, volume) VALUES ($1, $2, $3, $4, NULL, 0) RETURNING *`;
-    const values = [landfill_id, manager_id, vehicle_id, entry_time];
+const addEntryToLandfill = async (landfill_id, manager_id, entry_time, vehicle_id, weight) => {
+    const query = `INSERT INTO public."Landfill_Entry" (landfill_id, manager_id, vehicle_id, entry_time, departure_time, volume) VALUES ($1, $2, $3, $4, NULL, $5) RETURNING *`;
+    const values = [landfill_id, manager_id, vehicle_id, new Date(entry_time), weight];
     const { rows } = await pool.query(query, values);
     return rows[0];
 }
@@ -152,9 +152,9 @@ const getOnlyEntriesOfLandfill = async (landfill_id) => {
     return rows;
 }
 
-const addDepartureToLandfill = async (landfill_entry_id, departure_time, volume) => {
-    const query = `UPDATE public."Landfill_Entry" SET departure_time = $1, volume = $2 WHERE landfill_entry_id = $3 RETURNING *`;
-    const values = [departure_time, volume, landfill_entry_id];
+const addDepartureToLandfill = async (landfill_entry_id, departure_time) => {
+    const query = `UPDATE public."Landfill_Entry" SET departure_time = $1 WHERE landfill_entry_id = $2 AND departure_time IS NULL RETURNING *`;
+    const values = [new Date(departure_time), landfill_entry_id];
     const { rows } = await pool.query(query, values);
     return rows[0];
 }
