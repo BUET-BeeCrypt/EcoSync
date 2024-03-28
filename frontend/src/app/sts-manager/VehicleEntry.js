@@ -1,20 +1,37 @@
 import { Typeahead } from "react-bootstrap-typeahead";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { addSTSEntry, getSTSVehicles } from "../api/sts";
+
+export const formatDateFromTimestamp = (
+  timestamp,
+  style = { timeStyle: "short", dateStyle: "short" }
+) => {
+  if (!timestamp) return "Invalid DateTime";
+  return new Intl.DateTimeFormat("en-BD", {
+    ...style,
+    timeZone: "Asia/Dhaka",
+    hourCycle: "h12",
+  }).format(new Date(timestamp));
+};
 
 export default function VehicleEntry() {
-  const [vehicles, setVehicles] = useState([
-    {
-      vehicle_id: 0,
-      registration: "A1123GH",
-      type: "Truck",
-      capacity: 0.0,
-      disabled: false,
-      fuel_cost_per_km_loaded: 0.0,
-      fuel_cost_per_km_unloaded: 0.0,
-      landfill_id: null,
-    },
-  ]);
+  const [vehicles, setVehicles] = useState([]);
   const [vehicle, setVehicle] = useState(null);
+  const [entryTime, setEntryTime] = useState(
+    new Date().getTime() + 1000 * 60 * 60 * 6
+  );
+
+  useEffect(() => {
+    toast.promise(
+      getSTSVehicles().then((vehicles) => setVehicles(vehicles)),
+      {
+        loading: "Loading vehicles...",
+        success: "Vehicles loaded!",
+        error: "Failed to load vehicles",
+      }
+    );
+  }, []);
 
   return (
     <div>
@@ -56,48 +73,83 @@ export default function VehicleEntry() {
           <div className={`col-md-6 grid-margin stretch-card`}>
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title"> Vehicle Details </h4>
-                    <h5 className="mr-5 my-auto">{vehicle.registration}</h5>
-                    <p className="text-muted mt-2">{vehicle.type}</p>
-                    {/* <div className="d-flex mb-5"> */}
-                        
+                <h4 className="card-title">{vehicle.registration}</h4>
+                <p className="card-description">Vehicle Details</p>
+                <div className="row">
+                  <div className="col-md-6">
+                    <p className="text-muted">Type</p>
+                    <p>{vehicle.type}</p>
+                  </div>
+                  <div className="col-md-6">
+                    <p className="text-muted">Capacity (Tons)</p>
+                    <p>{vehicle.capacity}</p>
+                  </div>
+                  <div className="col-md-6">
+                    <p className="text-muted">Loaded Cost/km</p>
+                    <p>{vehicle.fuel_cost_per_km_loaded}</p>
+                  </div>
+                  <div className="col-md-6">
+                    <p className="text-muted">Unloaded Cost/km</p>
+                    <p>{vehicle.fuel_cost_per_km_unloaded}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          {/* <div className={`col-md-12 grid-margin stretch-card`}>
+          <div className={`col-md-6 grid-margin stretch-card`}>
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title"> Feature Suggestions </h4>
-                <h5>User Feature Suggestion</h5>
-                <ul>
-                  {featureSuggestions.user.map((suggestion, index) => (
-                    <li key={index}>
-                      <span className="font-weight-bold">{suggestion[0]}</span>:{" "}
-                      {suggestion[1]}
-                    </li>
-                  ))}
-                </ul>
-                <h5>Doctor Feature Suggestion</h5>
-                <ul>
-                  {featureSuggestions.doctor.map((suggestion, index) => (
-                    <li key={index}>
-                      <span className="font-weight-bold">{suggestion[0]}</span>:{" "}
-                      {suggestion[1]}
-                    </li>
-                  ))}
-                </ul>
-                <h5>Test Feature Suggestion</h5>
-                <ul>
-                  {featureSuggestions.test.map((suggestion, index) => (
-                    <li key={index}>
-                      <span className="font-weight-bold">{suggestion[0]}</span>:{" "}
-                      {suggestion[1]}
-                    </li>
-                  ))}
-                </ul>
+                <h4 className="card-title">Vehicle Entry</h4>
+                <p className="card-description">Add Vehicle entry details</p>
+                <div className="row">
+                  <div className="col-md-12">
+                    <p className="text-muted">Entry Time</p>
+                    <p>
+                      <input
+                        type="datetime-local"
+                        className="form-control"
+                        value={new Date(entryTime).toISOString().slice(0, 16)}
+                        onChange={(e) =>
+                          setEntryTime(
+                            new Date(e.target.value).getTime() +
+                              1000 * 60 * 60 * 6
+                          )
+                        }
+                      />
+                    </p>
+                  </div>
+                  <div className="col-md-3">
+                    <p className="text-muted"> </p>
+                    <p>
+                      <button
+                        className="btn btn-primary"
+                        onClick={(e) => {
+                          e.preventDefault();
+
+                          toast.promise(
+                            addSTSEntry(
+                              vehicle.vehicle_id,
+                              entryTime - 1000 * 60 * 60 * 6
+                            ).then(() => {
+                              toast.success("Entry added successfully");
+                              setVehicle(null);
+                            }),
+                            {
+                              loading: "Adding entry...",
+                              success: "Entry added successfully",
+                              error: "Failed to add entry",
+                            }
+                          );
+                        }}
+                      >
+                        Entry
+                      </button>
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
       )}
     </div>
