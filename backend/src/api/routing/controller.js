@@ -211,4 +211,15 @@ modules.calculateRoutes = async (req, res) => {
     return res.status(200).json({message:"Recalculating routes"});
 }
 
+modules.getRoutes = async (req, res) => {
+    const manager_id = req.user.user_id;
+    const sts_id = await stsRepository.getSTSIDfromManagerID(manager_id);
+    const routes = await repository.getRoute(sts_id);
+    const landfills = await landfillRepository.getLandfills();
+    return res.status(200).json({
+        routes,
+        landfills
+    });
+}
+
 module.exports = modules;

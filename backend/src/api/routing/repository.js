@@ -121,9 +121,16 @@ const createTrip = async (fleet_id, vehicle_id, total_trip) => {
     await pool.query(query, values);
 }
 
+const getRoute = async (sts_id) => {
+    const query = `SELECT * FROM public."Vehicle_Route" WHERE sts_id = $1`;
+    const result = await pool.query(query, [sts_id]);
+    return result.rows;
+}
+
 module.exports = {
     createRoute,
     getRoutes,
+    getRoute,
     getRoutesBySTS,
     getRouteByLandfillAndSTS,
     getLandfills,

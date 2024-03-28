@@ -272,3 +272,7 @@ Authorization: {{access}}
 ### get fleet information
 GET {{url}}/api/routes/fleet/suggest HTTP/1.1
 Authorization: {{access}}
+
+### Get all routes
+GET {{url}}/api/routes HTTP/1.1
+Authorization: {{access}}

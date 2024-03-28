@@ -30,3 +30,6 @@ export const getMySTS = async () =>
 
 export const getFleet = async () =>
   axios.get(api_url(`/routes/fleet/suggest`)).then((res) => res.data);
+
+export const getRoutes = async () =>
+  axios.get(api_url(`/routes`)).then((res) => res.data);
