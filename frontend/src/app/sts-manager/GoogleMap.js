@@ -57,7 +57,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log(route);
     if (route && map) {
       // for each route.directions
       for (let i = 0; i < route.directions.length; i++) {
