@@ -19,10 +19,15 @@ const LandfillFacilities = lazy(() =>
 );
 const Vehicles = lazy(() => import("./system-admin/Vehicles"));
 
-const VehicleEntry = lazy(() => import("./sts-manager/VehicleEntry"));
-const VehicleExit = lazy(() => import("./sts-manager/VehicleExit"));
+const STSVehicleEntry = lazy(() => import("./sts-manager/VehicleEntry"));
+const STSVehicleExit = lazy(() => import("./sts-manager/VehicleExit"));
 const DumpEntry = lazy(() => import("./sts-manager/DumpEntry"));
 const STSRecords = lazy(() => import("./sts-manager/Records"));
+
+const LandfillVehicleEntry = lazy(() => import("./landfill-manager/VehicleEntry"));
+const LandfillVehicleExit = lazy(() => import("./landfill-manager/VehicleExit"));
+// const LandfillBills = lazy(() => import("./landfill-manager/Bills"));
+const LandfillRecords = lazy(() => import("./landfill-manager/Records"));
 
 // const Activate = lazy(() => import("./user-pages/Activate"));
 // const ActivateDoctor = lazy(() => import("./user-pages/RegisterDoctor"));
@@ -65,8 +70,8 @@ export default function AppRoutes() {
             {user?.role === USER_ROLES.STS_MANAGER && (
               <Switch>
                 <Route path="/sts/dashboard" component={SystemAdminHome} />
-                <Route path="/sts/vehicle/entry" component={VehicleEntry} />
-                <Route path="/sts/vehicle/exit" component={VehicleExit} />
+                <Route path="/sts/vehicle/entry" component={STSVehicleEntry} />
+                <Route path="/sts/vehicle/exit" component={STSVehicleExit} />
                 <Route path="/sts/dump" component={DumpEntry} />
                 <Route path="/sts/records" component={STSRecords} />
                 <Redirect to="/sts/dashboard" />
@@ -76,6 +81,10 @@ export default function AppRoutes() {
             {user?.role === USER_ROLES.LANDFILL_MANAGER && (
               <Switch>
                 <Route path="/landfill/dashboard" component={SystemAdminHome} />
+                <Route path="/landfill/vehicle/entry" component={LandfillVehicleEntry} />
+                <Route path="/landfill/vehicle/exit" component={LandfillVehicleExit} />
+                {/* <Route path="/landfill/bills" component={LandfillBills} /> */}
+                <Route path="/landfill/records" component={LandfillRecords} />
                 <Redirect to="/landfill/dashboard" />
               </Switch>
             )}

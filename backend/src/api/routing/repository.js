@@ -20,6 +20,7 @@ CREATE TABLE public."Vehicle_Route"
 */
 
 const createRoute = async (landfill_id, sts_id, direction, distance, duration) => {
+    direction = JSON.stringify(direction).replace(/{/g, '[').replace(/}/g, ']');
     const query = `INSERT INTO public."Vehicle_Route" (landfill_id, sts_id, direction, distance, duration) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
     const values = [landfill_id, sts_id, direction, distance, duration];
     const { rows } = await pool.query(query, values);

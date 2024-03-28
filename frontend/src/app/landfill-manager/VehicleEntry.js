@@ -1,21 +1,35 @@
+import { Typeahead } from "react-bootstrap-typeahead";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { addSTSDumpEntry, getMySTS } from "../api/sts";
+import { addSTSEntry, getSTSVehicles } from "../api/sts";
+import { getVehicles } from "../api/landfill";
 
-export default function DumpEntry() {
-  const [mySTS, setMySTS] = useState(null);
-  const [volume, setVolume] = useState(0);
+export const formatDateFromTimestamp = (
+  timestamp,
+  style = { timeStyle: "short", dateStyle: "short" }
+) => {
+  if (!timestamp) return "Invalid DateTime";
+  return new Intl.DateTimeFormat("en-BD", {
+    ...style,
+    timeZone: "Asia/Dhaka",
+    hourCycle: "h12",
+  }).format(new Date(timestamp));
+};
+
+export default function VehicleEntry() {
+  const [vehicles, setVehicles] = useState([]);
+  const [vehicle, setVehicle] = useState(null);
   const [entryTime, setEntryTime] = useState(
     new Date().getTime() + 1000 * 60 * 60 * 6
   );
 
   useEffect(() => {
     toast.promise(
-      getMySTS().then((sts) => setMySTS(sts)),
+      getVehicles().then((vehicles) => setVehicles(vehicles)),
       {
-        loading: "Loading STS Details...",
-        success: "STS Details loaded!",
-        error: "Failed to load STS Details",
+        loading: "Loading vehicles...",
+        success: "Vehicles loaded!",
+        error: "Failed to load vehicles",
       }
     );
   }, []);
@@ -23,44 +37,61 @@ export default function DumpEntry() {
   return (
     <div>
       <div className="page-header">
-        <h3 className="page-title"> Dump Entry </h3>
+        <h3 className="page-title"> Vehicle Entry </h3>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
               <a href="!#" onClick={(event) => event.preventDefault()}>
-                STS
+                Vehicle
               </a>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              Dump Entry
+              Entry
             </li>
           </ol>
         </nav>
       </div>
 
-      {mySTS && (
+      <div className="d-flex justify-content-center mb-5">
+        <div className="col-md-6">
+          <div className="d-flex justify-content-center">
+            <Typeahead
+              onChange={(selected) => {
+                setVehicle(selected[0]);
+              }}
+              options={vehicles}
+              labelKey={(option) => `[${option.type}] ${option.registration}`}
+              filterBy={["text", "name"]}
+              placeholder="Choose vehicle..."
+              className="flex-grow-1"
+            />
+          </div>
+        </div>
+      </div>
+
+      {vehicle && (
         <div className="row">
           <div className={`col-md-6 grid-margin stretch-card`}>
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title">Ward #{mySTS.ward_no}</h4>
-                <p className="card-description">STS Details</p>
+                <h4 className="card-title">{vehicle.registration}</h4>
+                <p className="card-description">Vehicle Details</p>
                 <div className="row">
                   <div className="col-md-6">
-                    <p className="text-muted">Amount (Tons)</p>
-                    <p>{mySTS.amount}</p>
+                    <p className="text-muted">Type</p>
+                    <p>{vehicle.type}</p>
                   </div>
                   <div className="col-md-6">
                     <p className="text-muted">Capacity (Tons)</p>
-                    <p>{mySTS.capacity}</p>
+                    <p>{vehicle.capacity}</p>
                   </div>
                   <div className="col-md-6">
-                    <p className="text-muted">Latittude</p>
-                    <p>{mySTS.latitude}</p>
+                    <p className="text-muted">Loaded Cost/km</p>
+                    <p>{vehicle.fuel_cost_per_km_loaded}</p>
                   </div>
                   <div className="col-md-6">
-                    <p className="text-muted">Longitude</p>
-                    <p>{mySTS.longitude}</p>
+                    <p className="text-muted">Unloaded Cost/km</p>
+                    <p>{vehicle.fuel_cost_per_km_unloaded}</p>
                   </div>
                 </div>
               </div>
@@ -69,8 +100,8 @@ export default function DumpEntry() {
           <div className={`col-md-6 grid-margin stretch-card`}>
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title">Dump Entry</h4>
-                <p className="card-description">Add dump information</p>
+                <h4 className="card-title">Vehicle Entry</h4>
+                <p className="card-description">Add Vehicle entry details</p>
                 <div className="row">
                   <div className="col-md-12">
                     <p className="text-muted">Entry Time</p>
@@ -88,20 +119,7 @@ export default function DumpEntry() {
                       />
                     </p>
                   </div>
-                  <div className="col-md-12">
-                    <p className="text-muted">Volume (Tons)</p>
-                    <p>
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={volume}
-                        onChange={(e) =>
-                          setVolume(Number.parseFloat(e.target.value))
-                        }
-                      />
-                    </p>
-                  </div>
-                  <div className="col-md-6">
+                  <div className="col-md-3">
                     <p className="text-muted"> </p>
                     <p>
                       <button
@@ -109,37 +127,13 @@ export default function DumpEntry() {
                         onClick={(e) => {
                           e.preventDefault();
 
-                          if (volume <= 0) {
-                            toast.error("Volume must be greater than 0");
-                            return;
-                          } else if (
-                            entryTime >
-                            new Date().getTime() + 1000 * 60 * 60 * 6
-                          ) {
-                            toast.error(
-                              "Exit time must be less than current time"
-                            );
-                            return;
-                          } else if (volume > mySTS.capacity - mySTS.amount) {
-                            toast.error(
-                              "Volume must be less than capacity - amount"
-                            );
-                            return;
-                          }
-
                           toast.promise(
-                            addSTSDumpEntry(
-                              entryTime - 1000 * 60 * 60 * 6,
-                              volume
+                            addSTSEntry(
+                              vehicle.vehicle_id,
+                              entryTime - 1000 * 60 * 60 * 6
                             ).then(() => {
-                              setVolume(0);
-                              setEntryTime(
-                                new Date().getTime() + 1000 * 60 * 60 * 6
-                              );
-                              setMySTS({
-                                ...mySTS,
-                                amount: mySTS.amount + volume,
-                              });
+                              toast.success("Entry added successfully");
+                              setVehicle(null);
                             }),
                             {
                               loading: "Adding entry...",
@@ -149,7 +143,7 @@ export default function DumpEntry() {
                           );
                         }}
                       >
-                        Dump Entry
+                        Entry
                       </button>
                     </p>
                   </div>

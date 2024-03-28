@@ -234,15 +234,18 @@ export default function LandfillFacilities() {
                 className="btn btn-danger"
                 onClick={() => {
                   toast.promise(
-                    deleteLandfill(selectedDeleteLandfill.landfill_id).then((e) => {
-                      setLandfills(
-                        landfills.filter(
-                          (u) =>
-                            u.landfill_id !== selectedDeleteLandfill.landfill_id
-                        )
-                      );
-                      setSelectedDeleteLandfill(null);
-                    }),
+                    deleteLandfill(selectedDeleteLandfill.landfill_id).then(
+                      (e) => {
+                        setLandfills(
+                          landfills.filter(
+                            (u) =>
+                              u.landfill_id !==
+                              selectedDeleteLandfill.landfill_id
+                          )
+                        );
+                        setSelectedDeleteLandfill(null);
+                      }
+                    ),
                     {
                       loading: "Deleting Landfill",
                       success: "Deleted Landfill",
@@ -402,6 +405,7 @@ export default function LandfillFacilities() {
                 <label>Add New Landfill Manager</label>
                 <Typeahead
                   onChange={(selected) => {
+                    if (selected.length === 0) return;
                     toast.promise(
                       addManagerToLandfill(
                         selectedLandfillManagers.landfill_id,
@@ -409,10 +413,7 @@ export default function LandfillFacilities() {
                       ).then((e) => {
                         setSelectedLandfillManagers((m) => ({
                           ...m,
-                          managers: [
-                            ...m.managers,
-                            selected[0],
-                          ],
+                          managers: [...m.managers, selected[0]],
                         }));
                       }),
                       {

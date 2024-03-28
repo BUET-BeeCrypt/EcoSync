@@ -9,7 +9,7 @@ import { api_url, BASE_URL, FORBIDDEN, UNAUTHORIZED } from "./api";
 import { toast } from "react-hot-toast";
 import STSManagerSidebar from "./sts-manager/STSManagerSidebar";
 import AdminSidebar from "./system-admin/SystemAdminSidebar";
-import DoctorSidebar from "./doctor/DoctorSidebar";
+import LandfillManagerSidebar from "./landfill-manager/LandfillManagerSidebar";
 
 export const USER_ROLES = {
   SYSTEM_ADMIN: "SYSTEM_ADMIN",
@@ -111,8 +111,8 @@ function App() {
       <STSManagerSidebar />
     ) : user?.role === USER_ROLES.SYSTEM_ADMIN ? (
       <AdminSidebar />
-    ) : user?.role === "ROLE_DOCTOR" ? (
-      <DoctorSidebar />
+    ) : user?.role === USER_ROLES.LANDFILL_MANAGER ? (
+      <LandfillManagerSidebar />
     ) : null
   ) : (
     ""

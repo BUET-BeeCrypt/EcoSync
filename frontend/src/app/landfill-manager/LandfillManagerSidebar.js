@@ -4,20 +4,20 @@ import { Collapse } from "react-bootstrap";
 import { UserContext } from "../App";
 import { getProfile } from "../api/user";
 
-function UserSideBar(props) {
+function LandfillManagerSideBar(props) {
   const [state, setState] = useState({});
   const { user } = React.useContext(UserContext);
 
   const [imageURL, setImageURL] = useState("");
 
-  useEffect(() => {
-    console.log("user: ", user);
-    if (user?.role === "ROLE_USER") {
-      getProfile().then((res) => {
-        setImageURL(res.imageURL);
-      });
-    }
-  }, [user?.username]);
+  // useEffect(() => {
+  //   console.log("user: ", user);
+  //   if (user?.role === "ROLE_USER") {
+  //     getProfile().then((res) => {
+  //       setImageURL(res.imageURL);
+  //     });
+  //   }
+  // }, [user?.username]);
 
   const toggleMenuState = (menuState) => {
     if (state[menuState]) {
@@ -55,8 +55,8 @@ function UserSideBar(props) {
     });
 
     const dropdownPaths = [
-      { path: "/user/assistance", state: "assistanceMenuOpen" },
-      { path: "/user/documents", state: "documentsMenuOpen" },
+      { path: "/landfill/vehicle", state: "vehicleMenuOpen" },
+      { path: "/landfill/route", state: "routeMenuOpen" },
     ];
 
     dropdownPaths.forEach((obj) => {
@@ -81,9 +81,7 @@ function UserSideBar(props) {
           >
             <div className="nav-profile-image">
               <img
-                src={
-                  imageURL || require("../../assets/images/faces/face1.jpg")
-                }
+                src={imageURL || require("../../assets/images/faces/face1.jpg")}
                 alt="profile"
               />
               <span className="login-status online"></span>{" "}
@@ -93,61 +91,61 @@ function UserSideBar(props) {
               <span className="font-weight-bold mb-2">
                 {user?.username || "User"}
               </span>
-              <span className="text-secondary text-small">Site User</span>
+              <span className="text-secondary text-small">Landfill Manager</span>
             </div>
             <i className="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
           </a>
         </li>
         <li
           className={
-            isPathActive("/user/dashboard") ? "nav-item active" : "nav-item"
+            isPathActive("/landfill/dashboard") ? "nav-item active" : "nav-item"
           }
         >
-          <Link className="nav-link" to="/user/dashboard">
+          <Link className="nav-link" to="/landfill/dashboard">
             <span className="menu-title">Dashboard</span>
             <i className="mdi mdi-home menu-icon"></i>
           </Link>
         </li>
         <li
           className={
-            isPathActive("/user/assistance") ? "nav-item active" : "nav-item"
+            isPathActive("/landfill/vehicle") ? "nav-item active" : "nav-item"
           }
         >
           <div
             className={
-              state.assistanceMenuOpen ? "nav-link menu-expanded" : "nav-link"
+              state.vehicleMenuOpen ? "nav-link menu-expanded" : "nav-link"
             }
-            onClick={() => toggleMenuState("assistanceMenuOpen")}
+            onClick={() => toggleMenuState("vehicleMenuOpen")}
             data-toggle="collapse"
           >
-            <span className="menu-title">Assistance</span>
+            <span className="menu-title">Vehicle</span>
             <i className="menu-arrow"></i>
-            <i className="mdi mdi-assistant menu-icon"></i>
+            <i className="mdi mdi-dump-truck menu-icon"></i>
           </div>
-          <Collapse in={state.assistanceMenuOpen}>
+          <Collapse in={state.vehicleMenuOpen}>
             <ul className="nav flex-column sub-menu">
               <li className="nav-item">
                 {" "}
                 <Link
                   className={
-                    isPathActive("/user/assistance/symptom-checker")
+                    isPathActive("/landfill/vehicle/entry")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/user/assistance/symptom-checker"
+                  to="/landfill/vehicle/entry"
                 >
-                  Symptom Checker
+                  Entry
                 </Link>
               </li>
               {/* <li className="nav-item">
                 {" "}
                 <Link
                   className={
-                    isPathActive("/user/assistance/symptom-checker-pro")
+                    isPathActive("/landfill/assistance/symptom-checker-pro")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/user/assistance/symptom-checker-pro"
+                  to="/landfill/assistance/symptom-checker-pro"
                 >
                   Symptom Checker - Pro
                 </Link>
@@ -156,24 +154,24 @@ function UserSideBar(props) {
                 {" "}
                 <Link
                   className={
-                    isPathActive("/user/assistance/analysis")
+                    isPathActive("/landfill/vehicle/exit")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/user/assistance/anlysis"
+                  to="/landfill/vehicle/exit"
                 >
-                  Report Analysis
+                  Exit
                 </Link>
               </li>
               {/* <li className="nav-item">
                 {" "}
                 <Link
                   className={
-                    isPathActive("/user/assistance/skin-care")
+                    isPathActive("/landfill/assistance/skin-care")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/user/assistance/skin-care"
+                  to="/landfill/assistance/skin-care"
                 >
                   Skin Care
                 </Link>
@@ -183,100 +181,98 @@ function UserSideBar(props) {
         </li>
         <li
           className={
-            isPathActive("/user/collections") ? "nav-item active" : "nav-item"
+            isPathActive("/landfill/bills") ? "nav-item active" : "nav-item"
           }
         >
-          <Link className="nav-link" to="/user/collections">
-            <span className="menu-title">Collections</span>
-            <i className="mdi mdi-folder-file menu-icon"></i>
+          <Link className="nav-link" to="/landfill/bills">
+            <span className="menu-title">Bills</span>
+            <i className="mdi mdi-cash-register menu-icon"></i>
           </Link>
         </li>
-        <li
+        {/* <li
           className={
-            isPathActive("/user/documents") ? "nav-item active" : "nav-item"
+            isPathActive("/landfill/route") ? "nav-item active" : "nav-item"
           }
         >
           <div
             className={
-              state.documentsMenuOpen ? "nav-link menu-expanded" : "nav-link"
+              state.routeMenuOpen ? "nav-link menu-expanded" : "nav-link"
             }
-            onClick={() => toggleMenuState("documentsMenuOpen")}
+            onClick={() => toggleMenuState("routeMenuOpen")}
             data-toggle="collapse"
           >
-            <span className="menu-title">Documents</span>
+            <span className="menu-title">Routes</span>
             <i className="menu-arrow"></i>
-            <i className="mdi mdi-file-document menu-icon"></i>
+            <i className="mdi mdi-map-marker-distance menu-icon"></i>
           </div>
-          <Collapse in={state.documentsMenuOpen}>
+          <Collapse in={state.routeMenuOpen}>
             <ul className="nav flex-column sub-menu">
               <li className="nav-item">
                 {" "}
                 <Link
                   className={
-                    isPathActive("/user/documents/add")
+                    isPathActive("/landfill/route/find")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/user/documents/add"
+                  to="/landfill/route/find"
                 >
-                  Upload
+                  Find Route
                 </Link>
               </li>
               <li className="nav-item">
                 {" "}
                 <Link
                   className={
-                    isPathActive("/user/documents/view")
+                    isPathActive("/landfill/route/fleet")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/user/documents/view"
+                  to="/landfill/route/fleet"
                 >
-                  View
+                  Deploy Fleet
                 </Link>
               </li>
               <li className="nav-item">
                 {" "}
                 <Link
                   className={
-                    isPathActive("/user/documents/accept")
+                    isPathActive("/landfill/documents/accept")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/user/documents/accept"
+                  to="/landfill/documents/accept"
                 >
                   Accept
                 </Link>
               </li>
             </ul>
           </Collapse>
-        </li>
-        <li
+        </li> */}
+        {/* <li
           className={
-            isPathActive("/user/shared") ? "nav-item active" : "nav-item"
+            isPathActive("/landfill/shared") ? "nav-item active" : "nav-item"
           }
         >
-          <Link className="nav-link" to="/user/shared">
+          <Link className="nav-link" to="/landfill/shared">
             <span className="menu-title">Shared Documents</span>
             <i className="mdi mdi-share menu-icon"></i>
           </Link>
-        </li>
+        </li> */}
         <li
-          className={
-            isPathActive("/user/logs") ? "nav-item active" : "nav-item"
-          }
+          className={isPathActive("/landfill/records") ? "nav-item active" : "nav-item"}
         >
-          <Link className="nav-link" to="/user/logs">
-            <span className="menu-title">Logs</span>
-            <i className="mdi mdi-text-long menu-icon"></i>
+          <Link className="nav-link" to="/landfill/records">
+            <span className="menu-title">Records</span>
+            <i className="mdi mdi-book-open-variant-outline menu-icon"></i>
           </Link>
         </li>
         <li
           className={
-            isPathActive("/user/settings") ? "nav-item active" : "nav-item"
+            isPathActive("/landfill/settings") ? "nav-item active" : "nav-item"
           }
         >
-          <Link className="nav-link" to="/user/settings">
+          <Link className="nav-link" to="/landfill/settings">
             <span className="menu-title">Settings</span>
             <i className="mdi mdi-cog menu-icon"></i>
           </Link>
@@ -286,4 +282,4 @@ function UserSideBar(props) {
   );
 }
 
-export default withRouter(UserSideBar);
+export default withRouter(LandfillManagerSideBar);

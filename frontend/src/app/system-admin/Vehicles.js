@@ -159,7 +159,7 @@ export default function Vehicles() {
                               ? "No STS"
                               : `Ward #${STSs.find(
                                   (l) => l.sts_id === s.sts_id
-                                )?.ward_id}`}{" "}
+                                )?.ward_no}`}{" "}
                           </span>
                         </td>
                         <td>
@@ -382,7 +382,7 @@ export default function Vehicles() {
                   <option value={null}>No STS</option>
                   {STSs.map((l) => (
                     <option key={l.sts_id} value={l.sts_id}>
-                      Ward #{l.ward_id}
+                      Ward #{l.ward_no}
                     </option>
                   ))}
                 </select>

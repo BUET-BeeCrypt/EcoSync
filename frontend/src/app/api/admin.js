@@ -20,9 +20,29 @@ export const editUser = async (id, username, email, name, active, banned) =>
 export const deleteUser = async (id) =>
   axios.delete(api_url(`/users/${id}`)).then((res) => res.data);
 
-export const addSTS = async (ward_id, capacity, latitude, longitude) =>
+export const addSTS = async (
+  zone_no,
+  ward_no,
+  name,
+  location,
+  latitude,
+  longitude,
+  capacity,
+  dump_area,
+  coverage_area
+) =>
   axios
-    .post(api_url("/sts"), { ward_id, capacity, latitude, longitude })
+    .post(api_url("/sts"), {
+      zone_no,
+      ward_no,
+      name,
+      location,
+      latitude,
+      longitude,
+      capacity,
+      dump_area,
+      coverage_area,
+    })
     .then((res) => res.data);
 
 export const getSTSs = async () =>
@@ -33,13 +53,28 @@ export const getSTS = async (sts_id) =>
 
 export const updateSTS = async (
   sts_id,
-  ward_id,
-  capacity,
+  zone_no,
+  ward_no,
+  name,
+  location,
   latitude,
-  longitude
+  longitude,
+  capacity,
+  dump_area,
+  coverage_area
 ) =>
   axios
-    .put(api_url(`/sts/${sts_id}`), { ward_id, capacity, latitude, longitude })
+    .put(api_url(`/sts/${sts_id}`), {
+      zone_no,
+      ward_no,
+      name,
+      location,
+      latitude,
+      longitude,
+      capacity,
+      dump_area,
+      coverage_area,
+    })
     .then((res) => res.data);
 
 export const deleteSTS = async (sts_id) =>
