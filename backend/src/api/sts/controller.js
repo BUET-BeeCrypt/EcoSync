@@ -211,6 +211,89 @@ modules.removeManagerFromSTS = async (req, res) => {
   }
 };
 
+// vehicle assignment
+modules.assignVehicleToSTS = async (req, res) => {
+  const sts_id = req.params.sts_id;
+  const { vehicle_id } = req.body;
+
+  // check if number
+  if(isNaN(sts_id)) return res.status(400).json({message:"STS id must be a number"})
+  // check is vehicle id
+  if(!vehicle_id) return res.status(400).json({message:"Vehicle id is required"})
+  if(isNaN(vehicle_id)) return res.status(400).json({message:"Vehicle id must be a number"})
+
+  try{
+    const exists = await repository.existsSTS(sts_id);
+    if(!exists) return res.status(404).json({message:"STS not found"})
+
+    const isAssigned  = await repository.isAlreadyAssigned(sts_id, vehicle_id);
+    if(isAssigned) return res.status(409).json({message:"Vehicle is already assigned to sts"})
+    
+    await repository.assignVehicleToSTS(sts_id, vehicle_id);
+    res.status(200).json({ message: "Vehicle assigned to sts" });
+  }catch(err){
+    if(err.code === 404)
+      return res.status(404).json({message:err.message})
+    res.status(500).json({ message: err.message });
+  }
+}
+
+modules.removeVehicleFromSTS = async (req, res) => {
+  const { sts_id, vehicle_id } = req.params;
+  // check if number
+  if(isNaN(sts_id)) return res.status(400).json({message:"STS id must be a number"})
+
+  try{
+    const exists = await repository.existsSTS(sts_id);
+    if(!exists) return res.status(404).json({message:"STS not found"})
+
+    const isAssigned  = await repository.isAlreadyAssigned(sts_id, vehicle_id);
+    if(!isAssigned) return res.status(404).json({message:"Vehicle is not assigned to sts"})
+
+    await repository.removeVehicleFromSTS(sts_id, vehicle_id);
+    res.status(200).json({ message: "Vehicle removed from sts" });
+  }catch(err){
+    if(err.code === 404)
+      return res.status(404).json({message:err.message})
+    res.status(500).json({ message: err.message });
+  }
+};
+
+modules.getVehiclesOfManager = async (req, res) => {
+  const manager_id = req.user.user_id;
+  try{
+    const sts_id = await repository.getSTSIDfromManagerID(manager_id);
+    const vehicles = await repository.getVehiclesOfSTS(sts_id);
+    res.status(200).json(vehicles);
+  }catch(err){
+    if(err.code === 404)
+      return res.status(404).json({message:err.message})
+    res.status(500).json({ message: err.message });
+  }
+};
+
+modules.getVehiclesOfSTS = async (req, res) => {
+  const sts_id = req.params.sts_id;
+  // check if number
+  if(isNaN(sts_id)) return res.status(400).json({message:"STS id must be a number"})
+
+  try{
+    const exists = await repository.existsSTS(sts_id);
+    if(!exists) return res.status(404).json({message:"STS not found"})
+
+    const isManager = await repository.isManagerOfSTS(sts_id, req.user.user_id);
+    if(req.user.role !=="SYSTEM_ADMIN" && !isManager) return res.status(403).json({message:"You are not a manager of this sts"})
+
+    const vehicles = await repository.getVehiclesOfSTS(sts_id);
+    res.status(200).json(vehicles);
+  }catch(err){
+    if(err.code === 404)
+      return res.status(404).json({message:err.message})
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 modules.addEntryToSTS = async (req, res) => {
   const manager_id = req.user.user_id;
   const sts_id = await repository.getSTSIDfromManagerID(manager_id);
@@ -289,11 +372,5 @@ modules.addDumpEntryToSTS = async (req, res) => {
   res.status(200).json({ message: "Dump entry added to sts" });
 };
 
-modules.getVehiclesOfSTS = async (req, res) => {
-  const manager_id = req.user.user_id;
-  const sts_id = await repository.getSTSIDfromManagerID(manager_id);
-  const vehicles = await repository.getVehiclesOfSTS(sts_id);
-  res.status(200).json(vehicles);
-};
 
 module.exports = modules;
