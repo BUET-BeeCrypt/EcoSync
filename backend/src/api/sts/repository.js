@@ -139,7 +139,7 @@ const addDepartureToSTS = async (
   volume
 ) => {
   const query = `UPDATE public."STS_Entry" SET departure_time = $1, volume = $2, manager_id = $3 WHERE sts_entry_id = $4 AND sts_id = $5 AND departure_time IS NULL`;
-  const values = [new Date(departure_time), volume, manager_id, sts_entry_id, sts_id];
+  const values = [new Date(departure_time), -volume, manager_id, sts_entry_id, sts_id];
   await pool.query(query, values);
 };
 

@@ -12,8 +12,10 @@ export const addSTSEntry = async (vehicle_id, entry_time) =>
 export const getSTSEntries = async () =>
   axios.get(api_url(`/sts/entries`)).then((res) => res.data);
 
-export const addSTSDeparture = async (sts_entry_id) =>
-  axios.put(api_url(`/sts/departures/${sts_entry_id}`)).then((res) => res.data);
+export const addSTSDeparture = async (sts_entry_id, departure_time, volume) =>
+  axios
+    .put(api_url(`/sts/departures/${sts_entry_id}`), { departure_time, volume })
+    .then((res) => res.data);
 
 export const addSTSDumpEntry = async (entry_time, volume) =>
   axios
