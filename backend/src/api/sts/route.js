@@ -16,6 +16,14 @@ router.get("/:sts_id/managers", checkPermission("VIEW_STS_MANAGER"),controller.g
 // remove manager from STS
 router.delete("/:sts_id/managers/:user_id", checkPermission("UNASSIGN_STS_MANAGER"),controller.removeManagerFromSTS);
 
+// assign vehicle to STS
+router.post("/:sts_id/vehicles", checkPermission("ASSIGN_VEHCILE"),controller.assignVehicleToSTS);
+// get vehicles of STS
+router.get("/:sts_id/vehicles", checkPermission("VIEW_VEHICLE"),controller.getVehiclesOfSTS);
+router.get("/vehicles", checkPermission("VIEW_VEHICLE"),controller.getVehiclesOfManager);
+// remove vehicle from STS
+router.delete("/:sts_id/vehicles/:vehicle_id", checkPermission("UNASSIGN_VEHICLE"),controller.removeVehicleFromSTS);
+
 
 router.get("/entries", controller.getOnlyEntriesOfSTS);
 router.post("/entries", controller.addEntryToSTS);
@@ -23,7 +31,7 @@ router.put("/departures/:sts_entry_id", controller.addDepartureToSTS);
 router.post("/dump", controller.addDumpEntryToSTS);
 router.get("/records", controller.getEntriesOfSTS);
 
-router.get("/vehicles", controller.getVehiclesOfSTS);
+
 
 
 module.exports = router;

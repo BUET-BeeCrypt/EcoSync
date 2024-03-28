@@ -135,8 +135,34 @@ modules.removeManagerFromSTS = async (sts_id, user_id) => {
 };
 // =====================
 /// vechile assignment 
-// =====================   
+// =====================  
+modules.isAlreadyAssigned = async (sts_id, vehicle_id) => {
+  const query = `SELECT 1 FROM public."Vehicle" WHERE sts_id = $1 AND vehicle_id = $2`;
+  const result = await pool.query(query, [sts_id, vehicle_id]);
+  return result.rows.length > 0;
+};
 
+modules.assignVehicleToSTS = async (sts_id, vehicle_id) => {
+  const query = `UPDATE public."Vehicle" SET sts_id = $1 WHERE vehicle_id = $2`;
+  const values = [sts_id, vehicle_id];
+  const result = await pool.query(query, values);
+  if (result.rowCount === 0) {
+    throw {code: 404, message: "Vehicle not found"};
+  }
+  return;
+};
+
+modules.getVehiclesOfSTS = async (sts_id) => {
+  const query = `SELECT * FROM public."Vehicle" WHERE sts_id = $1 and disabled = false`;
+  const result = await pool.query(query, [sts_id]);
+  return result.rows;
+};
+
+modules.removeVehicleFromSTS = async (sts_id, vehicle_id) => {
+  const query = `UPDATE public."Vehicle" SET sts_id = NULL WHERE vehicle_id = $1 AND sts_id = $2`;
+  const values = [vehicle_id, sts_id];
+  await pool.query(query, values);
+};
 
 // =====================
 // STS Entry and Departure
@@ -175,12 +201,6 @@ modules.addDumpEntryToSTS = async (sts_id, manager_id, entry_time, volume) => {
   const query = `INSERT INTO public."STS_Entry" (sts_id, manager_id, entry_time, volume) VALUES ($1, $2, $3, $4)`;
   const values = [sts_id, manager_id, new Date(entry_time), volume];
   await pool.query(query, values);
-};
-
-modules.getVehiclesOfSTS = async (sts_id) => {
-  const query = `SELECT * FROM public."Vehicle" WHERE sts_id = $1 and disabled = false`;
-  const result = await pool.query(query, [sts_id]);
-  return result.rows;
 };
 
 modules.getSTSIDfromManagerID = async (manager_id) => {
