@@ -116,7 +116,7 @@ modules.refreshToken = async (req, res) => {
     if( !savedToken)
         return res.status(401).json({ message: "Invalid token." });
 
-    const accessToken = signAccessToken(user.user_id, user.username, user.role);
+    const accessToken = signAccessToken(user.user_id, user.username, user.role_name);
     res.status(200).json({ accessToken });
 }
 
