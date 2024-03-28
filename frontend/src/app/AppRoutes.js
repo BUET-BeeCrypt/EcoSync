@@ -23,6 +23,7 @@ const STSVehicleEntry = lazy(() => import("./sts-manager/VehicleEntry"));
 const STSVehicleExit = lazy(() => import("./sts-manager/VehicleExit"));
 const DumpEntry = lazy(() => import("./sts-manager/DumpEntry"));
 const STSRecords = lazy(() => import("./sts-manager/Records"));
+const STSRoutes = lazy(() => import("./sts-manager/GoogleMap"));
 const FleetGeneration = lazy(() => import("./sts-manager/FleetGenerate"));
 
 const LandfillVehicleEntry = lazy(() => import("./landfill-manager/VehicleEntry"));
@@ -76,6 +77,7 @@ export default function AppRoutes() {
                 <Route path="/sts/route/fleet" component={FleetGeneration} />
                 <Route path="/sts/dump" component={DumpEntry} />
                 <Route path="/sts/records" component={STSRecords} />
+                <Route path="/sts/route/find" component={STSRoutes} />
                 <Redirect to="/sts/dashboard" />
               </Switch>
             )}
