@@ -71,6 +71,12 @@ const getSTS = async (sts_id) => {
     return result.rows[0];
 }
 
+const getVehiclesBySTS = async (sts_id) => {
+    const query = `SELECT * FROM public."Vehicle" WHERE sts_id = $1 ORDER BY fuel_cost_per_km_loaded ASC, fuel_cost_per_km_unloaded ASC, capacity DESC`;
+    const result = await pool.query(query,[sts_id]);
+    return result.rows;
+}
+
 module.exports = {
     createRoute,
     getRoutes,
@@ -79,5 +85,6 @@ module.exports = {
     getLandfills,
     getLandfill,
     getSTSs,
-    getSTS
+    getSTS,
+    getVehiclesBySTS
 };

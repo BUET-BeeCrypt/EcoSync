@@ -1,4 +1,7 @@
 const repository = require("./repository");
+const stsRepository = require("../sts/repository");
+const landfillRepository = require("../landfill/repository");
+const { PriorityQueue } = require('@datastructures-js/priority-queue');
 const modules = {};
 
 const Valhalla = require("@routingjs/valhalla").Valhalla;
@@ -88,7 +91,8 @@ modules.createRouteFromLandfillToSTS = async (landfill_id, sts_id) => {
 modules.assignSTSsToLandfills = async (req, res) => {
     const sts_id = req.params.sts_id;
     let routes = await repository.getRoutesBySTS(sts_id);
-    const STSs = await repository.getSTSs();
+    const sts = await stsRepository.getSTS(sts_id);
+    if( sts === null ) return res.status(400).json({message: "STS not found"});
     const landfills = await repository.getLandfills();
     let distances = {};
     for( const route of routes ){
@@ -113,16 +117,40 @@ modules.assignSTSsToLandfills = async (req, res) => {
     }
     
     let minDistance = Number.MAX_VALUE;
-    let minLandfill = null;
+    let minLandfillDirection = null;
     for( const route of routes ){
         if( route.distance < minDistance ){
             minDistance = route.distance;
-            minLandfill = route;
+            minLandfillDirection = route;
+        }
+    }
+    // console.log(JSON.stringify(minLandfillDirection));
+    if( minLandfillDirection === null ) return res.status(400).json({message: "No landfills available"});
+
+    const vehicles = await repository.getVehiclesBySTS(sts_id);
+    let chosenVehicles = [];
+    let garbage = sts.amount;
+    console.log(`Garbage: ${garbage}`);
+    for( const vehicle of vehicles ){
+        if( garbage <= 0 ) break;
+        if( vehicle.capacity >= garbage ){
+            chosenVehicles.push(vehicle);
+            break;
+        }else{
+            garbage -= vehicle.capacity;
+            chosenVehicles.push(vehicle);
         }
     }
 
-    console.log(JSON.stringify(minLandfill));
-    return res.status(200).json({message: "STSs assigned to landfills"});
+    let minLandfill = null;
+    for( const landfill of landfills ){
+        if( landfill.landfill_id === minLandfillDirection.landfill_id ){
+            minLandfill = landfill;
+            break;
+        }
+    }
+
+    return res.status(200).json({landfill:minLandfill,direction: minLandfillDirection, vehicles: chosenVehicles});
 }
 
 module.exports = modules;
