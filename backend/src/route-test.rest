@@ -1,6 +1,7 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTU3Nzg2OSwiZXhwIjoxNzExNTgxNDY5fQ.jbb0LysfVvPKqU8vsASk5T70H27jm2Uvm8ah3CsLaTA
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxMTYyMzgzMiwiZXhwIjoxNzExNjI3NDMyfQ.ROcOfLDX7NLCftgwBgnGNb-tUDKflMXi0PxnLTVXdAw
+
 @refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzExNDg1ODcxLCJleHAiOjE3MTIwOTA2NzF9.yquv251X2ze43Th7BSK0lRZ52BZw5T0gf2W-1M0CY5I
 
 ### health
@@ -11,7 +12,7 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "landfill_manager",
+  "username": "admin",
   "password": "12345678"
 }
 
@@ -145,17 +146,6 @@ Content-Type: application/json
   "banned": false
 }
 
-### Create STS
-POST {{url}}/api/sts HTTP/1.1
-Authorization: {{access}}
-Content-Type: application/json
-
-{
-  "ward_id": 0,
-  "capacity": 0,
-  "latitude": 0,
-  "longitude": 0
-}
 
 ### Get all Vehicle
 GET {{url}}/api/vehicles HTTP/1.1
@@ -175,3 +165,48 @@ Content-Type: application/json
   "fuel_cost_per_km_unloaded": 0,
   "landfill_id": null
 }
+
+### Create STS
+POST {{url}}/api/sts HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "zone_no": 10,
+  "ward_no": 37,
+  "name": "Eastern Housing LTD STS",
+  "location": "Eastern Housing LTD. Aftabnagar, Rampura",
+  "latitude": 23.7693,
+  "longitude": 90.4382,
+  "capacity": 50,
+  "dump_area": 130,
+  "coverage_area": 10000
+}
+
+### get all STS with pagination
+GET {{url}}/api/sts?page=5&limit=10 HTTP/1.1
+Authorization: {{access}}
+
+### get STS by id
+GET {{url}}/api/sts/47 HTTP/1.1
+Authorization: {{access}}
+
+
+### udpate STS
+PUT {{url}}/api/sts/47 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "zone_no": "10",
+  "ward_no": 37,
+  "name": "Eastern Housing LTD STS",
+  "location": "Eastern Housing LTD. Aftabnagar, Rampura",
+  "capacity": 70,
+  "dump_area": 130,
+  "coverage_area": 12000
+}
+
+### delete STS
+DELETE {{url}}/api/sts/47 HTTP/1.1
+Authorization: {{access}}

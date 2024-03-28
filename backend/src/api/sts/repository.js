@@ -54,19 +54,26 @@ CREATE TABLE public."STS_Entry"
 */
 
 const createSTS = async (sts) => {
-  const { ward_id, capacity, latitude, longitude } = sts;
-  const query = `INSERT INTO public."STS" (ward_id, capacity, latitude, longitude) VALUES ($1, $2, $3, $4) RETURNING *`;
-  const values = [ward_id, capacity, latitude, longitude];
-  const { rows } = await pool.query(query, values);
-  return rows[0];
+  const { zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area } = sts;
+  const query = `INSERT INTO public."STS" (zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`;
+  const values = [zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area];
+  const result = await pool.query(query, values);
+  return result.rows[0];
 };
 
-const getSTSs = async () => {
+const existsSTS = async (sts_id) => {
+  const query = `SELECT 1 FROM public."STS" WHERE sts_id = $1`;
+  const result = await pool.query(query, [sts_id]);
+  return result.rows.length > 0;
+};
+
+const getSTSs = async (limit, offset) => {
   const query = `SELECT *,
 	(SELECT COUNT(*) FROM public."STS_Manager" sm WHERE sm.sts_id = s.sts_id) as manager_count,
 	(SELECT COALESCE(SUM(volume),0) FROM public."STS_Entry" se WHERE se.sts_id = s.sts_id) as amount
-	FROM public."STS" s`;
-  const result = await pool.query(query, []);
+	FROM public."STS" s
+  LIMIT $1 OFFSET $2`;
+  const result = await pool.query(query, [limit, offset]);
   return result.rows;
 };
 
@@ -77,16 +84,20 @@ const getSTS = async (sts_id) => {
 	(SELECT COALESCE(SUM(volume),0) FROM public."STS_Entry" WHERE sts_id = $1) as amount
 	FROM public."STS" WHERE sts_id = $1`;
   const result = await pool.query(query, [sts_id]);
-  if (result.rows.length === 0) return null;
+  if (result.rows.length === 0) {
+    throw {code: 404, message: "STS not found"};
+  }
   return result.rows[0];
 };
 
 const updateSTS = async (sts_id, sts) => {
-  const { ward_id, capacity, latitude, longitude } = sts;
-  const query = `UPDATE public."STS" SET ward_id = $1, capacity = $2, latitude = $3, longitude = $4 WHERE sts_id = $5 RETURNING *`;
-  const values = [ward_id, capacity, latitude, longitude, sts_id];
+  const { zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area } = sts;
+  const query = `UPDATE public."STS" SET zone_no = $1, ward_no = $2, name = $3, location = $4, latitude = $5, longitude = $6, capacity = $7, dump_area = $8, coverage_area = $9 WHERE sts_id = $10 RETURNING *`;
+  const values = [zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area, sts_id];
   const result = await pool.query(query, values);
-  if (result.rows.length === 0) return null;
+  if (result.rows.length === 0) {
+    throw {code: 404, message: "STS not found"};
+  }
   return result.rows[0];
 };
 
@@ -164,6 +175,7 @@ const getSTSIDfromManagerID = async (manager_id) => {
 
 module.exports = {
   createSTS,
+  existsSTS,
   getSTSs,
   getSTS,
   updateSTS,
