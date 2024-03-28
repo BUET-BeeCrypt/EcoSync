@@ -345,6 +345,36 @@ CREATE TABLE public."Vehicle_Route"
         ON DELETE NO ACTION
 );
 
+CREATE TABLE public."Fleet"
+(
+    fleet_id serial NOT NULL,
+    route_id integer NOT NULL,
+    time_stamp timestamp NOT NULL,
+    PRIMARY KEY (fleet_id),
+    FOREIGN KEY (route_id)
+        REFERENCES public."Vehicle_Route" (route_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE public."Trip"
+(
+    trip_id serial NOT NULL,
+    fleet_id integer NOT NULL,
+    vehicle_id integer NOT NULL,
+    remaining_trip integer NOT NULL,
+    total_trip integer NOT NULL,
+    PRIMARY KEY (trip_id),
+    FOREIGN KEY (vehicle_id)
+        REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (fleet_id)
+        REFERENCES public."Fleet" (fleet_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
 
 INSERT INTO public."Permission" ("name",details) VALUES
         ('LOGIN','Login permission'),

@@ -88,8 +88,11 @@ modules.createRouteFromLandfillToSTS = async (landfill_id, sts_id) => {
     }
 }
 
-modules.assignSTSsToLandfills = async (req, res) => {
-    const sts_id = req.params.sts_id;
+modules.suggestFleet = async (req, res) => {
+    const manager_id = req.user.user_id;
+    const sts_id = await stsRepository.getSTSIDfromManagerID(manager_id);
+    // const sts_id = req.params.sts_id;
+    if( sts_id === null ) return res.status(400).json({message: "Manager not assigned to any STS"});
     let routes = await repository.getRoutesBySTS(sts_id);
     const sts = await stsRepository.getSTS(sts_id);
     if( sts === null ) return res.status(400).json({message: "STS not found"});
@@ -138,13 +141,17 @@ modules.assignSTSsToLandfills = async (req, res) => {
     console.log(`Garbage: ${garbage}`);
     for( const vehicle of vehicles ){
         if( garbage <= 0 ) break;
-        if( vehicle.capacity >= garbage ){
-            chosenVehicles.push(vehicle);
-            break;
-        }else{
-            garbage -= vehicle.capacity;
-            chosenVehicles.push(vehicle);
+
+        for(let i=1;i<=3;i++){
+            vehicle.total_trip = i;
+            if( vehicle.capacity >= garbage ){
+                garbage = 0;
+                break;
+            }else{
+                garbage -= vehicle.capacity;
+            }
         }
+        chosenVehicles.push(vehicle);
     }
 
     let minLandfill = null;
@@ -156,6 +163,19 @@ modules.assignSTSsToLandfills = async (req, res) => {
     }
 
     return res.status(200).json({landfill:minLandfill,direction: minLandfillDirection, vehicles: chosenVehicles});
+}
+
+modules.confirmFleet = async (req, res) => {
+    const route_id = req.body.route_id;
+    const vehicles = req.body.vehicles;
+
+    // create fleet
+    const fleet = await repository.createFleet(route_id);
+    // assign trips to fleet
+    for( const vehicle of vehicles ){
+        await repository.createTrip(fleet.fleet_id, vehicle.vehicle_id, vehicle.total_trip);
+    }
+    return res.status(200).json({message: "Fleet created"});
 }
 
 modules.recalculateRoutes = async ( ) => {
