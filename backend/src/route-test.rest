@@ -246,3 +246,25 @@ Authorization: {{access}}
 ### get all vehicles of sts
 GET {{url}}/api/sts/47/vehicles HTTP/1.1
 Authorization: {{access}}
+
+### get all landfills
+GET {{url}}/api/landfill HTTP/1.1
+Authorization: {{access}}
+
+
+### assign manager to landfill
+POST {{url}}/api/landfill/1/managers HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "user_id": 5
+}
+
+### unassign manager from landfill
+DELETE {{url}}/api/landfill/1/managers/5 HTTP/1.1
+Authorization: {{access}}
+
+### get all managers of landfill
+GET {{url}}/api/landfill/1/managers HTTP/1.1
+Authorization: {{access}}
