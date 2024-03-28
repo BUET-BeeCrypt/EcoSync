@@ -394,7 +394,8 @@ INSERT INTO public."Permission_Role" (role_name, permission_name)VALUES
     ('STS_MANAGER', 'VIEW_VEHICLE'),
     ('STS_MANAGER', 'VIEW_STS'),
     ('STS_MANAGER', 'VIEW_STS_ENTRY'),
-    ('STS_MANAGER', 'CREATE_STS_ENTRY');
+    ('STS_MANAGER', 'CREATE_STS_ENTRY'),
+    ('STS_MANAGER', 'UPDATE_STS_ENTRY');
 
 
 

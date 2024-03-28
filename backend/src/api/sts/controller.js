@@ -324,7 +324,7 @@ modules.getEntriesOfSTS = async (req, res) => {
   res.status(200).json(entries);
 };
 
-modules.getOnlyEntriesOfSTS = async (req, res) => {
+modules.getArrivalEntriesOfSTS = async (req, res) => {
   const sts_id = await repository.getSTSIDfromManagerID(req.user.user_id);
 
   if (sts_id === null) {
@@ -333,7 +333,7 @@ modules.getOnlyEntriesOfSTS = async (req, res) => {
       .json({ message: "Manager is not assigned to any sts" });
   }
 
-  const entries = await repository.getOnlyEntriesOfSTS(sts_id);
+  const entries = await repository.getArrivalEntriesOfSTS(sts_id);
   res.status(200).json(entries);
 };
 
