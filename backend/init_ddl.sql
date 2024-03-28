@@ -133,13 +133,66 @@ Landfill_entry
 CREATE TABLE public."STS"
 (
     sts_id serial NOT NULL,
-    ward_id integer NOT NULL UNIQUE,
-    capacity double precision NOT NULL,
+    zone_no INTEGER NOT NULL,
+    ward_no integer NOT NULL,
+    name character varying(256) NOT NULL UNIQUE,
+    location character varying(256) NOT NULL,
     latitude double precision NOT NULL,
     longitude double precision NOT NULL,
+    capacity double precision NOT NULL, -- Total Volume Of Garbage Day
+    dump_area double precision NOT NULL, -- Total Area Of Dumping Area
+    coverage_area double precision NOT NULL, -- Total Area Of Coverage Area
     PRIMARY KEY (sts_id)
 );
 
+
+INSERT INTO public."STS" (zone_no,ward_no,"name","location",latitude,longitude,capacity,dump_area,coverage_area) VALUES
+        (1,1,'Ranavola Section-10 STS','Ranavola, Section-10, Uttara',23.8841,90.3908,80,130,3300),
+        (1,1,'BDR Bazar STS','BDR bazar, Uttara',23.8706,90.4007,58,130,7350),
+        (1,17,'Nikunja-2 STS','West side of Road No-18, Nikonja',23.8346,90.4144,12,130,2700),
+        (1,17,'Kuril Bishawroad STS','Kuril Bishawroad, Vatara',23.8211,90.4194,14,130,1650),
+        (2,2,'Mirpur Ceramic Road STS','Mirpur Ceramic Road',23.8291,90.3656,30,130,10000),
+        (2,15,'Manikdi Graveyard STS','Manikdi Graveyard, Mirpur',23.8244,90.394,25,130,5000),
+        (2,5,'Kalshi Road STS','East side of Kalshi Road, Mirpur',23.8215,90.3776,20,130,3000),
+        (2,6,'Arambagh Culvert STS','Arambagh Culvert, Mirpur',23.8169,90.3572,35,130,3000),
+        (2,3,'Mirpur DSCC Market STS','Mirpur DSCC Market , Mirpur',23.8136,90.3701,20,130,1800),
+        (2,3,'Jalladkhana STS','Jalladkhana, Mirpur',23.8109,90.3759,20,130,5000),
+        (2,15,'Vasantek Market STS','Vasantech Bazar, Mirpur',23.8108,90.3922,30,130,8000),
+        (2,8,'Rainkhola STS','Rainkhola. Mirpur',23.8064,90.3514,30,130,10000),
+        (2,7,'Shyalbari Mor STS','Shyalbari Morh, Mirpur',23.8084,90.3581,20,130,10000),
+        (2,7,'Proshika Office STS','Near to Proshika Office, Mirpur 2',23.8091,90.3599,15,130,1500),
+        (2,4,'Baishteki Culvert STS','Baishteki Culvert, Mirpur 13',23.8086,90.3845,30,130,2400),
+        (3,35,'Eskaton Road STS','Eskaton Road, Mogbazar',23.748,90.4017,38,130,13800),
+        (3,35,'Mogbazar BTCL STS','Adjacent To Mogbazar BTCL Office, Maghbazar',23.752,90.4094,40,130,17500),
+        (3,35,'Nayatola Park STS','Nayatola, Maghbazar',23.7541,90.4081,12,130,5000),
+        (3,23,'Khilgaon Graveyard STS','Khilgaon Graveyard',23.7528,90.4255,44,130,7000),
+        (3,22,'Bansree STS','Bansree, Rampura',23.7678,90.4234,37,130,31500),
+        (3,21,'Gudara Ghat Badda STS','Gudara Ghat, Badda',23.7963,90.4282,300,130,14700),
+        (3,19,'Gulshan Shooting Club STS','Opposite Police Plasa, Gulsha',23.7729,90.4151,50,130,5500),
+        (3,24,'Orion Morh STS','Tejgaon Orion Morh, Tejgaon',23.767,90.4051,112,130,11000),
+        (3,18,'Natun Bazar STS','Natun Bazar, Baridhara',23.7993,90.423,200,150,60000),
+        (3,19,'Banani BTCL Office STS','BTCL Office, Banani',23.7868,90.4083,10,130,2000),
+        (3,20,'Karail T&T Playground STS','Karail T&T Playground',23.7846,90.4044,60,130,7500),
+        (4,10,'Mazar Road STS','Mazar Road, Diabari, Mirpur',23.7983,90.3449,30,130,12800),
+        (4,9,'Mirpur 10 No. Community Center STS','Budhijibi Shahid Minar rd, Mirpur',23.7923,90.3463,23,100,2000),
+        (4,12,'Tolarbag STS','Tolarbag, Mirpur',23.789,90.3536,40,130,24000),
+        (4,16,'Kachukhet, WASA Pump STS','WASA Pump, Kochukhet, Cantonment',23.7888,90.3881,80,130,72000),
+        (4,14,'Agargaon Taltola STS','Agargaon Taltola Bus stand, Mirpur',23.7836,90.3788,40,130,15000),
+        (4,10,'Mohona Pamp STS','Mohona Pamp, Technical, Mirpur',23.782,90.3496,40,0,2100),
+        (5,33,'Basila Bridge STS','Near Basila Bridge, Mohammadpur',23.7456,90.3484,25,0,2500),
+        (5,34,'Rayerbazar Beribund STS','Rayerbazar, Mohammadpur',23.7444,90.3598,27,130,15360),
+        (5,26,'Kawran Bazar STS','Kawran Bazar',23.7518,90.3948,15,130,10000),
+        (5,26,'Tejkunipara Playground STS','Tejkunipara Playground',23.7622,90.3935,10,130,6000),
+        (5,27,'Khejur Bagan STS','Khejur Bagan, Shere Bangla Nagar',23.7581,90.3836,33,130,13320),
+        (5,31,'Town Hall STS','Town Hall, Mohammadpur',23.7733,90.3856,27,130,13300),
+        (5,31,'Mohammadpur Fertility STS','Mohammadpur Fertility',23.7627,90.3659,18,130,3375),
+        (5,33,'Jaker Dairy Farm STS','Jaker Dairy Farm, Beribund, Mohammadpur',23.7602,90.3515,43,130,22500),
+        (5,30,'Dhaka Uddan STS','Dhaka Uddan, Mohammadpur',23.764,90.3479,18,130,5460),
+        (5,30,'Kallyanpur Bus Stand STS','Kallyanpur Bus Stand',23.7774,90.3618,20,130,9460),
+        (5,27,'Pongu Hospital STS','Pongu Haspatal, Agargaon',23.7744,90.371,36,130,10500),
+        (5,29,'Badsha Faysal School STS','Badshah Faisal School, Ring Road, Adabor',23.7719,90.3604,20,130,5040),
+        (5,27,'PGR Ganabhaban STS','PGR Ganabhaban, Sher E Bangla Nagar',23.767,90.3732,5,100,400),
+        (6,51,'Uttara Section-12 Graveyard STS','Section-12 Graveyard, Uttara',23.8707,90.3784,10,130,2500);
 
 CREATE TABLE public."STS_Manager"
 (
