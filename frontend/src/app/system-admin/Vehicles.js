@@ -430,7 +430,9 @@ export default function Vehicles() {
                         ).then((e) => {
                           setVehicles(
                             vehicles.map((v) =>
-                              v.vehicle_id === e.vehicle_id ? e : v
+                              v.vehicle_id === selectedEditVehicle.vehicle_id
+                                ? selectedEditVehicle
+                                : v
                             )
                           );
                           setSelectedEditVehicle(null);
