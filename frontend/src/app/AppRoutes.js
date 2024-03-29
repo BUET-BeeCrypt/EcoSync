@@ -22,6 +22,7 @@ const PermissionManagement = lazy(() =>
   import("./system-admin/PermissionManagement")
 );
 
+const STSManagerHome = lazy(() => import("./sts-manager/Dashboard"));
 const STSVehicleEntry = lazy(() => import("./sts-manager/VehicleEntry"));
 const STSVehicleExit = lazy(() => import("./sts-manager/VehicleExit"));
 const DumpEntry = lazy(() => import("./sts-manager/DumpEntry"));
@@ -29,6 +30,7 @@ const STSRecords = lazy(() => import("./sts-manager/Records"));
 const STSRoutes = lazy(() => import("./sts-manager/GoogleMap"));
 const FleetGeneration = lazy(() => import("./sts-manager/FleetGenerate"));
 
+const LandfillManagerHome = lazy(() => import("./landfill-manager/Dashboard"));
 const LandfillVehicleEntry = lazy(() =>
   import("./landfill-manager/VehicleEntry")
 );
@@ -54,7 +56,7 @@ export default function AppRoutes() {
 
             {user?.role === USER_ROLES.STS_MANAGER && (
               <Switch>
-                <Route path="/sts/dashboard" component={SystemAdminHome} />
+                <Route path="/sts/dashboard" component={STSManagerHome} />
                 <Route path="/sts/vehicle/entry" component={STSVehicleEntry} />
                 <Route path="/sts/vehicle/exit" component={STSVehicleExit} />
                 <Route path="/sts/route/fleet" component={FleetGeneration} />
@@ -67,7 +69,10 @@ export default function AppRoutes() {
 
             {user?.role === USER_ROLES.LANDFILL_MANAGER && (
               <Switch>
-                <Route path="/landfill/dashboard" component={SystemAdminHome} />
+                <Route
+                  path="/landfill/dashboard"
+                  component={LandfillManagerHome}
+                />
                 <Route
                   path="/landfill/vehicle/entry"
                   component={LandfillVehicleEntry}
