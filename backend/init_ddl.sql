@@ -251,12 +251,12 @@ CREATE TABLE public."Vehicle_Route"
     PRIMARY KEY (route_id),
     FOREIGN KEY (landfill_id)
         REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (sts_id)
         REFERENCES public."STS" (sts_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 CREATE TABLE public."Vehicle"

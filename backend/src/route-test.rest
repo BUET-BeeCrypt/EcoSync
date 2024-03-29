@@ -16,8 +16,8 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "admin",
-  "password": "123456789"
+  "username": "sts_manager1",
+  "password": "12345678"
 }
 
 ### Refresh
@@ -223,6 +223,10 @@ DELETE {{url}}/api/rbac/roles/STS_MANAGER/permissions/VIEW_BILLS HTTP/1.1
 Authorization: {{access}}
 
 
+############################
+#### Vehicle Management ####
+############################
+
 ### Get all Vehicle
 GET {{url}}/api/vehicles HTTP/1.1
 Authorization: {{access}}
@@ -261,6 +265,14 @@ Content-Type: application/json
 GET {{url}}/api/vehicles/1 HTTP/1.1
 Authorization: {{access}}
 
+### Delete a Vehicle by id
+DELETE {{url}}/api/vehicles/5 HTTP/1.1
+Authorization: {{access}}
+
+###########################
+### STS Management ####
+###########################
+
 ### Create STS
 POST {{url}}/api/sts HTTP/1.1
 Authorization: {{access}}
@@ -279,7 +291,7 @@ Content-Type: application/json
 }
 
 ### get all STS with pagination
-GET {{url}}/api/sts?page=5&limit=10 HTTP/1.1
+GET {{url}}/api/sts?page=1&limit=3 HTTP/1.1
 Authorization: {{access}}
 
 ### get STS by id
@@ -312,18 +324,19 @@ Authorization: {{access}}
 Content-Type: application/json
 
 {
-  "user_id": 2
+  "user_id": 3
 }
-
-### unassign manager from sts
-DELETE {{url}}/api/sts/47/managers/2 HTTP/1.1
-Authorization: {{access}}
 
 ### get all managers of sts
 GET {{url}}/api/sts/47/managers HTTP/1.1
 Authorization: {{access}}
 
-# @access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTYzMTg5MiwiZXhwIjoxNzExNzE4MjkyfQ.CHSJZy1lykXaJlyIWw1I9gWa07ht5reeYOwvvEgUZBw
+### unassign manager from sts
+DELETE {{url}}/api/sts/47/managers/2 HTTP/1.1
+Authorization: {{access}}
+
+
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6InN0c19tYW5hZ2VyMSIsInJvbGUiOiJTVFNfTUFOQUdFUiIsImlhdCI6MTcxMTczMjg2OSwiZXhwIjoxNzExODE5MjY5fQ.1anGsvDrt8ri7ge-2DunJczhul92cBZA4CCKKSimykc
 
 ### assign vehicle to sts
 POST {{url}}/api/sts/47/vehicles HTTP/1.1
@@ -334,13 +347,70 @@ Content-Type: application/json
   "vehicle_id": 4
 }
 
+### get all vehicles of sts
+GET {{url}}/api/sts/47/vehicles HTTP/1.1
+Authorization: {{access}}
+
 ### unassign vehicle from sts
 DELETE {{url}}/api/sts/47/vehicles/4 HTTP/1.1
 Authorization: {{access}}
 
-### get all vehicles of sts
-GET {{url}}/api/sts/47/vehicles HTTP/1.1
+##################
+### STS entries ###
+##################
+
+### Create sts entries
+POST {{url}}/api/sts/entries HTTP/1.1
 Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "vehicle_id": 3,
+  "entry_time": "2024-03-29T23:36:00"
+}
+
+### get all sts entries
+GET {{url}}/api/sts/entries?page=1&limit=5 HTTP/1.1
+Authorization: {{access}}
+
+### add depature entries
+PUT {{url}}/api/sts/departures/1 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "departure_time": 1711735319707,
+  "volume": 10
+}
+
+### create dump entries
+POST {{url}}/api/sts/dump HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "entry_time": "2024-03-29T23:36:00",
+  "volume": 10
+}
+
+### get sts records
+GET {{url}}/api/sts/records?page=1&limit=5 HTTP/1.1
+Authorization: {{access}}
+
+### get vehicle is in sts
+GET {{url}}/api/sts/vehicles HTTP/1.1
+Authorization: {{access}}
+
+### get my sts
+GET {{url}}/api/sts/my HTTP/1.1
+Authorization: {{access}}
+
+GET {{url}}/api/sts/my
+
+############################
+#### Landfill Management ####
+############################
+### Create a landfill
 
 ### get all landfills
 GET {{url}}/api/landfill HTTP/1.1
