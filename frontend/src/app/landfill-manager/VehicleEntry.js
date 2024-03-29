@@ -60,7 +60,9 @@ export default function VehicleEntry() {
                 if (selected.length === 0) return;
                 setVehicle(selected[0]);
               }}
-              options={vehicles}
+              options={vehicles.filter(
+                (vehicle) => vehicle.done_trip !== vehicle.available_trip
+              )}
               labelKey={(option) => `[${option.type}] ${option.registration}`}
               filterBy={["type", "registration"]}
               placeholder="Choose vehicle..."
@@ -144,11 +146,13 @@ export default function VehicleEntry() {
                           if (volume <= 0) {
                             toast.error("Volume must be greater than 0");
                             return;
-                          } else if ( isNaN(volume) ) {
+                          } else if (isNaN(volume)) {
                             toast.error("Volume must be a number");
                             return;
                           } else if (volume > vehicle.capacity) {
-                            toast.error("Volume must be less than or equal to vehicle capacity");
+                            toast.error(
+                              "Volume must be less than or equal to vehicle capacity"
+                            );
                             return;
                           }
 
@@ -159,6 +163,17 @@ export default function VehicleEntry() {
                               volume
                             ).then(() => {
                               toast.success("Entry added successfully");
+                              setVehicles(
+                                vehicles.map((v) => {
+                                  if (v.vehicle_id === vehicle.vehicle_id) {
+                                    return {
+                                      ...v,
+                                      done_trip: v.done_trip + 1,
+                                    };
+                                  }
+                                  return v;
+                                })
+                              );
                               setVehicle(null);
                             }),
                             {
