@@ -138,6 +138,12 @@ const decreaseRemainingTrip = async (fleet_id, vehicle_id) => {
     await pool.query(query, [fleet_id, vehicle_id]);
 }
 
+const getVehiclesOfFleet = async (fleet_id) => {
+    const query = `SELECT * FROM public."Vehicle" JOIN public."Trip" ON public."Trip".vehicle_id = public."Vehicle".vehicle_id AND fleet_id = $1`;
+    const result = await pool.query(query, [fleet_id]);
+    return result.rows;
+}
+
 module.exports = {
     createRoute,
     getRoutes,
@@ -152,5 +158,6 @@ module.exports = {
     createFleet,
     createTrip,
     getLastFleetOfSTS,
-    decreaseRemainingTrip
+    decreaseRemainingTrip,
+    getVehiclesOfFleet
 };

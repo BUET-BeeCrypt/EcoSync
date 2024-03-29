@@ -1,7 +1,7 @@
 const { get } = require("../../../app");
 const pool = require(`../../db/pool`);
 
-modules = {};
+const modules = {};
 
 /*
 CREATE TABLE public."STS"
@@ -152,7 +152,7 @@ modules.deleteSTS = async (sts_id) => {
 modules.addManagerToSTS = async (sts_id, user_id) => {
   const query = `INSERT INTO public."STS_Manager" (sts_id, user_id) VALUES ($1, $2) RETURNING *`;
   const values = [sts_id, user_id];
-  result = await pool.query(query, values);
+  const result = await pool.query(query, values);
   return result.rows[0];
 };
 

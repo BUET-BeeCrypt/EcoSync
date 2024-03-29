@@ -8,7 +8,7 @@ const modules = {};
 modules.createSTS = async (req, res) => {
   const sts = req.body;
   // zono_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area
-  err_msg = "";
+  let err_msg = "";
   if (!sts.zone_no) err_msg = "Zone number is required";
   // check number
   if (isNaN(sts.zone_no)) err_msg = "Zone number must be a number";
@@ -84,7 +84,7 @@ modules.updateSTS = async (req, res) => {
   const sts_id = req.params.sts_id;
   const sts = req.body;
   // zono_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area
-  err_msg = "";
+  let err_msg = "";
   if (sts.zone_no && isNaN(sts.zone_no))
     err_msg = "Zone number must be a number";
   if (sts.ward_no && isNaN(sts.ward_no))
