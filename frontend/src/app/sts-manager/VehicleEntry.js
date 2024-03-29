@@ -53,6 +53,13 @@ export default function VehicleEntry() {
         </nav>
       </div>
 
+      <div className="alert alert-warning mb-5" role="alert">
+        <h4 className="alert-heading">Note</h4>
+        <p>
+          You must create fleet before using this feature. Only vehicles with remaining trips will be shown here.
+        </p>
+      </div>
+
       <div className="d-flex justify-content-center mb-5">
         <div className="col-md-6">
           <div className="d-flex justify-content-center">

@@ -17,6 +17,10 @@ const LandfillFacilities = lazy(() =>
   import("./system-admin/LandfillFacilities")
 );
 const Vehicles = lazy(() => import("./system-admin/Vehicles"));
+const RoleManagement = lazy(() => import("./system-admin/RoleManagement"));
+const PermissionManagement = lazy(() =>
+  import("./system-admin/PermissionManagement")
+);
 
 const STSVehicleEntry = lazy(() => import("./sts-manager/VehicleEntry"));
 const STSVehicleExit = lazy(() => import("./sts-manager/VehicleExit"));
@@ -25,8 +29,12 @@ const STSRecords = lazy(() => import("./sts-manager/Records"));
 const STSRoutes = lazy(() => import("./sts-manager/GoogleMap"));
 const FleetGeneration = lazy(() => import("./sts-manager/FleetGenerate"));
 
-const LandfillVehicleEntry = lazy(() => import("./landfill-manager/VehicleEntry"));
-const LandfillVehicleExit = lazy(() => import("./landfill-manager/VehicleExit"));
+const LandfillVehicleEntry = lazy(() =>
+  import("./landfill-manager/VehicleEntry")
+);
+const LandfillVehicleExit = lazy(() =>
+  import("./landfill-manager/VehicleExit")
+);
 const LandfillBills = lazy(() => import("./landfill-manager/Bills"));
 const LandfillRecords = lazy(() => import("./landfill-manager/Records"));
 
@@ -60,8 +68,14 @@ export default function AppRoutes() {
             {user?.role === USER_ROLES.LANDFILL_MANAGER && (
               <Switch>
                 <Route path="/landfill/dashboard" component={SystemAdminHome} />
-                <Route path="/landfill/vehicle/entry" component={LandfillVehicleEntry} />
-                <Route path="/landfill/vehicle/exit" component={LandfillVehicleExit} />
+                <Route
+                  path="/landfill/vehicle/entry"
+                  component={LandfillVehicleEntry}
+                />
+                <Route
+                  path="/landfill/vehicle/exit"
+                  component={LandfillVehicleExit}
+                />
                 <Route path="/landfill/bills" component={LandfillBills} />
                 <Route path="/landfill/records" component={LandfillRecords} />
                 <Redirect to="/landfill/dashboard" />
@@ -78,30 +92,13 @@ export default function AppRoutes() {
                   path="/admin/facilities/landfill"
                   component={LandfillFacilities}
                 />
+                <Route path="/admin/roles/roles" component={RoleManagement} />
+                <Route
+                  path="/admin/roles/permissions"
+                  component={PermissionManagement}
+                />
                 <Route path="/admin/vehicles" component={Vehicles} />
                 <Redirect to="/admin/dashboard" />
-              </Switch>
-            )}
-
-            {user?.role === "ROLE_DOCTOR" && (
-              <Switch>
-                {/* <Route path="/doctor/dashboard" component={DoctorHome} />
-                <Route path="/doctor/documents/add" component={AddDocument} />
-                <Route path="/doctor/documents/view" component={SharedWithMe} />
-                <Route path="/doctor/emergency" component={AccessEmergency} />
-                <Route path="/doctor/settings" component={DoctorSettings} />
-                <Route path="/doctor/logs" component={Logs} />
-                <Route
-                  path="/doctor/documents/uploaded"
-                  component={UploadedByDoctor}
-                />
-                <Route
-                  path="/doctor/collections"
-                  component={Collections}
-                  exact
-                />
-                <Route path="/doctor/collections/:id" component={Collections} />
-                <Redirect to="/doctor/dashboard" /> */}
               </Switch>
             )}
           </Switch>
@@ -112,8 +109,6 @@ export default function AppRoutes() {
             <Route path="/auth/login" component={Login} />
             <Route path="/auth/register" component={Register} />
             <Route path="/auth/forget-password" component={ForgetPassword} />
-            {/* <Route path="/auth/activate/:token" component={Activate} />
-            <Route path="/auth/doctor/:token" component={ActivateDoctor} /> */}
             <Redirect to="/auth/login" />
           </Switch>
         )}
