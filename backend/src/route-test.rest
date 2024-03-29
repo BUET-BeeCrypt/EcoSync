@@ -1,8 +1,8 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTY3NjUzOCwiZXhwIjoxNzExNjgwMTM4fQ.WPAdDZ4eQ7ZfmvLqWsYaPwEIyqMEfbZlociPz9Gxisk
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxMTcxMzA0OCwiZXhwIjoxNzExNzk5NDQ4fQ.Q7q2a7Pj9eTjz8qXnQruu8MYD5ArS5mIguTtZQF7mxk
 
-@refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJpYXQiOjE3MTE2NDc0MjYsImV4cCI6MTcxMjI1MjIyNn0.dB8uUaTcOu_84lXxoHSZbBTt2NpXMi5l8X8asXDb14M
+@refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzExNzEzMDQ4LCJleHAiOjE3MTIzMTc4NDh9.sV4VT2Rtj5BdWsRRU6Wrg3OzVmEQzoNSZM8nKG5-LS4
 
 ### health
 GET {{url}} HTTP/1.1
@@ -12,8 +12,8 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "landfill_manager",
-  "password": "12345678"
+  "username": "admin",
+  "password": "123456789"
 }
 
 ### Refresh
@@ -34,6 +34,35 @@ content-type: application/json
   "token": "{{refesh}}"
 }
 
+### change password
+POST {{url}}/api/auth/change-password HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "old_password": "12345678",
+  "new_password": "123456789"
+}
+
+
+### forgot password / rest password
+POST {{url}}/api/auth/reset-password/initiate HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "masum.buetcse18@gmail.com"
+}
+
+### reset password
+POST {{url}}/api/auth/reset-password/confirm HTTP/1.1
+Content-Type: application/json
+
+{
+  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwidHlwZSI6ImZvcmdldC1wYXNzd29yZC10b2tlbiIsImlhdCI6MTcxMTcxNDA5MiwiZXhwIjoxNzExNzE3NjkyfQ.NR01hhDyGbcxPHtVPET_N3lrlo16dv3sHwgv60OH3Qk",
+  "new_password": "123456789"
+}
+
+
 
 ### test
 GET {{url}}/api/users/test HTTP/1.1
@@ -43,14 +72,25 @@ Authorization: {{access}}
 GET {{url}}/api/profile HTTP/1.1
 Authorization: {{access}}
 
+### update profile
+PUT {{url}}/api/profile HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "username": "admin_u",
+  "email": "admin_u@gmail.com",
+  "name": "admin updated"
+}
+
 ### add user
 POST {{url}}/api/users HTTP/1.1
 Authorization : {{access}}
 Content-Type: application/json
 
 {
-  "username": "test2",
-  "email": "test2@xyz.com",
+  "username": "test",
+  "email": "test@xyz.com",
   "password": "12345678",
   "name": "test name"
 }

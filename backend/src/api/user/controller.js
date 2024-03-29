@@ -144,9 +144,28 @@ modules.getProfile = async (req, res) => {
 }
 
 modules.updateProfile = async (req, res) => {
-  const user = req.user;
-  const userProfile = req.body.profile;
-  await repository.updateUser(user.user_id, userProfile);
+  const user_id = req.user.user_id;
+  const username = req.body.username;
+  const email = req.body.email;
+  const name = req.body.name;
+
+  try{
+    const oldUser = await repository.getUser(user_id);
+    if(!username) username = oldUser.username;
+    if(!email) email = oldUser.email;
+    if(!name) name = oldUser.name;
+    const updatedUser = await repository.updateProfile(user_id, username, email, name);
+    return res.status(200).json({
+      "message":"Profile updated successfully",
+      "user": updatedUser
+    });
+  }catch(err){
+    if(err.code !== 404){
+      return res.status(500).json({message: err.message});
+    }else{
+      return res.status(404).json({message: err.message});
+    }
+  }
 }
 
 

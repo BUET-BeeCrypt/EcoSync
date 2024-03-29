@@ -46,14 +46,11 @@ modules.logout = async (req, res) => {
 modules.changePassword = async (req, res) => {
    
     const cred = req.body;
-    const token = cred.token; 
-    
+
     if (!cred.old_password || !cred.new_password)
         return res.status(400).json({ message: "Bad request." });
-
-    const decoded = verify(token, process.env.JWT_SECRET_KEY);
     
-    const user = await repository.getUserById(decoded.user_id);
+    const user = await repository.getUserById(req.user.user_id);
     if (!user)
         return res.status(404).json({ message: "User not found." });
 
@@ -72,13 +69,17 @@ modules.initiateResetPassword = async (req, res) => {
     if (!cred.email)
         return res.status(400).json({ message: "Bad request." });
 
-    const user = await repository.getUserByEmail(cred.email);
-    if (!user)
-        return res.status(404).json({ message: "User not found." });
+    try{
+        const user = await repository.getUserByEmail(cred.email);
+        if (!user)
+            return res.status(404).json({ message: "User not found." });
 
-    const forgetPasswordToken = signForgetPasswordToken(user.username);
-    sendMail(user.email, "Reset password", `Hello ${user.name},\n\nYou can reset your password using the following link: http://localhost:3000/auth/forget-password?token=${forgetPasswordToken}`);
-    res.status(200).json({ forgetPasswordToken });
+        const forgetPasswordToken = signForgetPasswordToken(user.username);
+        sendMail(user.email, "Reset password", `Hello ${user.name},\n\nYou can reset your password using the following link: http://localhost:3000/auth/forget-password?token=${forgetPasswordToken}`);
+        res.status(200).json({ "message": "Reset password link sent to your email." });
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error." });
+    }
 }
 
 modules.resetPassword = async (req, res) => {
@@ -92,13 +93,17 @@ modules.resetPassword = async (req, res) => {
     if( decoded.type !== "forget-password-token") 
         return res.status(400).json({ message: "Invalid token." });
 
-    const user = await repository.getUserByUsername(decoded.username);
-    if (!user)
-        return res.status(404).json({ message: "User not found." });
+    try{
+        const user = await repository.getUserByUsername(decoded.username);
+        if (!user)
+            return res.status(404).json({ message: "User not found." });
 
-    const hashedPassword = await bcyrpt.hash(cred.new_password, 10);
-    await repository.updatePassword(user.user_id, hashedPassword);
-    res.status(200).json({ message: "Password updated." });
+        const hashedPassword = await bcyrpt.hash(cred.new_password, 10);
+        await repository.updatePassword(user.user_id, hashedPassword);
+        res.status(200).json({ message: "Password updated. Use your new password to login in." });
+    }catch (error) {
+        return res.status(500).json({ message: "Internal server error." });
+    }
 }
 
 modules.refreshToken = async (req, res) => {
