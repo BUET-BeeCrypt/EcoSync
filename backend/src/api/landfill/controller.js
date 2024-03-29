@@ -213,4 +213,22 @@ modules.getVehiclesOfManager = async (req, res) => {
   res.status(200).json(vehicles);
 };
 
+modules.getLandfillBills = async (req, res) => {
+  const landfill_id = await repository.getLandfillIdfromManagerId(
+    req.user.user_id
+  );
+
+  if (landfill_id === null) {
+    return res
+      .status(404)
+      .json({ message: "Manager is not assigned to any landfill" });
+  }
+
+  const page = Number.parseInt(req.query.page) || 1;
+  const limit = Number.parseInt(req.query.limit) || 500;
+
+  const bills = await repository.getLandfillBills(landfill_id, page, limit);
+  res.status(200).json(bills);
+}
+
 module.exports = modules;

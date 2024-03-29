@@ -24,3 +24,6 @@ export const getLandfillRecords = async (page) =>
 
 export const getMyLandfill = async () =>
   axios.get(api_url(`/landfill/my`)).then((res) => res.data);
+
+export const getBills = async () =>
+  axios.get(api_url(`/landfill/bills`)).then((res) => res.data);

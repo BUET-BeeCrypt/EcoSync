@@ -217,27 +217,35 @@ const createBill = async (vehicle_id, weight, landfill_id) => {
     // calculate cost - round trip
     const cost = (2*fuel_cost_per_km_unloaded + weight / capacity * (fuel_cost_per_km_loaded - fuel_cost_per_km_unloaded)) * distance;
 
-    const insert_query = `INSERT INTO public."Bill" (vehicle_id, amount, timestamp) VALUES ($1, $2, NOW()) RETURNING *`;
-    const insert_result = await pool.query(insert_query, [vehicle_id, cost]);
+    const insert_query = `INSERT INTO public."Bill" (vehicle_id, landfill_id, sts_id, amount, distance, timestamp) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING *`;
+    const insert_result = await pool.query(insert_query, [vehicle_id, landfill_id, sts_id, cost, distance]);
     return insert_result.rows[0];
 }
 
+const getLandfillBills = async (landfill_id, page, limit) => {
+    page = page - 1;
+    const query = `SELECT b.*, v.registration, v."type", v.capacity, s."name", s."location", s.zone_no, s.ward_no FROM public."Bill" b JOIN public."Vehicle" v USING (vehicle_id) join "STS" s on (s.sts_id = b.sts_id) WHERE b.landfill_id = $1 ORDER BY timestamp DESC LIMIT $2 OFFSET $3`;
+    const result = await pool.query(query, [landfill_id, limit, page * limit]);
+    return result.rows;
+}
+
 module.exports = {
-  createLandfill,
-  existsLandfill,
-  getLandfills,
-  getLandfill,
-  updateLandfill,
-  deleteLandfill,
-  addManagerToLandfill,
-  isManagerOfLandfill,
-  getManagersOfLandfill,
-  removeManagerFromLandfill,
-  addEntryToLandfill,
-  getEntriesOfLandfill,
-  getOnlyEntriesOfLandfill,
-  addDepartureToLandfill,
-  getLandfillIdfromManagerId,
-  getVehiclesOfLandfill,
-    createBill
+    createLandfill,
+    existsLandfill,
+    getLandfills,
+    getLandfill,
+    updateLandfill,
+    deleteLandfill,
+    addManagerToLandfill,
+    isManagerOfLandfill,
+    getManagersOfLandfill,
+    removeManagerFromLandfill,
+    addEntryToLandfill,
+    getEntriesOfLandfill,
+    getOnlyEntriesOfLandfill,
+    addDepartureToLandfill,
+    getLandfillIdfromManagerId,
+    getVehiclesOfLandfill,
+    createBill,
+    getLandfillBills
 };

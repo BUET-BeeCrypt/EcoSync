@@ -395,14 +395,24 @@ CREATE TABLE public."Bill"
 (
     bill_id serial NOT NULL,
     vehicle_id integer NOT NULL,
+    landfill_id integer NOT NULL,
+    sts_id integer NOT NULL,
     amount double precision NOT NULL,
+    distance double precision NOT NULL,
     timestamp timestamp NOT NULL,
     PRIMARY KEY (bill_id),
     FOREIGN KEY (vehicle_id)
         REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
         ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (landfill_id)
+        REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
         ON DELETE NO ACTION
-
 );
 
 INSERT INTO public."Permission" ("name",details) VALUES
@@ -486,7 +496,8 @@ INSERT INTO public."Permission_Role" (role_name, permission_name) VALUES
     ('LANDFILL_MANAGER', 'VIEW_LANDFILL'),
     ('LANDFILL_MANAGER', 'VIEW_LANDFILL_ENTRY'),
     ('LANDFILL_MANAGER', 'CREATE_LANDFILL_ENTRY'),
-    ('LANDFILL_MANAGER', 'UPDATE_LANDFILL_ENTRY');
+    ('LANDFILL_MANAGER', 'UPDATE_LANDFILL_ENTRY'),
+    ('LANDFILL_MANAGER', 'VIEW_BILL');
 
 
 
