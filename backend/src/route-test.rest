@@ -7,6 +7,10 @@
 ### health
 GET {{url}} HTTP/1.1
 
+########################
+#### Authentication ####
+########################
+
 ### Sign in
 POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
@@ -62,7 +66,9 @@ Content-Type: application/json
   "new_password": "123456789"
 }
 
-
+########################
+#### User Management ####
+########################
 
 ### test
 GET {{url}}/api/users/test HTTP/1.1
@@ -78,9 +84,9 @@ Authorization: {{access}}
 Content-Type: application/json
 
 {
-  "username": "admin_u",
-  "email": "admin_u@gmail.com",
-  "name": "admin updated"
+  "username": "admin",
+  "email": "admin@gmail.com",
+  "name": "admin user"
 }
 
 ### add user
@@ -99,18 +105,47 @@ Content-Type: application/json
 GET {{url}}/api/users HTTP/1.1
 Authorization: {{access}}
 
+### Get user by id
+GET {{url}}/api/users/5 HTTP/1.1
+Authorization: {{access}}
+
+### update user by id
+# admin and owner only
+PUT {{url}}/api/users/5 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+
+{
+  "user_id": 5,
+  "name": "lm",
+  "username": "lm",
+  "email": "lm1@email.com",
+  "active": false,
+  "banned": true
+}
+
+### delete user by id
+# admin only
+DELETE {{url}}/api/users/8 HTTP/1.1
+Authorization: {{access}}
+
 ### get all roles
 GET {{url}}/api/users/roles HTTP/1.1
 Authorization: {{access}}
 
 ### update role
-PUT {{url}}/api/users/5/roles HTTP/1.1
+PUT {{url}}/api/users/8/roles HTTP/1.1
 Authorization: {{access}}
 Content-Type: application/json
 
 {
-  "role_name": "STS_MANAGER2"
+  "role_name": "STS_MANAGER"
 }
+
+###################################
+#### Role Based Access Control ####
+###################################
 
 ###  Create role
 POST {{url}}/api/rbac/roles HTTP/1.1
@@ -129,12 +164,16 @@ Content-Type: application/json
 
 {
   "role_name": "STS_MANAGER_U",
-  "description": "STS Manager2 udpated"
+  "description": "STS Manager udpated"
 }
 
 ### delete role
-DELETE {{url}}/api/rbac/roles/STS_MANAGER2 HTTP/1.1
+DELETE {{url}}/api/rbac/roles/STS_MANAGER_U HTTP/1.1
 Authorization: {{access}}
+
+#####################
+#### Permissions ####
+##################
 
 ### Create permission
 POST {{url}}/api/rbac/permissions HTTP/1.1
@@ -146,9 +185,19 @@ Content-Type: application/json
   "description": "View all bills"
 }
 
+### update permission
+PUT {{url}}/api/rbac/permissions/VIEW_BILLS HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "permission_name": "VIEW_BILLS",
+  "description": "View all bills updated"
+}
+
 
 ### get permissions using pagination
-GET {{url}}/api/rbac/permissions?page=5&limit=10 HTTP/1.1
+GET {{url}}/api/rbac/permissions?page=1&limit=5 HTTP/1.1
 Authorization: {{access}}
 
 
@@ -162,7 +211,7 @@ Content-Type: application/json
 }
 
 ### get all permissions of role with pagination
-GET {{url}}/api/rbac/roles/STS_MANAGER/permissions?page=1&limit=10 HTTP/1.1
+GET {{url}}/api/rbac/roles/STS_MANAGER/permissions?page=1&limit=5 HTTP/1.1
 Authorization: {{access}}
 
 ### delete a permission
@@ -172,19 +221,6 @@ Authorization: {{access}}
 ### delete permission from role
 DELETE {{url}}/api/rbac/roles/STS_MANAGER/permissions/VIEW_BILLS HTTP/1.1
 Authorization: {{access}}
-
-### update user
-PUT {{url}}/api/users/5 HTTP/1.1
-Authorization: {{access}}
-Content-Type: application/json
-
-{
-  "username": "test2",
-  "email": "test2@xyz.com",
-  "name": "test2 name",
-  "active": true,
-  "banned": false
-}
 
 
 ### Get all Vehicle
@@ -203,8 +239,27 @@ Content-Type: application/json
   "disabled": false,
   "fuel_cost_per_km_loaded": 0,
   "fuel_cost_per_km_unloaded": 0,
-  "landfill_id": null
+  "sts_id": null
 }
+
+### Update Vehicle
+PUT {{url}}/api/vehicles/5 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "registration": "test updated",
+  "type": "Truck 1",
+  "capacity": 5,
+  "disabled": false,
+  "fuel_cost_per_km_loaded": 0,
+  "fuel_cost_per_km_unloaded": 0,
+  "sts_id": null
+}
+
+### Get Vehicle by id
+GET {{url}}/api/vehicles/1 HTTP/1.1
+Authorization: {{access}}
 
 ### Create STS
 POST {{url}}/api/sts HTTP/1.1
