@@ -1,6 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxMTcxMzA0OCwiZXhwIjoxNzExNzk5NDQ4fQ.Q7q2a7Pj9eTjz8qXnQruu8MYD5ArS5mIguTtZQF7mxk
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTc0MzM4OCwiZXhwIjoxNzExNzQ2OTg4fQ.7hhIfmlb55UeVtzrXswKhlkfvROvcUCY8T6OFdIqMYs
 
 @refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzExNzEzMDQ4LCJleHAiOjE3MTIzMTc4NDh9.sV4VT2Rtj5BdWsRRU6Wrg3OzVmEQzoNSZM8nKG5-LS4
 
@@ -488,4 +488,8 @@ Authorization: {{access}}
 
 ### Get Landfill Bills
 GET {{url}}/api/landfill/bills HTTP/1.1
+Authorization: {{access}}
+
+### Get Statistics
+GET {{url}}/api/stats HTTP/1.1
 Authorization: {{access}}

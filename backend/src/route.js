@@ -17,6 +17,8 @@ router.use('/vehicles', require('./api/vehicle/route'), /*#swagger.tags = ['vehi
 
 router.use('/routes', require('./api/routing/route'), /*#swagger.tags = ['vehicle']*/);
 
+router.use('/stats', require('./api/stat/route'), /*#swagger.tags = ['Stats']*/);
+
 
 
 module.exports = router;

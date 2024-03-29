@@ -13,8 +13,8 @@ import Spinner from "../shared/Spinner";
 import { getRoutes } from "../api/sts";
 
 const center = {
-  lat: 23.8041,
-  lng: 90.4152,
+  lat: 23.8091,
+  lng: 90.3599,
 };
 
 const containerStyle = {
