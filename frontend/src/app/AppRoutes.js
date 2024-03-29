@@ -6,7 +6,6 @@ import { useContext } from "react";
 import { USER_ROLES, UserContext } from "./App";
 
 const Register = lazy(() => import("./user-pages/Register"));
-const Verify = lazy(() => import("./user-pages/Verify"));
 const Login = lazy(() => import("./user-pages/Login"));
 const ForgetPassword = lazy(() => import("./user-pages/ForgetPassword"));
 

@@ -1,17 +1,14 @@
 import { useState } from "react";
-import { useQuery } from "../user/OwnedDocuments";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { Modal } from "react-bootstrap";
 import {
-  changeUserBannedStatus,
   changeUserRole,
   deleteUser,
   editUser,
   getRoles,
   getUsers,
 } from "../api/admin";
-import { formatDateFromTimestamp } from "../user/SharedByMe";
 
 export default function Users() {
   // const [query, location] = useQuery();

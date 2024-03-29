@@ -1,8 +1,7 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { Collapse } from "react-bootstrap";
 import { UserContext } from "../App";
-import { getProfile } from "../api/user";
 
 function LandfillManagerSideBar(props) {
   const [state, setState] = useState({});
