@@ -178,22 +178,8 @@ export const updateVehicle = async (
 
 export const deleteVehicle = async (vehicle_id) =>
   axios.delete(api_url(`/vehicles/${vehicle_id}`)).then((res) => res.data);
-
-///////////////////////// OLD /////////////////////////
-
-export const addDoctorRequest = async (email) =>
-  axios.post(api_url("/admin/add-doctor"), { email }).then((res) => res.data);
-
-export const changeUserBannedStatus = async (id, banned) =>
-  axios(api_url(`/admin/user/${id}`), {
-    method: "PUT",
-    data: { banned },
-  }).then((res) => res.data);
-
-export const filterAndAnalyze = async (data) =>
-  axios.post(api_url("/admin/filter"), data).then((res) => res.data);
-
-export const addUser = async (username, email, password, name, send_email) =>
-  axios
-    .post(api_url("/users"), { username, email, password, name, send_email })
-    .then((res) => res.data);
+  
+  export const addUser = async (username, email, password, name, send_email) =>
+    axios
+      .post(api_url("/users"), { username, email, password, name, send_email })
+      .then((res) => res.data);
