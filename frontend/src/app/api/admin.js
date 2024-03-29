@@ -178,8 +178,61 @@ export const updateVehicle = async (
 
 export const deleteVehicle = async (vehicle_id) =>
   axios.delete(api_url(`/vehicles/${vehicle_id}`)).then((res) => res.data);
-  
-  export const addUser = async (username, email, password, name, send_email) =>
-    axios
-      .post(api_url("/users"), { username, email, password, name, send_email })
-      .then((res) => res.data);
+
+export const addUser = async (username, email, password, name, send_email) =>
+  axios
+    .post(api_url("/users"), { username, email, password, name, send_email })
+    .then((res) => res.data);
+
+export const addRole = async(role_name, description);
+axios
+  .post(api_url(`/rbac/roles`), { role_name, description })
+  .then((res) => res.data);
+
+export const updateRole = async (old_role_name, role_name, description) =>
+  axios
+    .put(api_url(`/rbac/roles/${old_role_name}`), { role_name, description })
+    .then((res) => res.data);
+
+export const deleteRole = async (role_name) =>
+  axios.delete(api_url(`/rbac/roles/${role_name}`)).then((res) => res.data);
+
+export const addPermission = async (permission_name, description) =>
+  axios
+    .post(api_url(`/rbac/permissions`), { permission_name, description })
+    .then((res) => res.data);
+
+export const updatePermission = async (
+  old_permission_name,
+  permission_name,
+  description
+) =>
+  axios
+    .put(api_url(`/rbac/permissions/${old_permission_name}`), {
+      permission_name,
+      description,
+    })
+    .then((res) => res.data);
+
+export const deletePermission = async (permission_name) =>
+  axios
+    .delete(api_url(`/rbac/permissions/${permission_name}`))
+    .then((res) => res.data);
+
+export const getPermissions = async () =>
+  axios.get(api_url(`/rbac/permissions`)).then((res) => res.data);
+
+export const getRolePermissions = async (role_name) =>
+  axios
+    .get(api_url(`/rbac/roles/${role_name}/permissions`))
+    .then((res) => res.data);
+
+export const assignPermission = async (role_name, permission_name) =>
+  axios
+    .post(api_url(`/rbac/roles/${role_name}/permissions`), { permission_name })
+    .then((res) => res.data);
+
+export const revokePermission = async (role_name, permission_name) =>
+  axios
+    .delete(api_url(`/rbac/roles/${role_name}/permissions/${permission_name}`))
+    .then((res) => res.data);
