@@ -30,31 +30,7 @@ const LandfillVehicleExit = lazy(() => import("./landfill-manager/VehicleExit"))
 const LandfillBills = lazy(() => import("./landfill-manager/Bills"));
 const LandfillRecords = lazy(() => import("./landfill-manager/Records"));
 
-// const Activate = lazy(() => import("./user-pages/Activate"));
-// const ActivateDoctor = lazy(() => import("./user-pages/RegisterDoctor"));
-
-// const SecuritySettings = lazy(() => import("./common/SecuritySettings"));
-// const AddDocument = lazy(() => import("./common/UploadDocument"));
-// const Logs = lazy(() => import("./common/Logs"));
-
-// const UserHome = lazy(() => import("./user/Dashboard"));
-// const ViewDocuments = lazy(() => import("./user/OwnedDocuments"));
-// const PendingDocuments = lazy(() => import("./user/NotAcceptedDocuments"));
-// const Collections = lazy(() => import("./user/Collections"));
-// const SharedByMe = lazy(() => import("./user/SharedByMe"));
-// const UserSettings = lazy(() => import("./user/UserSettings"));
-// const SymptomChecker = lazy(() => import("./user/SymptomChecker"));
-// const PDFAnalyzer = lazy(() => import("./user/PDFAnalyzer"));
-
-// const AdminHome = lazy(() => import("./admin/Dashboard"));
-// const AddDoctor = lazy(() => import("./admin/AddDoctor"));
-// const Users = lazy(() => import("./admin/Users"));
-
-// const DoctorHome = lazy(() => import("./doctor/Dashboard"));
-// const SharedWithMe = lazy(() => import("./doctor/SharedWithMe"));
-// const UploadedByDoctor = lazy(() => import("./doctor/UploadedByDoctor"));
-// const AccessEmergency = lazy(() => import("./doctor/AceessEmergencyProfile"));
-// const DoctorSettings = lazy(() => import("./doctor/DoctorSettings"));
+const SecuritySettings = lazy(() => import("./shared/Settings"));
 
 export default function AppRoutes() {
   const { user } = useContext(UserContext);
@@ -66,7 +42,7 @@ export default function AppRoutes() {
 
         {user && (
           <Switch>
-            {/* <Route path="/security-settings" component={SecuritySettings} /> */}
+            <Route path="/user/settings" component={SecuritySettings} />
 
             {user?.role === USER_ROLES.STS_MANAGER && (
               <Switch>

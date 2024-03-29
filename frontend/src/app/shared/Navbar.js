@@ -84,10 +84,10 @@ function Navbar() {
 
               <Dropdown.Menu className="navbar-dropdown">
                 <Dropdown.Item
-                  href="/security-settings"
+                  href="/user/settings"
                   onClick={(evt) => {
                     evt.preventDefault();
-                    history.push("/security-settings");
+                    history.push("/user/settings");
                   }}
                 >
                   <i className="mdi mdi-security mr-2 text-success"></i>

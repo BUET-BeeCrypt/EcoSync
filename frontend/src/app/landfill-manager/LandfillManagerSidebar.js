@@ -90,7 +90,9 @@ function LandfillManagerSideBar(props) {
               <span className="font-weight-bold mb-2">
                 {user?.username || "User"}
               </span>
-              <span className="text-secondary text-small">Landfill Manager</span>
+              <span className="text-secondary text-small">
+                Landfill Manager
+              </span>
             </div>
             <i className="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
           </a>
@@ -259,7 +261,9 @@ function LandfillManagerSideBar(props) {
           </Link>
         </li> */}
         <li
-          className={isPathActive("/landfill/records") ? "nav-item active" : "nav-item"}
+          className={
+            isPathActive("/landfill/records") ? "nav-item active" : "nav-item"
+          }
         >
           <Link className="nav-link" to="/landfill/records">
             <span className="menu-title">Records</span>
@@ -268,10 +272,10 @@ function LandfillManagerSideBar(props) {
         </li>
         <li
           className={
-            isPathActive("/landfill/settings") ? "nav-item active" : "nav-item"
+            isPathActive("/user/settings") ? "nav-item active" : "nav-item"
           }
         >
-          <Link className="nav-link" to="/landfill/settings">
+          <Link className="nav-link" to="/user/settings">
             <span className="menu-title">Settings</span>
             <i className="mdi mdi-cog menu-icon"></i>
           </Link>
