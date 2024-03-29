@@ -184,10 +184,10 @@ export const addUser = async (username, email, password, name, send_email) =>
     .post(api_url("/users"), { username, email, password, name, send_email })
     .then((res) => res.data);
 
-export const addRole = async(role_name, description);
-axios
-  .post(api_url(`/rbac/roles`), { role_name, description })
-  .then((res) => res.data);
+export const addRole = async (role_name, description) =>
+  axios
+    .post(api_url(`/rbac/roles`), { role_name, description })
+    .then((res) => res.data);
 
 export const updateRole = async (old_role_name, role_name, description) =>
   axios
@@ -220,7 +220,7 @@ export const deletePermission = async (permission_name) =>
     .then((res) => res.data);
 
 export const getPermissions = async () =>
-  axios.get(api_url(`/rbac/permissions`)).then((res) => res.data);
+  axios.get(api_url(`/rbac/permissions?page=1&limit=500`)).then((res) => res.data);
 
 export const getRolePermissions = async (role_name) =>
   axios

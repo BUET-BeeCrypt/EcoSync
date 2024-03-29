@@ -34,7 +34,7 @@ const getRefreshToken = async () => {
 
 axios.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (
       (error.response.status === UNAUTHORIZED ||
         error.response.status === FORBIDDEN) &&
@@ -44,10 +44,9 @@ axios.interceptors.response.use(
       if (localStorage.getItem("refreshToken")) {
         localStorage.removeItem("token");
         try {
-          getRefreshToken().then((token) => {
-            localStorage.setItem("token", token);
-          });
-          // return axios.request(error.config);
+          const token = await getRefreshToken();
+          localStorage.setItem("token", token);
+          return axios.request(error.config);
         } catch (error) {
           removeTokenFromStorage("token");
           removeTokenFromStorage("refreshToken");
