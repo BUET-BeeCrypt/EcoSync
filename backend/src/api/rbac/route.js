@@ -9,7 +9,7 @@ router.put("/roles/:role_name",controller.updateRole);
 router.delete("/roles/:role_name",controller.deleteRole);
 
 router.post("/permissions",controller.addPermission);
-router.put("/permissions/:permission_id",controller.updatePermission);
+router.put("/permissions/:permission_name",controller.updatePermission);
 router.delete("/permissions/:permission_name", controller.deletePermission);
 // get all permissions
 router.get("/permissions", controller.getPermissions);

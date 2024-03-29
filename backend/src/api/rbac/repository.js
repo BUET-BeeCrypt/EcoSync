@@ -70,15 +70,21 @@ modules.existsPermission = async (permission_name) => {
     return !!result.rows[0];
 }
 
+modules.getPermission = async (permission_name) => {
+    const query = `SELECT * FROM "Permission" WHERE name = $1`;
+    const result = await pool.query(query, [permission_name]);
+    return result.rows[0];
+}
+
 modules.createPermission = async (permission_name, description) => {
 	const query = `INSERT INTO "Permission"(name, details) VALUES($1, $2)`;
     const result = await pool.query(query, [permission_name, description]);
 	return;
 }
 
-modules.updatePermission = async (permission_id, permission) => {
-	const query = `UPDATE "Permission" SET name = $2, details = $3 WHERE permission_id = $1`;
-	const result = await pool.query(query,[permission_id, permission.name,permission.details]);
+modules.updatePermission = async (old_name, new_name, description) => {
+	const query = `UPDATE "Permission" SET name = $2, details = $3 WHERE name = $1`;
+	const result = await pool.query(query, [old_name, new_name, description]);
 	return;
 }
 
