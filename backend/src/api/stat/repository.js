@@ -1,4 +1,5 @@
 const pool = require(`../../db/pool`);
+const landfills = require(`../landfill/repository`);
 modules = {};
 
 modules.getStats = async () => {
@@ -61,17 +62,11 @@ modules.stsManagerStats = async (sts_id) => {
   const res = {};
 
   res.vehicles = (
-    await pool.query(
-      `SELECT * FROM "Vehicle" WHERE sts_id = $1`,
-      [sts_id]
-    )
+    await pool.query(`SELECT * FROM "Vehicle" WHERE sts_id = $1`, [sts_id])
   ).rows;
 
   res.sts = (
-    await pool.query(
-      `SELECT * FROM "STS" WHERE sts_id = $1`,
-      [sts_id]
-    )
+    await pool.query(`SELECT * FROM "STS" WHERE sts_id = $1`, [sts_id])
   ).rows[0];
 
   res.fleet = (
@@ -87,6 +82,27 @@ modules.stsManagerStats = async (sts_id) => {
   ).rows;
 
   return res;
-}
+};
+
+modules.landfillManagerStats = async (landfill_id) => {
+  const res = {};
+
+  res.landfill = await landfills.getLandfill(landfill_id);
+  res.fleet = await landfills.getVehiclesOfLandfill(landfill_id);
+  res.entries_count = (
+    await pool.query(
+      `SELECT COUNT(*) as count FROM "Landfill_Entry" WHERE landfill_id = $1`,
+      [landfill_id]
+    )
+  ).rows[0].count;
+  res.bills_count = (
+    await pool.query(
+      `SELECT COUNT(*) as count FROM "Bill" WHERE landfill_id = $1`,
+      [landfill_id]
+    )
+  ).rows[0].count;
+
+  return res;
+};
 
 module.exports = modules;

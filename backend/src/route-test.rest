@@ -1,6 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VybmFtZSI6InN0c19tYW5hZ2VyIiwicm9sZSI6IlNUU19NQU5BR0VSIiwiaWF0IjoxNzExNzQxNjgxLCJleHAiOjE3MTE3NDUyODF9.HNygAVeJ-rceox345rk2e7Tyz4DS0RCh_2QEQFs6oaw
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTc0MzM4OCwiZXhwIjoxNzExNzQ2OTg4fQ.7hhIfmlb55UeVtzrXswKhlkfvROvcUCY8T6OFdIqMYs
 
 @refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzExNzEzMDQ4LCJleHAiOjE3MTIzMTc4NDh9.sV4VT2Rtj5BdWsRRU6Wrg3OzVmEQzoNSZM8nKG5-LS4
 
@@ -16,7 +16,7 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "sts_manager",
+  "username": "landfill_manager",
   "password": "12345678"
 }
 
