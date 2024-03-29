@@ -233,11 +233,11 @@ function Navbar() {
               <i className="mdi mdi-power"></i>
             </a>
           </li>
-          <li className="nav-item nav-settings d-none d-lg-block">
+          {/* <li className="nav-item nav-settings d-none d-lg-block">
             <Link type="button" className="nav-link border-0" to="/verify">
               <i className="mdi mdi-check-decagram-outline"></i>
             </Link>
-          </li>
+          </li> */}
         </ul>
         <button
           className="navbar-toggler navbar-toggler-right d-lg-none align-self-center"
