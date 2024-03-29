@@ -16,7 +16,7 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "sts_manager1",
+  "username": "landfill_manager",
   "password": "12345678"
 }
 
@@ -336,7 +336,7 @@ DELETE {{url}}/api/sts/47/managers/2 HTTP/1.1
 Authorization: {{access}}
 
 
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6InN0c19tYW5hZ2VyMSIsInJvbGUiOiJTVFNfTUFOQUdFUiIsImlhdCI6MTcxMTczMjg2OSwiZXhwIjoxNzExODE5MjY5fQ.1anGsvDrt8ri7ge-2DunJczhul92cBZA4CCKKSimykc
+# @access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6InN0c19tYW5hZ2VyMSIsInJvbGUiOiJTVFNfTUFOQUdFUiIsImlhdCI6MTcxMTczMjg2OSwiZXhwIjoxNzExODE5MjY5fQ.1anGsvDrt8ri7ge-2DunJczhul92cBZA4CCKKSimykc
 
 ### assign vehicle to sts
 POST {{url}}/api/sts/47/vehicles HTTP/1.1
@@ -411,11 +411,38 @@ GET {{url}}/api/sts/my
 #### Landfill Management ####
 ############################
 ### Create a landfill
+POST {{url}}/api/landfill HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "name": "Landfill 1",
+  "latitude": 23.8103,
+  "longitude": 90.4125
+}
 
 ### get all landfills
 GET {{url}}/api/landfill HTTP/1.1
 Authorization: {{access}}
 
+### Update landfill
+PUT {{url}}/api/landfill/2 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "name": "Landfill 2 updated",
+  "latitude": 23.8103,
+  "longitude": 90.4125
+}
+
+### Get landfill by id
+GET {{url}}/api/landfill/1 HTTP/1.1
+Authorization: {{access}}
+
+### Delete landfill by id
+DELETE {{url}}/api/landfill/2 HTTP/1.1
+Authorization: {{access}}
 
 ### assign manager to landfill
 POST {{url}}/api/landfill/1/managers HTTP/1.1
@@ -426,12 +453,29 @@ Content-Type: application/json
   "user_id": 5
 }
 
+### get all managers of landfill
+GET {{url}}/api/landfill/1/managers HTTP/1.1
+Authorization: {{access}}
+
 ### unassign manager from landfill
 DELETE {{url}}/api/landfill/1/managers/5 HTTP/1.1
 Authorization: {{access}}
 
-### get all managers of landfill
-GET {{url}}/api/landfill/1/managers HTTP/1.1
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTczODk4MSwiZXhwIjoxNzExODI1MzgxfQ.wbS0fTPgXyBVukJS-VhCtkypZ3-Jx8LMwg7eFLDTiqY
+
+### Create landfill entry
+POST {{url}}/api/landfill/entries HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "vehicle_id": 2,
+  "entry_time": "2024-03-29T23:50:00",
+  "weight": 10
+}
+
+### get all landfill entries
+GET {{url}}/api/landfill/entries?page=1&limit=5 HTTP/1.1
 Authorization: {{access}}
 
 ### get fleet information
