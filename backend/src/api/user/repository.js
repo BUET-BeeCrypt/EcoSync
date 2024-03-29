@@ -58,6 +58,17 @@ const updateUser = async (user_id, username, email, name, banned, active) => {
 	return result.rows[0];
 }
 
+const updateProfile = async (user_id, username, email, name) => {
+	const query = `UPDATE "User" SET username = $2, email = $3, "name" = $4 WHERE user_id = $1 RETURNING 
+	"user_id", "name", "username", "email","role_name", "active", "banned"
+	`;
+	const result = await pool.query(query, [user_id, username, email, name]);
+	if (result.rows.length === 0) {
+		throw {code:404, message: `User not found`};
+	}
+	return result.rows[0];
+}
+
 const getRoles = async() => {
 	const query = `SELECT * FROM "Role"`;
 	const result = await pool.query(query,[]);
@@ -108,6 +119,7 @@ module.exports = {
 	getUser,
 	deleteUser,
 	updateUser,
+	updateProfile,
 	getRoles,
 	updateUserRole,
 	getUserByUsername,
