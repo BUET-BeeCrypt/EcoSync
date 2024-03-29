@@ -115,6 +115,9 @@ modules.addEntryToLandfill = async (req, res) => {
   }
 
   const { entry_time, vehicle_id, weight } = req.body;
+
+  await repository.createBill(vehicle_id, weight, landfill_id);
+
   res
     .status(201)
     .json(
@@ -194,6 +197,20 @@ modules.getLandfillOfManager = async (req, res) => {
 
   const landfill = await repository.getLandfill(landfill_id);
   res.status(200).json(landfill);
+};
+
+modules.getVehiclesOfManager = async (req, res) => {
+  const manager_id = req.user.user_id;
+  const landfill_id = await repository.getLandfillIdfromManagerId(manager_id);
+
+  if (landfill_id === null) {
+    return res
+      .status(404)
+      .json({ message: "Manager is not assigned to any landfill" });
+  }
+
+  const vehicles = await repository.getVehiclesOfLandfill(landfill_id);
+  res.status(200).json(vehicles);
 };
 
 module.exports = modules;

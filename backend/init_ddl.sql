@@ -396,7 +396,7 @@ CREATE TABLE public."Bill"
     bill_id serial NOT NULL,
     vehicle_id integer NOT NULL,
     amount double precision NOT NULL,
-    timestamp integer NOT NULL,
+    timestamp timestamp NOT NULL,
     PRIMARY KEY (bill_id),
     FOREIGN KEY (vehicle_id)
         REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE

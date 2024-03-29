@@ -2,7 +2,7 @@ import { api_url } from ".";
 import axios from "axios";
 
 export const getVehicles = async () =>
-  axios.get(api_url(`/vehicles`)).then((res) => res.data);
+  axios.get(api_url(`/landfill/vehicles`)).then((res) => res.data);
 
 export const addLandfillEntry = async (vehicle_id, entry_time, weight) =>
   axios
