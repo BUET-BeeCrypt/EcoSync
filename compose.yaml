@@ -1,7 +1,17 @@
 version: "3.8"
 services:
-  web:
-    build: .
+  frontend:
+    build: ./frontend
+    restart: on-failure
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_BASE_URL: "http://localhost:8000"
+
+  backend:
+    build: ./backend
     depends_on:
       pg-db:
         condition: service_healthy
@@ -10,6 +20,11 @@ services:
     environment:
       DB_URL: postgresql://pg-db:5432/code-samurai?user=postgres&password=password
       PORT: 8000
+      JWT_SECRET_KEY: "secret"
+      REFRESH_TOKEN_SECRET_KEY: "refresh"
+      EMAIL_ID: "syncinc408@gmail.com"
+      EMAIL_PASS: "dczlxzhbozamacbu"
+      EMAIL_HOST: "smtp.gmail.com"
     ports:
       - "8000:8000"
   

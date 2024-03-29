@@ -391,6 +391,7 @@ export default function LandfillFacilities() {
       <Modal
         show={selectedLandfillManagers}
         onHide={closeManagerModal}
+        size="xl"
         centered
       >
         <Modal.Header closeButton>
