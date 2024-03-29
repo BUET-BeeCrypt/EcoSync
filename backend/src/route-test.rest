@@ -7,6 +7,10 @@
 ### health
 GET {{url}} HTTP/1.1
 
+########################
+#### Authentication ####
+########################
+
 ### Sign in
 POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
@@ -62,7 +66,9 @@ Content-Type: application/json
   "new_password": "123456789"
 }
 
-
+########################
+#### User Management ####
+########################
 
 ### test
 GET {{url}}/api/users/test HTTP/1.1
@@ -78,9 +84,9 @@ Authorization: {{access}}
 Content-Type: application/json
 
 {
-  "username": "admin_u",
-  "email": "admin_u@gmail.com",
-  "name": "admin updated"
+  "username": "admin",
+  "email": "admin@gmail.com",
+  "name": "admin user"
 }
 
 ### add user
@@ -99,17 +105,42 @@ Content-Type: application/json
 GET {{url}}/api/users HTTP/1.1
 Authorization: {{access}}
 
+### Get user by id
+GET {{url}}/api/users/5 HTTP/1.1
+Authorization: {{access}}
+
+### update user by id
+# admin and owner only
+PUT {{url}}/api/users/5 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+
+{
+  "user_id": 5,
+  "name": "lm",
+  "username": "lm",
+  "email": "lm1@email.com",
+  "active": false,
+  "banned": true
+}
+
+### delete user by id
+# admin only
+DELETE {{url}}/api/users/8 HTTP/1.1
+Authorization: {{access}}
+
 ### get all roles
 GET {{url}}/api/users/roles HTTP/1.1
 Authorization: {{access}}
 
 ### update role
-PUT {{url}}/api/users/5/roles HTTP/1.1
+PUT {{url}}/api/users/8/roles HTTP/1.1
 Authorization: {{access}}
 Content-Type: application/json
 
 {
-  "role_name": "STS_MANAGER2"
+  "role_name": "STS_MANAGER"
 }
 
 ###  Create role
@@ -172,19 +203,6 @@ Authorization: {{access}}
 ### delete permission from role
 DELETE {{url}}/api/rbac/roles/STS_MANAGER/permissions/VIEW_BILLS HTTP/1.1
 Authorization: {{access}}
-
-### update user
-PUT {{url}}/api/users/5 HTTP/1.1
-Authorization: {{access}}
-Content-Type: application/json
-
-{
-  "username": "test2",
-  "email": "test2@xyz.com",
-  "name": "test2 name",
-  "active": true,
-  "banned": false
-}
 
 
 ### Get all Vehicle

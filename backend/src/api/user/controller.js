@@ -71,7 +71,7 @@ modules.deleteUser = async(req, res) => {
   }
   try{
     await repository.deleteUser(user_id);
-    res.status(200).json({"message":"Deleted successfully"});
+    res.status(200).json({"message":"User deleted successfully"});
   }catch(err){
     if(err.code !== 404){
       return res.status(500).json({message: err.message});
@@ -100,8 +100,18 @@ modules.updateUser = async (req, res) => {
     return res.status(403).json({message: `Only system admin can update other users`});
   }
   try{
+    const oldUser = await repository.getUser(user_id);
+    if(!username) username = oldUser.username;
+    if(!email) email = oldUser.email;
+    if(!name) name = oldUser.name;
+    if(banned === undefined) banned = oldUser.banned;
+    if(active === undefined) active = oldUser.active;
+
     const updatedUser = await repository.updateUser(user_id, username, email, name, banned, active);
-    res.status(200).json(updatedUser);
+    res.status(200).json({
+      "message":"User updated successfully",
+      "user": updatedUser
+    });
   }catch(err){
     if(err.code !== 404){
       return res.status(500).json({message: err.message});
