@@ -21,12 +21,14 @@ const defaultVehicle = {
   vehicle_id: 0,
   registration: "",
   type: VEHICLE_TYPES[0],
-  capacity: 0.0,
+  capacity: 3.0,
   disabled: false,
   fuel_cost_per_km_loaded: 0.0,
   fuel_cost_per_km_unloaded: 0.0,
   sts_id: null,
 };
+
+const possibleVehicleCapacity = [3, 5, 7, 15];
 
 export default function Vehicles() {
   // const [query, location] = useQuery();
@@ -149,17 +151,15 @@ export default function Vehicles() {
                           <span
                             className={
                               "mdi mdi-delete-variant mr-2 " +
-                              (s.sts_id === null
-                                ? " text-danger"
-                                : "text-dark")
+                              (s.sts_id === null ? " text-danger" : "text-dark")
                             }
                           >
                             {" "}
                             {s.sts_id === null
                               ? "No STS"
-                              : `${STSs.find(
-                                  (l) => l.sts_id === s.sts_id
-                                )?.name}`}{" "}
+                              : `${
+                                  STSs.find((l) => l.sts_id === s.sts_id)?.name
+                                }`}{" "}
                           </span>
                         </td>
                         <td>
@@ -295,8 +295,7 @@ export default function Vehicles() {
             <div className="col-md-6">
               <div className="form-group">
                 <label>Capacity</label>
-                <input
-                  type="number"
+                <select
                   className="form-control"
                   value={selectedEditVehicle?.capacity}
                   onChange={(e) => {
@@ -305,7 +304,13 @@ export default function Vehicles() {
                       capacity: Number.parseFloat(e.target.value),
                     });
                   }}
-                />
+                >
+                  {possibleVehicleCapacity.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
