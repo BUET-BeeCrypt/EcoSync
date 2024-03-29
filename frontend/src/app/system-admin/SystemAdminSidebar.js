@@ -389,7 +389,7 @@ function SideBar(props) {
         </li>
         <li
           className={
-            isPathActive("/admin/settings") ? "nav-item active" : "nav-item"
+            isPathActive("/user/settings") ? "nav-item active" : "nav-item"
           }
         >
           <Link className="nav-link" to="/user/settings">

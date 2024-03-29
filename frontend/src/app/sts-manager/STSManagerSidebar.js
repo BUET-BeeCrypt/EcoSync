@@ -268,10 +268,10 @@ function STSManagerSideBar(props) {
         </li>
         <li
           className={
-            isPathActive("/sts/settings") ? "nav-item active" : "nav-item"
+            isPathActive("/user/settings") ? "nav-item active" : "nav-item"
           }
         >
-          <Link className="nav-link" to="/sts/settings">
+          <Link className="nav-link" to="/user/settings">
             <span className="menu-title">Settings</span>
             <i className="mdi mdi-cog menu-icon"></i>
           </Link>
