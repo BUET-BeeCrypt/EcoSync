@@ -11,7 +11,7 @@ const sqlFromFile = (fileName) => {
     .replace(/\s+/g, " ") // excess white space
     .split(";") // split into all statements
     .map(Function.prototype.call, String.prototype.trim)
-    .filter((el) => el.length != 0); // remove any empty ones
+    .filter((el) => el.length != 0); // remove any empty ones 
 
   pool
     .connect()

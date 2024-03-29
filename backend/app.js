@@ -16,7 +16,7 @@ app.use(express.json());
 //   try {
 //     dbInit("./init_ddl.sql");
 //     break;
-//   } catch (e) {
+//   } catch (e) { 
 //     console.log(e);
 //   }
 // }

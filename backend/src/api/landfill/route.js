@@ -7,7 +7,9 @@ router.post("/entries", checkPermission("CREATE_LANDFILL_ENTRY"),controller.addE
 router.put("/departures/:landfill_entry_id", checkPermission("UPDATE_LANDFILL_ENTRY"), controller.addDepartureToLandfill);
 router.get("/records",checkPermission("VIEW_LANDFILL_ENTRY"), controller.getEntriesOfLandfill);
 router.get("/my", checkPermission("VIEW_LANDFILL_ENTRY"), controller.getLandfillOfManager);
+router.get("/vehicles", checkPermission("VIEW_VEHICLE"), controller.getVehiclesOfManager);
 
+router.get("/bills", checkPermission("VIEW_BILL"), controller.getLandfillBills);
 
 router.post("/", checkPermission("CREATE_LANDFILL"),controller.createLandfill);
 router.get("/", checkPermission("VIEW_LANDFILL"), controller.getLandfills);

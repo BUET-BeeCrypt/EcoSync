@@ -24,7 +24,9 @@ export default function VehicleEntry() {
 
   useEffect(() => {
     toast.promise(
-      getSTSVehicles().then((vehicles) => setVehicles(vehicles)),
+      getSTSVehicles().then((vehicles) =>
+        setVehicles(vehicles.filter((v) => v.remaining_trip > 0))
+      ),
       {
         loading: "Loading vehicles...",
         success: "Vehicles loaded!",
@@ -133,6 +135,16 @@ export default function VehicleEntry() {
                               entryTime - 1000 * 60 * 60 * 6
                             ).then(() => {
                               toast.success("Entry added successfully");
+                              setVehicles(
+                                vehicles.map((v) =>
+                                  v.vehicle_id === vehicle.vehicle_id
+                                    ? {
+                                        ...v,
+                                        remaining_trip: v.remaining_trip - 1,
+                                      }
+                                    : v
+                                )
+                              );
                               setVehicle(null);
                             }),
                             {

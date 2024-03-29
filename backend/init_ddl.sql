@@ -240,6 +240,25 @@ CREATE TABLE public."Landfill_Manager"
 );
 
 
+CREATE TABLE public."Vehicle_Route"
+(
+    route_id serial NOT NULL,
+    landfill_id integer NOT NULL,
+    sts_id integer NOT NULL,
+    direction text NOT NULL,
+    distance double precision NOT NULL,
+    duration double precision NOT NULL,
+    PRIMARY KEY (route_id),
+    FOREIGN KEY (landfill_id)
+        REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
 CREATE TABLE public."Vehicle"
 (
     vehicle_id serial NOT NULL,
@@ -263,12 +282,45 @@ INSERT INTO public."Vehicle" (registration, type, capacity, fuel_cost_per_km_loa
     ('Dhaka Metro 3', 'Compactor', 7, 10, 5),
     ('Dhaka Metro 4', 'Container Carrier', 7, 10, 5);
 
+CREATE TABLE public."Fleet"
+(
+    fleet_id serial NOT NULL,
+    route_id integer NOT NULL,
+    time_stamp timestamp NOT NULL,
+    PRIMARY KEY (fleet_id),
+    FOREIGN KEY (route_id)
+        REFERENCES public."Vehicle_Route" (route_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE public."Trip"
+(
+    fleet_id integer NOT NULL,
+    vehicle_id integer NOT NULL,
+    remaining_trip integer NOT NULL,
+    total_trip integer NOT NULL,
+    PRIMARY KEY (fleet_id, vehicle_id),
+    FOREIGN KEY (vehicle_id)
+        REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    FOREIGN KEY (fleet_id)
+        REFERENCES public."Fleet" (fleet_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "Total_Trip_Check" CHECK (total_trip <= 3),
+    CONSTRAINT "Remaining_Trip_Check" CHECK (remaining_trip >= 0),
+    CONSTRAINT "Unique_Trip" UNIQUE (fleet_id, vehicle_id)
+);
+
 CREATE TABLE public."Landfill_Entry"
 (
     landfill_entry_id serial NOT NULL,
     landfill_id integer NOT NULL,
     manager_id integer NOT NULL,
     vehicle_id integer NOT NULL,
+    fleet_id integer NOT NULL,
     entry_time timestamp NOT NULL,
     departure_time timestamp,
     volume double precision NOT NULL,
@@ -284,8 +336,36 @@ CREATE TABLE public."Landfill_Entry"
     FOREIGN KEY (vehicle_id)
         REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
         ON UPDATE CASCADE
-        ON DELETE SET NULL
+        ON DELETE SET NULL,
+    FOREIGN KEY (fleet_id, vehicle_id)
+        REFERENCES public."Trip" (fleet_id, vehicle_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
+
+-- Before trip entry insert, update the trip table remaining_trip column
+-- if vehicle_id do not match with any vehicle_id in trip table, reject the entry
+-- CREATE OR REPLACE FUNCTION update_trip_remaining_trip()
+--     RETURNS TRIGGER AS
+-- $$
+-- BEGIN
+--     UPDATE public."Trip" SET remaining_trip = remaining_trip - 1 WHERE fleet_id = NEW.fleet_id AND vehicle_id = NEW.vehicle_id;
+--     RETURN NEW;
+-- END;
+-- $$
+-- LANGUAGE 'plpgsql';
+
+-- -- create a function that returns the last created fleet_id within 24 hours for a given sts_id
+-- CREATE OR REPLACE FUNCTION get_last_fleet_id(sts_id integer)
+--     RETURNS integer AS $$
+-- DECLARE
+--     fleet_id integer;
+-- BEGIN
+--     SELECT fleet_id INTO fleet_id FROM public."Fleet" WHERE route_id = (SELECT route_id FROM public."Vehicle_Route" WHERE sts_id = sts_id) AND time_stamp > NOW() - INTERVAL '1 day' ORDER BY time_stamp DESC LIMIT 1;
+--     RETURN fleet_id;
+-- END;
+-- $$
+-- LANGUAGE 'plpgsql';
 
 CREATE TABLE public."STS_Entry"
 (
@@ -315,26 +395,16 @@ CREATE TABLE public."Bill"
 (
     bill_id serial NOT NULL,
     vehicle_id integer NOT NULL,
+    landfill_id integer NOT NULL,
+    sts_id integer NOT NULL,
     amount double precision NOT NULL,
-    timestamp integer NOT NULL,
+    distance double precision NOT NULL,
+    timestamp timestamp NOT NULL,
     PRIMARY KEY (bill_id),
     FOREIGN KEY (vehicle_id)
         REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-
-);
-
-
-CREATE TABLE public."Vehicle_Route"
-(
-    route_id serial NOT NULL,
-    landfill_id integer NOT NULL,
-    sts_id integer NOT NULL,
-    direction text NOT NULL,
-    distance double precision NOT NULL,
-    duration double precision NOT NULL,
-    PRIMARY KEY (route_id),
+        ON DELETE NO ACTION,
     FOREIGN KEY (landfill_id)
         REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -344,37 +414,6 @@ CREATE TABLE public."Vehicle_Route"
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
-
-CREATE TABLE public."Fleet"
-(
-    fleet_id serial NOT NULL,
-    route_id integer NOT NULL,
-    time_stamp timestamp NOT NULL,
-    PRIMARY KEY (fleet_id),
-    FOREIGN KEY (route_id)
-        REFERENCES public."Vehicle_Route" (route_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-);
-
-CREATE TABLE public."Trip"
-(
-    trip_id serial NOT NULL,
-    fleet_id integer NOT NULL,
-    vehicle_id integer NOT NULL,
-    remaining_trip integer NOT NULL,
-    total_trip integer NOT NULL,
-    PRIMARY KEY (trip_id),
-    FOREIGN KEY (vehicle_id)
-        REFERENCES public."Vehicle" (vehicle_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    FOREIGN KEY (fleet_id)
-        REFERENCES public."Fleet" (fleet_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-);
-
 
 INSERT INTO public."Permission" ("name",details) VALUES
         ('LOGIN','Login permission'),
@@ -457,7 +496,8 @@ INSERT INTO public."Permission_Role" (role_name, permission_name) VALUES
     ('LANDFILL_MANAGER', 'VIEW_LANDFILL'),
     ('LANDFILL_MANAGER', 'VIEW_LANDFILL_ENTRY'),
     ('LANDFILL_MANAGER', 'CREATE_LANDFILL_ENTRY'),
-    ('LANDFILL_MANAGER', 'UPDATE_LANDFILL_ENTRY');
+    ('LANDFILL_MANAGER', 'UPDATE_LANDFILL_ENTRY'),
+    ('LANDFILL_MANAGER', 'VIEW_BILL');
 
 
 
