@@ -506,7 +506,12 @@ export default function STSFacilities() {
           </div>
         </Modal.Body>
       </Modal>
-      <Modal show={selectedStsManagers} onHide={closeManagerModal} centered>
+      <Modal
+        show={selectedStsManagers}
+        onHide={closeManagerModal}
+        centered
+        size="xl"
+      >
         <Modal.Header closeButton>
           <Modal.Title>
             Managers of STS in Ward #{selectedStsManagers?.ward_no}
