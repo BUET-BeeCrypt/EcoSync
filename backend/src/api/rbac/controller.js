@@ -104,10 +104,22 @@ modules.addPermission = async (req, res) => {
 }
 
 modules.updatePermission = async (req, res) => {
-  const permission_id = req.params.permission_id;
-  const permission = req.body;
-  const result = await repository.updatePermission(permission_id, permission);
-  return res.status(201).json({"message":"Permission updated"});
+  const permission_name = req.params.permission_name;
+  try{
+    const exists = await repository.existsPermission(permission_name);
+    if (!exists) {
+      return res.status(404).json({ "message": "Permission not found" });
+    }
+    const oldPermission = await repository.getPermission(permission_name);
+    const newPermission = req.body.permission_name;
+    const permission_description = req.body.description;
+    if (!newPermission) newPermission = oldPermission.name;
+    if (!permission_description) permission_description = oldPermission.details;
+    const result = await repository.updatePermission(permission_name, newPermission, permission_description);
+    return res.status(200).json({ "message": "Permission updated" });
+  }catch(err){  
+    return res.status(500).json({ "message": err.message });
+  }
 }
 
 modules.deletePermission = async (req, res) => {

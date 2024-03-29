@@ -26,9 +26,27 @@ modules.getVehicle = async (req, res) => {
 
 modules.updateVehicle = async (req, res) => {
   const vehicle_id = req.params.vehicle_id;
-  const vehicle = req.body;
-  const updatedVehicle = await repository.updateVehicle(vehicle_id, vehicle);
-  res.status(200).json(updatedVehicle);
+  try{
+    const newVehicle = req.body;
+    const oldVehicle = await repository.getVehicle(vehicle_id);
+
+    if(!newVehicle.registration) newVehicle.registration = oldVehicle.registration;
+    if(!newVehicle.type) newVehicle.type = oldVehicle.type;
+    if(!newVehicle.capacity) newVehicle.capacity = oldVehicle.capacity;
+    if(!newVehicle.disabled) newVehicle.disabled = oldVehicle.disabled;
+    if(!newVehicle.fuel_cost_per_km_loaded) newVehicle.fuel_cost_per_km_loaded = oldVehicle.fuel_cost_per_km_loaded;
+    if(!newVehicle.fuel_cost_per_km_unloaded) newVehicle.fuel_cost_per_km_unloaded = oldVehicle.fuel_cost_per_km_unloaded;
+    if(!newVehicle.sts_id) newVehicle.sts_id = oldVehicle.sts_id;
+
+    const updatedVehicle = await repository.updateVehicle(vehicle_id, newVehicle);
+    res.status(200).json({
+      message: "Vehicle updated",
+      vehicle: updatedVehicle
+    })
+  }catch(err){
+    res.status(500).json({message: err.message});
+  }
+  
 }
 
 modules.deleteVehicle = async (req, res) => {
