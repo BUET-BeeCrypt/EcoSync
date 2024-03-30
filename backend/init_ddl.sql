@@ -201,7 +201,7 @@ INSERT INTO public."STS" (zone_no,ward_no,"name","location",latitude,longitude,c
 CREATE TABLE public."STS_Manager"
 (
     sts_id integer NOT NULL,
-    user_id integer NOT NULL,
+    user_id integer UNIQUE NOT NULL,
     PRIMARY KEY (sts_id, user_id),
     FOREIGN KEY (sts_id)
         REFERENCES public."STS" (sts_id) MATCH SIMPLE
@@ -230,7 +230,7 @@ INSERT INTO public."Landfill" (name, latitude, longitude) VALUES ('Amin Bazar La
 CREATE TABLE public."Landfill_Manager"
 (
     landfill_id integer NOT NULL,
-    user_id integer NOT NULL,
+    user_id integer UNIQUE NOT NULL,
     PRIMARY KEY (landfill_id, user_id),
     FOREIGN KEY (landfill_id)
         REFERENCES public."Landfill" (landfill_id) MATCH SIMPLE
