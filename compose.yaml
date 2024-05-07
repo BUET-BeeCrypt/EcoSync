@@ -19,6 +19,7 @@ services:
     restart: on-failure
     environment:
       DB_URL: postgresql://pg-db:5432/code-samurai?user=postgres&password=password
+      VALHALLA_URL: http://valhalla:8002
       PORT: 8000
       JWT_SECRET_KEY: "secret"
       REFRESH_TOKEN_SECRET_KEY: "refresh"
@@ -39,3 +40,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+  
+  valhalla:
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+    ports:
+      - "8002:8002"
+    volumes:
+      - "./valhalla/custom_files:/custom_files"

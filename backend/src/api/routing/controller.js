@@ -1,7 +1,7 @@
 const repository = require("./repository");
 const stsRepository = require("../sts/repository");
 const landfillRepository = require("../landfill/repository");
-const { PriorityQueue } = require('@datastructures-js/priority-queue');
+const axios = require("axios");
 const modules = {};
 
 const Valhalla = require("@routingjs/valhalla").Valhalla;
@@ -37,17 +37,93 @@ modules.endToEnd = async (start, end) => {
    }
 }
 
+
+modules.decode = (str, precision) => {
+    var index = 0,
+        lat = 0,
+        lng = 0,
+        coordinates = [],
+        shift = 0,
+        result = 0,
+        byte = null,
+        latitude_change,
+        longitude_change,
+        factor = Math.pow(10, precision || 6);
+
+    // Coordinates have variable length when encoded, so just keep
+    // track of whether we've hit the end of the string. In each
+    // loop iteration, a single coordinate is decoded.
+    while (index < str.length) {
+
+        // Reset shift, result, and byte
+        byte = null;
+        shift = 0;
+        result = 0;
+
+        do {
+            byte = str.charCodeAt(index++) - 63;
+            result |= (byte & 0x1f) << shift;
+            shift += 5;
+        } while (byte >= 0x20);
+
+        latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+        shift = result = 0;
+
+        do {
+            byte = str.charCodeAt(index++) - 63;
+            result |= (byte & 0x1f) << shift;
+            shift += 5;
+        } while (byte >= 0x20);
+
+        longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+        lat += latitude_change;
+        lng += longitude_change;
+
+        coordinates.push([(lng / factor)+"",(lat / factor)+""]);
+    }
+
+    return coordinates;
+};
+
+modules.endToEndLocal = async (start, end) => {
+    try{
+        const json_data = {
+            "locations":[{"lat":start.lat,"lon":start.lon},
+                        {"lat":end.lat,"lon":end.lon}],
+            "costing":"auto",
+            "units":"kilometers",
+            "id":"my_work_route"
+        }
+        const valhalla_route = process.env.VALHALLA_URL+"/route?json="+JSON.stringify(json_data);
+        const result = await axios.get(valhalla_route);
+        const shape = modules.decode(result.data.trip.legs[0].shape);
+        const route = {
+            "direction": shape,
+            "distance": result.data.trip.legs[0].summary.length,
+            "duration": result.data.trip.legs[0].summary.time,
+            "maneuvers": result.data.trip.legs[0].maneuvers
+        }
+        return route;
+        
+    }catch(err){
+        console.log(err);
+       return null;
+   }
+}
+
 modules.createRoutesFromLandfill = async (landfill_id) => {
     const landfill = await repository.getLandfill(landfill_id);
     if( landfill === null ) return;
     const STSs = await repository.getSTSs();
     for( const sts of STSs ){
-        const result = await modules.endToEnd({lat:landfill.latitude, lon:landfill.longitude}, 
+        const result = await modules.endToEndLocal({lat:landfill.latitude, lon:landfill.longitude}, 
                                                 {lat:sts.latitude, lon:sts.longitude});
         if( result !== null ){
-            const direction = result.geometry.coordinates;
-            const distance = result.properties.distance;
-            const duration = result.properties.duration;
+            const direction = result.direction;
+            const distance = result.distance;
+            const duration = result.duration;
             await repository.createRoute(landfill_id, sts.sts_id, direction,distance,duration);
             console.log(`Route created from landfill ${landfill_id} to sts ${sts.sts_id}`);
         }
@@ -60,12 +136,12 @@ modules.createRoutesFromSTS = async (sts_id) => {
     if( sts === null ) return;
     const landfills = await repository.getLandfills();
     for( const landfill of landfills ){
-        const result = await modules.endToEnd({lat:landfill.latitude, lon:landfill.longitude},
+        const result = await modules.endToEndLocal({lat:landfill.latitude, lon:landfill.longitude},
                                                 {lat:sts.latitude, lon:sts.longitude});
         if( result !== null ){
-            const direction = result.geometry.coordinates;
-            const distance = result.properties.distance;
-            const duration = result.properties.duration;
+            const direction = result.direction;
+            const distance = result.distance;
+            const duration = result.duration;
             await repository.createRoute(landfill.landfill_id, sts_id, direction,distance,duration);
             console.log(`Route created from landfill ${landfill.landfill_id} to sts ${sts_id}`);
         }
@@ -77,12 +153,12 @@ modules.createRouteFromLandfillToSTS = async (landfill_id, sts_id) => {
     const landfill = await repository.getLandfill(landfill_id);
     const sts = await repository.getSTS(sts_id);
     if( landfill === null || sts === null ) return;
-    const result = await modules.endToEnd({lat:landfill.latitude, lon:landfill.longitude},
+    const result = await modules.endToEndLocal({lat:landfill.latitude, lon:landfill.longitude},
                                             {lat:sts.latitude, lon:sts.longitude});
     if( result !== null ){
-        const direction = result.geometry.coordinates;
-        const distance = result.properties.distance;
-        const duration = result.properties.duration;
+        const direction = result.direction;
+        const distance = result.distance;
+        const duration = result.duration;
         await repository.createRoute(landfill_id, sts_id, direction,distance,duration);
         console.log(`Route created from landfill ${landfill_id} to sts ${sts_id}`);
     }
@@ -200,7 +276,7 @@ modules.recalculateRoutes = async ( ) => {
                 console.log(`Creating route from landfill ${landfill.landfill_id} to sts ${sts.sts_id}`);
             
                 await modules.createRouteFromLandfillToSTS(landfill.landfill_id, sts.sts_id);
-                await wait(1000);
+                // await wait(1000);
             }
         }
     }
@@ -220,6 +296,13 @@ modules.getRoutes = async (req, res) => {
         routes,
         landfills
     });
+}
+
+modules.testLocal = async (req, res) => {
+    const start = req.body.start;
+    const end = req.body.end;
+    await modules.endToEndLocal(start,end);
+    return res.status(200).json({"ok":"ok"});
 }
 
 module.exports = modules;
