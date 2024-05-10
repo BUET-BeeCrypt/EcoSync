@@ -66,8 +66,9 @@ modules.createSTS = async (sts) => {
     capacity,
     dump_area,
     coverage_area,
+    fine_per_ton,
   } = sts;
-  const query = `INSERT INTO public."STS" (zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`;
+  const query = `INSERT INTO public."STS" (zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area, fine_per_ton) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`;
   const values = [
     zone_no,
     ward_no,
@@ -78,6 +79,7 @@ modules.createSTS = async (sts) => {
     capacity,
     dump_area,
     coverage_area,
+    fine_per_ton,
   ];
   const result = await pool.query(query, values);
   return result.rows[0];
@@ -123,8 +125,9 @@ modules.updateSTS = async (sts_id, sts) => {
     capacity,
     dump_area,
     coverage_area,
+    fine_per_ton,
   } = sts;
-  const query = `UPDATE public."STS" SET zone_no = $1, ward_no = $2, name = $3, location = $4, latitude = $5, longitude = $6, capacity = $7, dump_area = $8, coverage_area = $9 WHERE sts_id = $10 RETURNING *`;
+  const query = `UPDATE public."STS" SET zone_no = $1, ward_no = $2, name = $3, location = $4, latitude = $5, longitude = $6, capacity = $7, dump_area = $8, coverage_area = $9, fine_per_ton = $10 WHERE sts_id = $11 RETURNING *`;
   const values = [
     zone_no,
     ward_no,
@@ -135,6 +138,7 @@ modules.updateSTS = async (sts_id, sts) => {
     capacity,
     dump_area,
     coverage_area,
+    fine_per_ton,
     sts_id,
   ];
   const result = await pool.query(query, values);
@@ -214,19 +218,17 @@ modules.addEntryToSTS = async (sts_id, manager_id, entry_time, vehicle_id) => {
   await pool.query(query, values);
 };
 
-
 modules.existsVehicleInSTS = async (sts_id, vehicle_id) => {
   const query = `SELECT 1 FROM public."Vehicle" WHERE sts_id = $1 AND vehicle_id = $2`;
   const result = await pool.query(query, [sts_id, vehicle_id]);
   return result.rows.length > 0;
-}
+};
 
 modules.existsEntry = async (sts_entry_id) => {
   const query = `SELECT 1 FROM public."STS_Entry" WHERE sts_entry_id = $1`;
   const result = await pool.query(query, [sts_entry_id]);
   return result.rows.length > 0;
-}
-
+};
 
 modules.getArrivalEntriesOfSTS = async (sts_id) => {
   const query = `SELECT * FROM public."STS_Entry" WHERE sts_id = $1 AND departure_time IS NULL AND vehicle_id IS NOT NULL ORDER BY entry_time DESC`;
@@ -263,9 +265,25 @@ modules.addDepartureToSTS = async (
   await pool.query(query, values);
 };
 
-modules.addDumpEntryToSTS = async (sts_id, manager_id, entry_time, volume) => {
-  const query = `INSERT INTO public."STS_Entry" (sts_id, manager_id, entry_time, volume) VALUES ($1, $2, $3, $4)`;
-  const values = [sts_id, manager_id, new Date(entry_time), volume];
+modules.addDumpEntryToSTS = async (
+  sts_id,
+  manager_id,
+  entry_time,
+  volume,
+  waste_type,
+  contract_company_id,
+  contract_vehicle
+) => {
+  const query = `INSERT INTO public."STS_Entry" (sts_id, manager_id, entry_time, volume, waste_type, contract_company_id, contract_vehicle) VALUES ($1, $2, $3, $4, $5, $6, $7)`;
+  const values = [
+    sts_id,
+    manager_id,
+    new Date(entry_time),
+    volume,
+    waste_type,
+    contract_company_id,
+    contract_vehicle,
+  ];
   await pool.query(query, values);
 };
 
@@ -274,6 +292,12 @@ modules.getSTSIDfromManagerID = async (manager_id) => {
   const result = await pool.query(query, [manager_id]);
   if (result.rows.length === 0) return null;
   return result.rows[0].sts_id;
+};
+
+modules.getContractorsOfSTS = async (sts_id) => {
+  const query = `SELECT * FROM public."Contractor_Company" WHERE sts_id = $1`;
+  const result = await pool.query(query, [sts_id]);
+  return result.rows;
 };
 
 module.exports = modules;
