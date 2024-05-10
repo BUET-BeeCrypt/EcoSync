@@ -5,7 +5,7 @@ const modules = {};
 
 modules.createPost = async (req, res) => {
   try{
-    const { user_id } = req.user;
+    const { user_id, username } = req.user;
     const content  = req.body;
 
     // console.table(content);
@@ -17,7 +17,7 @@ modules.createPost = async (req, res) => {
     });
 
   
-    const post = await repository.createPost(user_id, content);
+    const post = await repository.createPost(user_id,username,content);
     res.status(201).json(post);
   }catch(err){
     res.status(500).json({message: err.message});

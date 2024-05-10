@@ -23,15 +23,15 @@ CREATE TABLE public."Like" (
 */
 
 // create post
-modules.createPost = async (user_id, post) => {
+modules.createPost = async (user_id, username, post) => {
   try {
     //console.table(post)
     const {title, description, type, issue_type, image_uri, visibility, latitude, longitude } = post;
     const query = `INSERT INTO public."Post" 
-    (user_id, title, description, type, type_value, image_uri, visibility, latitude, longitude, timestamp) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`;
+    (user_id, username, title, description, type, type_value, image_uri, visibility, latitude, longitude, timestamp) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`;
     
-    const values = [user_id, title, description, type, issue_type, image_uri, visibility, latitude, longitude, new Date()];
+    const values = [user_id, username, title, description, type, issue_type, image_uri, visibility, latitude, longitude, new Date()];
     const { rows } = await pool.query(query, values);
     return rows[0];
   } catch (error) {

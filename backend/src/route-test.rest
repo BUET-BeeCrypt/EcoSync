@@ -547,7 +547,6 @@ Content-Type: application/json
   "title": "Post 5",
   "description": "sdfasdfsffffffffffffffff",
   "image_uri": [
-    "1.jpg", "2.jpg"
   ],
   "type": "Issue",
   "type_value": "Event 1",
