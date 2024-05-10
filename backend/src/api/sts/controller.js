@@ -40,9 +40,9 @@ modules.createSTS = async (req, res) => {
   // check number
   if (isNaN(sts.coverage_area)) err_msg = "Coverage area must be a number";
 
-  if(!sts.fine_per_ton) err_msg = "Fine per ton is required";
-  if(isNaN(sts.fine_per_ton)) err_msg = "Fine per ton must be a number";
-  if(sts.fine_per_ton < 0) err_msg = "Fine per ton cannot be negative";
+  if (!sts.fine_per_ton) err_msg = "Fine per ton is required";
+  if (isNaN(sts.fine_per_ton)) err_msg = "Fine per ton must be a number";
+  if (sts.fine_per_ton < 0) err_msg = "Fine per ton cannot be negative";
 
   if (err_msg) return res.status(400).json({ message: err_msg });
 
@@ -333,7 +333,7 @@ modules.getVehiclesOfSTS = async (req, res) => {
 
 modules.addEntryToSTS = async (req, res) => {
   const manager_id = req.user.user_id;
-  try{
+  try {
     const sts_id = await repository.getSTSIDfromManagerID(manager_id);
 
     if (sts_id === null) {
@@ -344,15 +344,21 @@ modules.addEntryToSTS = async (req, res) => {
 
     const { entry_time, vehicle_id } = req.body;
 
-    const existsVehicle = await repository.existsVehicleInSTS(sts_id, vehicle_id);
-    if (!existsVehicle) return res.status(400).json({ message: "Vehicle not assigned to this sts" });
+    const existsVehicle = await repository.existsVehicleInSTS(
+      sts_id,
+      vehicle_id
+    );
+    if (!existsVehicle)
+      return res
+        .status(400)
+        .json({ message: "Vehicle not assigned to this sts" });
 
     const fleet_id =
       (await routeRepository.getLastFleetOfSTS(sts_id))?.fleet_id || null;
     await routeRepository.decreaseRemainingTrip(fleet_id, vehicle_id);
     await repository.addEntryToSTS(sts_id, manager_id, entry_time, vehicle_id);
     res.status(200).json({ message: "Entry added to sts" });
-  }catch(err){
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
@@ -416,7 +422,13 @@ modules.addDepartureToSTS = async (req, res) => {
 };
 
 modules.addDumpEntryToSTS = async (req, res) => {
-  let { entry_time, volume, waste_type, contract_company_id, contract_vehicle } = req.body;
+  let {
+    entry_time,
+    volume,
+    waste_type,
+    contract_company_id,
+    contract_vehicle,
+  } = req.body;
   const manager_id = req.user.user_id;
   waste_type = waste_type || "Domestic";
 
@@ -424,7 +436,7 @@ modules.addDumpEntryToSTS = async (req, res) => {
     return res.status(400).json({ message: "Contract company id is required" });
   }
 
-  try{
+  try {
     const sts_id = await repository.getSTSIDfromManagerID(manager_id);
 
     if (sts_id === null) {
@@ -436,9 +448,17 @@ modules.addDumpEntryToSTS = async (req, res) => {
     if (volume < 0) {
       res.status(400).json({ message: "Volume cannot be negative" });
     }
-    await repository.addDumpEntryToSTS(sts_id, manager_id, entry_time, volume, waste_type, contract_company_id, contract_vehicle);
+    await repository.addDumpEntryToSTS(
+      sts_id,
+      manager_id,
+      entry_time,
+      volume,
+      waste_type,
+      contract_company_id,
+      contract_vehicle
+    );
     res.status(200).json({ message: "Dump entry added to sts" });
-  }catch(err){
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
@@ -454,13 +474,37 @@ modules.getContractorsOfSTS = async (req, res) => {
 
   const contractors = await repository.getContractorsOfSTS(sts_id);
   res.status(200).json(contractors);
-}
+};
 
 modules.getSTSOfManager = async (req, res) => {
   const manager_id = req.user.user_id;
   const sts_id = await repository.getSTSIDfromManagerID(manager_id);
   const sts = await repository.getSTS(sts_id);
   res.status(200).json(sts);
+};
+
+modules.getAllBill = async (req, res) => {
+  const sts_id = await repository.getSTSIDfromManagerID(req.user.user_id);
+  if (sts_id === null) {
+    return res
+      .status(404)
+      .json({ message: "Manager is not assigned to any sts" });
+  }
+
+  const result = await repository.getAllBill(sts_id);
+  res.status(200).json(result);
+};
+
+modules.generateTodaysBill = async (req, res) => {
+  const sts_id = await repository.getSTSIDfromManagerID(req.user.user_id);
+  if (sts_id === null) {
+    return res
+      .status(404)
+      .json({ message: "Manager is not assigned to any sts" });
+  }
+
+  const result = await repository.generateTodaysBill(sts_id);
+  res.status(200).json(await repository.getAllBill(sts_id));
 };
 
 module.exports = modules;

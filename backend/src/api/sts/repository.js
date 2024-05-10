@@ -300,4 +300,26 @@ modules.getContractorsOfSTS = async (sts_id) => {
   return result.rows;
 };
 
+modules.generateTodaysBill = async (sts_id) => {
+  const file_per_ton_query = `SELECT fine_per_ton FROM public."STS" WHERE sts_id = $1`;
+  const file_per_ton_result = await pool.query(file_per_ton_query, [sts_id]);
+  const fine_per_ton = file_per_ton_result.rows[0].fine_per_ton;
+
+  const insert_as_fine = `INSERT INTO public."Contractor_Bills" (sts_id, contract_company_id, payment_per_ton, waste_required, waste_collected, created, fine_per_ton)
+  select se.sts_id, se.contract_company_id, cc.ton_payment_rate as payment_per_ton, cc.required_ton as waste_required, coalesce(SUM(se.volume), 0) as waste_collected, current_timestamp as created, $1 as fine_per_ton 
+  from "STS_Entry" se natural join "Contractor_Company" cc
+  where se.sts_id = $2 and se.entry_time > current_date and se.contract_company_id is not null
+  group by se.sts_id, se.contract_company_id, cc.ton_payment_rate, cc.required_ton 
+  `;
+  await pool.query(insert_as_fine, [fine_per_ton, sts_id]);
+};
+
+modules.getAllBill = async (sts_id) => {
+  const query = `SELECT * FROM public."Contractor_Bills" cb
+  join public."Contractor_Company" cc on (cb.contract_company_id = cc.contract_company_id)
+  WHERE cb.sts_id = $1 ORDER BY created DESC`;
+  const result = await pool.query(query, [sts_id]);
+  return result.rows;
+};
+
 module.exports = modules;

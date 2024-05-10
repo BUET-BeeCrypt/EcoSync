@@ -29,6 +29,8 @@ INSERT INTO public."Role" (name, details) VALUES ('STS_MANAGER', 'STS Manager ro
 INSERT INTO public."Role" (name, details) VALUES ('LANDFILL_MANAGER', 'Landfill Manager role');
 INSERT INTO public."Role" (name, details) VALUES ('CONTRACTOR_MANAGER', 'Contractor Manager role');
 INSERT INTO public."Role" (name, details) VALUES ('UNASSIGNED', 'Unassigned role');
+INSERT INTO public."Role" (name, details) VALUES ('CONTRACTOR_WORKER', 'Contractor Worker role');
+INSERT INTO public."Role" (name, details) VALUES ('CITIZEN', 'Citizen role');
 
 
 CREATE TABLE public."User"
@@ -333,6 +335,27 @@ CREATE TABLE public."Contractor_Worker_Log"
         ON DELETE CASCADE
 );
 
+CREATE TABLE public."Contractor_Bills"
+(
+    bill_id serial NOT NULL,
+    sts_id integer NOT NULL,
+    contract_company_id integer NOT NULL,
+    created timestamp NOT NULL,
+    waste_collected double precision NOT NULL,
+    waste_required double precision NOT NULL,
+    payment_per_ton double precision NOT NULL,
+    fine_per_ton double precision NOT NULL,
+    PRIMARY KEY (bill_id),
+    FOREIGN KEY (contract_company_id)
+        REFERENCES public."Contractor_Company" (contract_company_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 CREATE TABLE public."Vehicle_Route"
 (
     route_id serial NOT NULL,
@@ -613,7 +636,12 @@ INSERT INTO public."Permission_Role" (role_name, permission_name) VALUES
     ('LANDFILL_MANAGER', 'VIEW_BILL');
 
 
-
+-- citizen permissions
+-- view all sts, view sts, view landfill
+INSERT INTO public."Permission_Role" (role_name, permission_name) VALUES 
+    ('CITIZEN', 'VIEW_STS'),
+    ('CITIZEN', 'VIEW_ALL_STS'),
+    ('CITIZEN', 'VIEW_LANDFILL');
 
 
 
@@ -718,3 +746,48 @@ INSERT INTO public."Bill"(vehicle_id,landfill_id,sts_id,amount,distance,timestam
     (1,1,22,232.095,15.473,'2024-03-30 00:34:18.842722'),
     (2,1,22,232.095,15.473,'2024-03-30 00:34:57.897948'),
     (3,1,22,232.095,15.473,'2024-03-30 00:35:10.07073');
+
+
+-- create post
+-- user_id, tite, description list of imageuri, 
+-- type, visibility, timetimestamp
+CREATE TABLE public."Post" (
+    "post_id" SERIAL PRIMARY KEY,
+    "user_id" TEXT, -- null for anonymous post
+    "title" VARCHAR(100) NOT NULL,
+    "description" TEXT NOT NULL,
+    "image_uri" TEXT[],
+    "type" VARCHAR(20) NOT NULL, -- issue, event, news, questions, idea
+    "type_value" TEXT, -- date for event for issue type "overflowing bins", "illegal dumping", "broken bins", "littering", "damaged infrastructure", "other"
+    "visibility" VARCHAR(20) NOT NULL, -- "community", "dnnc"
+    "latitude" DOUBLE PRECISION NOT NULL,
+    "longitude" DOUBLE PRECISION NOT NULL,
+    "timestamp" TIMESTAMP NOT NULL
+);
+
+-- comment on post
+-- post_id, user_id, comment, timestamp
+CREATE TABLE public."Comment" (
+    "comment_id" SERIAL PRIMARY KEY,
+    "post_id" INTEGER NOT NULL,
+    "user_id" INTEGER, -- can be anonymous null for anonymous post
+    "comment" TEXT NOT NULL,
+    "timestamp" TIMESTAMP NOT NULL,
+    FOREIGN KEY (post_id) 
+        REFERENCES public."Post" (post_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+);
+
+-- like on post
+-- post_id, user_id, timestamp
+CREATE TABLE public."Like" (
+    "like_id" SERIAL PRIMARY KEY,
+    "post_id" INTEGER NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "timestamp" TIMESTAMP NOT NULL,
+    FOREIGN KEY (post_id) 
+        REFERENCES public."Post" (post_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+);
