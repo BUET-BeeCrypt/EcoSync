@@ -17,9 +17,12 @@ export const addSTSDeparture = async (sts_entry_id, departure_time, volume) =>
     .put(api_url(`/sts/departures/${sts_entry_id}`), { departure_time, volume })
     .then((res) => res.data);
 
-export const addSTSDumpEntry = async (entry_time, volume) =>
+export const getSTSContractors = async () =>
+  axios.get(api_url(`/sts/contractors`)).then((res) => res.data);
+
+export const addSTSDumpEntry = async (entry_time, volume, waste_type, contract_company_id, contract_vehicle) =>
   axios
-    .post(api_url(`/sts/dump`), { entry_time, volume })
+    .post(api_url(`/sts/dump`), { entry_time, volume, waste_type, contract_company_id, contract_vehicle})
     .then((res) => res.data);
 
 export const getSTSRecords = async (page) =>
