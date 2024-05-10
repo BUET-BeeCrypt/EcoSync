@@ -306,6 +306,12 @@ CREATE TABLE public."Contractor_Worker"
     contract_company_id integer NOT NULL,
     name character varying(256) NOT NULL,
     contact_number character varying(256) NOT NULL,
+    date_of_birth character varying(32),
+    date_of_hire character varying(32),
+    job_title character varying(32),
+    payement_per_hour double precision,
+    assigned_route text,
+    assigned_markers text,
     PRIMARY KEY (contract_worker_id),
     FOREIGN KEY (contract_company_id)
         REFERENCES public."Contractor_Company" (contract_company_id) MATCH SIMPLE
