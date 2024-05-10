@@ -29,7 +29,8 @@ export const addSTS = async (
   longitude,
   capacity,
   dump_area,
-  coverage_area
+  coverage_area,
+  fine_per_ton
 ) =>
   axios
     .post(api_url("/sts"), {
@@ -42,6 +43,7 @@ export const addSTS = async (
       capacity,
       dump_area,
       coverage_area,
+      fine_per_ton
     })
     .then((res) => res.data);
 
@@ -61,7 +63,8 @@ export const updateSTS = async (
   longitude,
   capacity,
   dump_area,
-  coverage_area
+  coverage_area,
+  fine_per_ton
 ) =>
   axios
     .put(api_url(`/sts/${sts_id}`), {
@@ -74,6 +77,7 @@ export const updateSTS = async (
       capacity,
       dump_area,
       coverage_area,
+      fine_per_ton
     })
     .then((res) => res.data);
 

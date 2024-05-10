@@ -412,12 +412,13 @@ export default function ContractorCompanies() {
                 <label>Payment Per Ton</label>
                 <input
                   type="number"
+                  step="any"
                   className="form-control"
                   value={selectedEditContractor?.ton_payment_rate}
                   onChange={(e) => {
                     setSelectedEditContractor({
                       ...selectedEditContractor,
-                      ton_payment_rate: Number.parseInt(e.target.value),
+                      ton_payment_rate: Number.parseFloat(e.target.value),
                     });
                   }}
                 />
@@ -428,13 +429,14 @@ export default function ContractorCompanies() {
               <div className="form-group">
                 <label>Minimum Collection </label>
                 <input
+                step="any"
                   type="number"
                   className="form-control"
                   value={selectedEditContractor?.required_ton}
                   onChange={(e) => {
                     setSelectedEditContractor({
                       ...selectedEditContractor,
-                      required_ton: Number.parseInt(e.target.value),
+                      required_ton: Number.parseFloat(e.target.value),
                     });
                   }}
                 />

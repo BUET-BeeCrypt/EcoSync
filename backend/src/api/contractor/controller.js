@@ -199,4 +199,146 @@ modules.removeManagerFromContractorCompany = async (req, res) => {
   }
 };
 
+modules.createContractorWorker = async (req, res) => {
+  const contractorWorker = req.body;
+
+  let err_msg = "";
+
+  if (!contractorWorker.name) err_msg += "Name is required. ";
+    
+  if (!contractorWorker.contact_number)
+    err_msg += "Contact number is required. ";
+  if (!contractorWorker.contract_company_id)
+    err_msg += "Contract company ID is required. ";
+  if (err_msg) {
+    return res.status(400).json({ error: err_msg });
+  }
+
+  try {
+    const result = await repository.createContractorWorker(contractorWorker);
+    res.status(201).json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
+modules.getContractorWorkers = async (req, res) => {
+  try {
+    const contract_company_id = req.params.contract_company_id;
+    console.log(contract_company_id);
+    const result = await repository.getContractorWorkers(contract_company_id);
+    res.status(200).json(result);
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).json({ error: e.message });
+  }
+};
+
+modules.getContractorWorker = async (req, res) => {
+  const worker_id = req.params.worker_id;
+
+  try {
+    const result = await repository.getContractorWorker(worker_id);
+    res.status(200).json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
+modules.updateContractorWorker = async (req, res) => {
+  const worker_id = req.params.worker_id;
+  const contractorWorker = req.body;
+
+  let err_msg = "";
+
+  if (!contractorWorker.name) err_msg += "Name is required. ";
+  if (!contractorWorker.contact_number)
+    err_msg += "Contact number is required. ";
+  if (!contractorWorker.contract_company_id)
+    err_msg += "Contract company ID is required. ";
+  if (err_msg) {
+    return res.status(400).json({ error: err_msg });
+  }
+
+  try {
+    const result = await repository.updateContractorWorker(
+      worker_id,
+      contractorWorker
+    );
+    res.status(200).json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
+modules.deleteContractorWorker = async (req, res) => {
+  const worker_id = req.params.worker_id;
+
+  try {
+    await repository.deleteContractorWorker(worker_id);
+    res.status(204).end();
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
+
+modules.deleteContractorWorkerRoute = async (req, res) => {
+  const contract_worker_id = req.params.contract_worker_id;
+
+  try {
+    await repository.updateContractorWorkerRoute(contract_worker_id, "[]","[]");
+    res.status(204).end();
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+}
+
+modules.createContractorWorkerLog = async (req, res) => {
+
+  try{
+    const contractorWorkerLog = req.body;
+    const { contract_worker_id, entry_time } = contractorWorkerLog;
+    
+    await repository.createContractorWorkerLog(contract_worker_id, entry_time);
+    res.status(201).end();
+  }catch(e){
+    res.status(500).json({ error: e.message });
+  }
+}
+
+modules.updateContractorWorkerLogEndTime = async (req, res) => {
+  try{
+    const contractorWorkerLog = req.body;
+    const { contract_worker_id, exit_time } = contractorWorkerLog;
+    await repository.updateContractorWorkerLogEndTime(contract_worker_id, exit_time);
+    res.status(200).end();
+  }catch(e){
+    res.status(500).json({ error: e.message });
+  }
+}
+
+modules.getContractorWorkerLogsRunning = async (req, res) => {
+  try{
+    const contract_company_id = req.params.contract_company_id;
+    const result = await repository.getUnfinishedContractorWorkerLogs(contract_company_id);
+    res.json(result);
+  }catch(e){
+    res.status(500).json({ error: e.message });
+  }
+}
+
+modules.updateContractorWorkerLog = async (req, res) => {
+  try{
+    const contractorWorkerLog = req.body;
+    const { contract_worker_id, exit_time } = contractorWorkerLog;
+    await repository.updateContractorWorkerLog(contract_worker_id, exit_time);
+    res.status(200).end();
+  }catch(e){
+    res.status(500).json({ error: e.message });
+  }
+}
+
+
+
 module.exports = modules;
