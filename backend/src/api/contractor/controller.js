@@ -205,7 +205,7 @@ modules.createContractorWorker = async (req, res) => {
   let err_msg = "";
 
   if (!contractorWorker.name) err_msg += "Name is required. ";
-    
+
   if (!contractorWorker.contact_number)
     err_msg += "Contact number is required. ";
   if (!contractorWorker.contract_company_id)
@@ -224,7 +224,9 @@ modules.createContractorWorker = async (req, res) => {
 
 modules.getContractorWorkers = async (req, res) => {
   try {
-    const contract_company_id = req.params.contract_company_id;
+    const contract_company_id = await repository.getContructorIdFromUserId(
+      req.user.user_id
+    );
     console.log(contract_company_id);
     const result = await repository.getContractorWorkers(contract_company_id);
     res.status(200).json(result);
@@ -282,63 +284,79 @@ modules.deleteContractorWorker = async (req, res) => {
   }
 };
 
-
 modules.deleteContractorWorkerRoute = async (req, res) => {
   const contract_worker_id = req.params.contract_worker_id;
 
   try {
-    await repository.updateContractorWorkerRoute(contract_worker_id, "[]","[]");
+    await repository.updateContractorWorkerRoute(
+      contract_worker_id,
+      "[]",
+      "[]"
+    );
     res.status(204).end();
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
-}
+};
 
 modules.createContractorWorkerLog = async (req, res) => {
-
-  try{
+  try {
     const contractorWorkerLog = req.body;
     const { contract_worker_id, entry_time } = contractorWorkerLog;
-    
+
     await repository.createContractorWorkerLog(contract_worker_id, entry_time);
     res.status(201).end();
-  }catch(e){
+  } catch (e) {
     res.status(500).json({ error: e.message });
   }
-}
+};
 
 modules.updateContractorWorkerLogEndTime = async (req, res) => {
-  try{
+  try {
     const contractorWorkerLog = req.body;
     const { contract_worker_id, exit_time } = contractorWorkerLog;
-    await repository.updateContractorWorkerLogEndTime(contract_worker_id, exit_time);
+    await repository.updateContractorWorkerLogEndTime(
+      contract_worker_id,
+      exit_time
+    );
     res.status(200).end();
-  }catch(e){
+  } catch (e) {
     res.status(500).json({ error: e.message });
   }
-}
+};
 
 modules.getContractorWorkerLogsRunning = async (req, res) => {
-  try{
+  try {
     const contract_company_id = req.params.contract_company_id;
-    const result = await repository.getUnfinishedContractorWorkerLogs(contract_company_id);
+    const result = await repository.getUnfinishedContractorWorkerLogs(
+      contract_company_id
+    );
     res.json(result);
-  }catch(e){
+  } catch (e) {
     res.status(500).json({ error: e.message });
   }
-}
+};
 
 modules.updateContractorWorkerLog = async (req, res) => {
-  try{
+  try {
     const contractorWorkerLog = req.body;
     const { contract_worker_id, exit_time } = contractorWorkerLog;
     await repository.updateContractorWorkerLog(contract_worker_id, exit_time);
     res.status(200).end();
-  }catch(e){
+  } catch (e) {
     res.status(500).json({ error: e.message });
   }
-}
+};
 
-
+modules.createOrUpdateWorkers = async (req, res) => {
+  try {
+    const workers = req.body;
+    const user_id = req.user.user_id;
+    await repository.updateOrCreateWorkerFromArray(workers, user_id);
+    res.status(201).end();
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
 
 module.exports = modules;

@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { Modal } from "react-bootstrap";
 import { USER_ROLES } from "../App";
+import { createOrUpdateWorkers, getContractorWorkers } from "../api/contractor";
 
 const headers = [
   "contract_worker_id",
@@ -91,6 +92,19 @@ const readFileAsText = (file) => {
 export default function Workers() {
   const [data, setData] = useState([]);
 
+  useEffect(() => {
+    toast.promise(
+      getContractorWorkers().then((rows) => {
+        setData(rows);
+      }),
+      {
+        loading: "Loading workers...",
+        success: "Workers loaded!",
+        error: "Failed to load workers",
+      }
+    );
+  }, []);
+
   return (
     <div>
       <div className="page-header">
@@ -135,7 +149,16 @@ export default function Workers() {
                         e.preventDefault();
                         readFileAsText(e.target.files[0]).then((text) => {
                           const rows = jsonFromCSV(text);
-                          setData(rows);
+                          toast.promise(
+                            createOrUpdateWorkers(rows).then(() => {
+                              setData(rows);
+                            }),
+                            {
+                              loading: "Uploading...",
+                              success: "Uploaded successfully",
+                              error: "Failed to upload",
+                            }
+                          );
                         });
                       }}
                     />

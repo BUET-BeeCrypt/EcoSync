@@ -99,3 +99,11 @@ export const removeManagerFromContractorCompany = async (
 export const getContractorCompanyId = async () => {
   return axios.get(api_url("/contractor/id")).then((res) => res.data);
 }
+
+export const createOrUpdateWorkers = async (workers) => {
+  return axios.put(api_url("/contractor/workforce"), workers).then((res) => res.data);
+}
+
+export const getContractorWorkers = async () => {
+  return axios.get(api_url("/contractor/workforce")).then((res) => res.data);
+}

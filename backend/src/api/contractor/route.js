@@ -3,8 +3,9 @@ const router = require("express-promise-router")();
 const checkPermission = require("../../middlewares/check-permission");
 
 router.get("/workforce/worker/:worker_id",controller.getContractorWorker);
-router.get("/workforce/:contract_company_id",controller.getContractorWorkers);
+router.get("/workforce",controller.getContractorWorkers);
 router.post("/workforce",controller.createContractorWorker);
+router.put("/workforce",controller.createOrUpdateWorkers);
 router.put("/workforce/worker/:worker_id",controller.updateContractorWorker);
 router.delete("/workforce/:worker_id",controller.deleteContractorWorker);
 router.delete("/workforce/route/:worker_id",controller.deleteContractorWorkerRoute);
