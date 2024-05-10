@@ -2,73 +2,94 @@ import { useState } from "react";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { Modal } from "react-bootstrap";
-import { Typeahead } from "react-bootstrap-typeahead";
-import {
-  addLandfill,
-  addManagerToLandfill,
-  deleteLandfill,
-  getLandfills,
-  getManagersOfLandfill,
-  getUsers,
-  removeManagerFromLandfill,
-  updateLandfill,
-} from "../api/admin";
 import { USER_ROLES } from "../App";
 
-const defaultLandfillFacility = {
-  landfill_id: 0,
-  name: "",
-  latitude: 0,
-  longitude: 0,
-  manager_count: 0,
-  total_volume: 0,
+const headers = [
+  "contract_worker_id",
+  "contract_company_id",
+  "name",
+  "contact_number",
+  "date_of_birth",
+  "date_of_hire",
+  "job_title",
+  "payement_per_hour",
+];
+
+const createAndDownloadCSV = (headers, rows) => {
+  const csvContent =
+    "data:text/csv;charset=utf-8," +
+    headers.join(",") +
+    "\n" +
+    rows
+      .map((row) => headers.map((header) => row[header]).join(","))
+      .join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "landfill_facilities.csv");
+  document.body.appendChild(link);
+  link.click();
+};
+
+const jsonFromCSV = (csv) => {
+  const lines = csv.split(/\r\n|\n/);
+  const headers = lines[0].split(",");
+  const result = [];
+  for (let i = 1; i < lines.length; i++) {
+    const obj = {};
+    if (lines[i].trim() === "") {
+      continue;
+    }
+    const currentline = lines[i].split(",");
+    for (let j = 0; j < headers.length; j++) {
+      obj[headers[j]] = currentline[j];
+    }
+    result.push(obj);
+  }
+  return result;
+};
+
+function jsonToCsv(items) {
+  const header = Object.keys(items[0]);
+  const headerString = header.join(",");
+  // handle null or undefined values here
+  const replacer = (key, value) => value ?? "";
+  const rowItems = items.map((row) =>
+    header
+      .map((fieldName) => JSON.stringify(row[fieldName], replacer))
+      .join(",")
+  );
+  // join header and body, and break into separate lines
+  const csv = [headerString, ...rowItems].join("\r\n");
+  return csv;
+}
+
+const downloadJSONasCSV = (json, filename) => {
+  const encodedUri = encodeURI(
+    "data:text/csv;charset=utf-8," + jsonToCsv(json)
+  );
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+};
+
+const readFileAsText = (file) => {
+  console.log("file: ", file);
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      resolve(event.target.result);
+    };
+    reader.onerror = reject;
+    reader.readAsText(file, "utf-8");
+  });
 };
 
 export default function Workers() {
-  // const [query, location] = useQuery();
-  // const page = (Number.parseInt(query.get("page")) || 1) - 1;
-
-  const [workers, setWorkers] = useState([]);
-  const [first, setFirst] = useState(true);
-  const [last, setLast] = useState(true);
-
-  const [selectedEditWorker, setSelectedEditWorker] = useState(null);
-  const [selectedDeleteLandfill, setSelectedDeleteLandfill] = useState(null);
-  const [selectedLandfillManagers, setSelectedLandfillManagers] =
-    useState(null);
-
-  const [landfillManagers, setLandfillManagers] = useState([]);
-
-  useEffect(() => {
-    toast.promise(
-      getLandfills().then((lfs) => {
-        setWorkers(lfs);
-      }),
-      {
-        loading: "Loading Workers",
-        success: "Loaded Workers",
-        error: "Failed loading Workers",
-      }
-    );
-
-    getUsers().then((users) => {
-      setLandfillManagers(
-        users.filter((u) => u.role_name === USER_ROLES.LANDFILL_MANAGER)
-      );
-    });
-  }, []);
-
-  const closeManagerModal = () =>
-    setSelectedLandfillManagers((m) => {
-      setWorkers(
-        workers.map((s) =>
-          s.landfill_id === m.landfill_id
-            ? { ...s, manager_count: `${m.managers.length}` }
-            : s
-        )
-      );
-      return null;
-    });
+  const [data, setData] = useState([]);
 
   return (
     <div>
@@ -96,32 +117,41 @@ export default function Workers() {
                 Landfill
                 <span className="float-right">
                   <button
-                    className={
-                      "btn btn-outline-primary btn-sm icon-btn" +
-                      (first ? " invisible" : "")
-                    }
+                    className={"btn btn-outline-primary btn-sm icon-btn"}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      downloadJSONasCSV(data, "workers.csv");
+                    }}
                   >
-                    <i className="mdi mdi-arrow-left-thick"></i>
-                    <span>Previous</span>
+                    <i className="mdi mdi-arrow-down-thick"></i>
+                    <span>Download</span>
                   </button>
-                  <button
-                    className={
-                      "btn btn-outline-primary btn-sm icon-btn" +
-                      (last ? " invisible" : "")
-                    }
-                  >
-                    <span>Next</span>
-                    <i className="mdi mdi-arrow-right-thick"></i>
-                  </button>
+                  <span className="ml-2">
+                    Upload
+                    <input
+                      type="file"
+                      className={"btn btn-outline-primary btn-sm icon-btn ml-2"}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        readFileAsText(e.target.files[0]).then((text) => {
+                          const rows = jsonFromCSV(text);
+                          setData(rows);
+                        });
+                      }}
+                    />
+                  </span>
+                  {/* <span>Upload</span>
+                    <i className="mdi mdi-arrow-up-thick"></i>
+                  </button> */}
                   <button
                     className={"btn btn-outline-success btn-sm icon-btn"}
                     onClick={(e) => {
                       e.preventDefault();
-                      setSelectedEditWorker(defaultLandfillFacility);
+                      createAndDownloadCSV(headers, []);
                     }}
                   >
-                    <i className="mdi mdi-plus mr-2"></i>
-                    <span>Add New</span>
+                    <i className="mdi mdi-table mr-2"></i>
+                    <span>Download Sample</span>
                   </button>
                 </span>
               </h4>
@@ -129,78 +159,27 @@ export default function Workers() {
                 <table className="table table-outline table-hover">
                   <thead>
                     <tr>
+                      <th> Worker ID </th>
+                      <th> Company ID </th>
                       <th> Name </th>
-                      <th> Amount </th>
-                      <th> Location </th>
-                      <th> No of Managers </th>
-                      <th> Action </th>
+                      <th> Contact Number </th>
+                      <th> Date of Birth </th>
+                      <th> Date of Hire </th>
+                      <th> Job Title </th>
+                      <th> Payment Per Hour </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {workers.map((s) => (
-                      <tr key={s.landfill_id} className={"text-dark"}>
-                        <td> {s.name} </td>
-                        <td> {s.total_volume} </td>
-                        <td>
-                          ({s.latitude}, {s.longitude})
-                        </td>
-                        <td>
-                          <span
-                            className={
-                              "mdi mdi-account mr-2 " +
-                              (s.manager_count === "0"
-                                ? " text-danger"
-                                : "text-dark")
-                            }
-                          >
-                            {" "}
-                            {s.manager_count}{" "}
-                            <button
-                              className="btn btn-outline-primary btn-sm ml-4"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                toast.promise(
-                                  getManagersOfLandfill(s.landfill_id).then(
-                                    (managers) => {
-                                      setSelectedLandfillManagers({
-                                        landfill_id: s.landfill_id,
-                                        name: s.name,
-                                        managers,
-                                      });
-                                    }
-                                  ),
-                                  {
-                                    loading: "Loading Managers",
-                                    success: "Loaded Managers",
-                                    error: "Failed loading Managers",
-                                  }
-                                );
-                              }}
-                            >
-                              Manage
-                            </button>
-                          </span>
-                        </td>
-                        <td>
-                          {" "}
-                          <button
-                            className="btn btn-outline-dark btn-sm"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setSelectedEditWorker(s);
-                            }}
-                          >
-                            Edit
-                          </button>{" "}
-                          <button
-                            className="btn btn-outline-danger btn-sm"
-                            onClick={(e) => {
-                              setSelectedDeleteLandfill(s);
-                            }}
-                          >
-                            Delete
-                          </button>
-                        </td>
+                    {data.map((row) => (
+                      <tr>
+                        <td> {row.contract_worker_id} </td>
+                        <td> {row.contract_company_id} </td>
+                        <td> {row.name} </td>
+                        <td> {row.contact_number} </td>
+                        <td> {row.date_of_birth} </td>
+                        <td> {row.date_of_hire} </td>
+                        <td> {row.job_title} </td>
+                        <td> {row.payement_per_hour} </td>
                       </tr>
                     ))}
                   </tbody>
@@ -210,184 +189,6 @@ export default function Workers() {
           </div>
         </div>
       </div>
-      <Modal
-        show={selectedDeleteLandfill}
-        onHide={() => setSelectedDeleteLandfill(null)}
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Are you sure you want to delete Landfill - "
-            {selectedDeleteLandfill?.name}"?
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="row">
-            <div className="col-md-12 text-right">
-              <button
-                className="btn btn-outline-danger mr-2"
-                onClick={() => setSelectedDeleteLandfill(null)}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn-danger"
-                onClick={() => {
-                  toast.promise(
-                    deleteLandfill(selectedDeleteLandfill.landfill_id).then(
-                      (e) => {
-                        setWorkers(
-                          workers.filter(
-                            (u) =>
-                              u.landfill_id !==
-                              selectedDeleteLandfill.landfill_id
-                          )
-                        );
-                        setSelectedDeleteLandfill(null);
-                      }
-                    ),
-                    {
-                      loading: "Deleting Landfill",
-                      success: "Deleted Landfill",
-                      error: "Failed deleting Landfill",
-                    }
-                  );
-                }}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
-
-      <Modal
-        show={selectedEditWorker}
-        onHide={() => setSelectedEditWorker(null)}
-        centered
-        size="md"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {selectedEditWorker?.landfill_id === 0
-              ? "Add Landfill"
-              : `Edit Landfill - "${selectedEditWorker?.name}"`}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="row">
-            <div className="col-md-12">
-              <div className="form-group">
-                <label>Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={selectedEditWorker?.name}
-                  onChange={(e) => {
-                    setSelectedEditWorker({
-                      ...selectedEditWorker,
-                      name: e.target.value,
-                    });
-                  }}
-                />
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className="form-group">
-                <label>Latitude</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={selectedEditWorker?.latitude}
-                  onChange={(e) => {
-                    setSelectedEditWorker({
-                      ...selectedEditWorker,
-                      latitude: Number.parseFloat(e.target.value),
-                    });
-                  }}
-                />
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className="form-group">
-                <label>Longitude</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={selectedEditWorker?.longitude}
-                  onChange={(e) => {
-                    setSelectedEditWorker({
-                      ...selectedEditWorker,
-                      longitude: Number.parseFloat(e.target.value),
-                    });
-                  }}
-                />
-              </div>
-            </div>
-            <div className="col-md-12 text-right">
-              <button
-                className="btn btn-outline-danger mr-2"
-                onClick={() => setSelectedEditWorker(null)}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={async () => {
-                  toast.promise(
-                    selectedEditWorker?.landfill_id === 0
-                      ? addLandfill(
-                          selectedEditWorker.name,
-                          selectedEditWorker.latitude,
-                          selectedEditWorker.longitude
-                        ).then((e) => {
-                          setWorkers([
-                            ...workers,
-                            { ...selectedEditWorker, ...e },
-                          ]);
-                          setSelectedEditWorker(null);
-                        })
-                      : updateLandfill(
-                          selectedEditWorker.landfill_id,
-                          selectedEditWorker.name,
-                          selectedEditWorker.latitude,
-                          selectedEditWorker.longitude
-                        ).then((e) => {
-                          setWorkers(
-                            workers.map((u) =>
-                              u.landfill_id === e.landfill_id
-                                ? selectedEditWorker
-                                : u
-                            )
-                          );
-                          setSelectedEditWorker(null);
-                        }),
-                    {
-                      loading: `${
-                        selectedEditWorker?.landfill_id === 0
-                          ? "Adding"
-                          : "Updating"
-                      } Landfill`,
-                      success: `${
-                        selectedEditWorker?.landfill_id === 0
-                          ? "Added"
-                          : "Updated"
-                      } Landfill`,
-                      error: `Failed ${
-                        selectedEditWorker?.landfill_id === 0
-                          ? "adding"
-                          : "updating"
-                      } Landfill`,
-                    }
-                  );
-                }}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
     </div>
   );
 }
