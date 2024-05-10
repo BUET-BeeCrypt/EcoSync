@@ -342,12 +342,25 @@ function SideBar(props) {
             onClick={() => toggleMenuState("facilitiesMenuOpen")}
             data-toggle="collapse"
           >
-            <span className="menu-title">Facilities</span>
+            <span className="menu-title">Management</span>
             <i className="menu-arrow"></i>
             <i className="mdi mdi-home-group menu-icon"></i>
           </div>
           <Collapse in={state.facilitiesMenuOpen}>
             <ul className="nav flex-column sub-menu">
+            <li className="nav-item">
+                {" "}
+                <Link
+                  className={
+                    isPathActive("/admin/facilities/contractor")
+                      ? "nav-link active"
+                      : "nav-link"
+                  }
+                  to="/admin/facilities/contractor"
+                >
+                  Contractors
+                </Link>
+              </li>
               <li className="nav-item">
                 {" "}
                 <Link
@@ -374,6 +387,7 @@ function SideBar(props) {
                   Landfill
                 </Link>
               </li>
+              
             </ul>
           </Collapse>
         </li>

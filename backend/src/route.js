@@ -14,6 +14,7 @@ router.use('/rbac', requiresAdmin, require('./api/rbac/route'), /*#swagger.tags 
 router.use('/sts', require('./api/sts/route'), /*#swagger.tags = ['sts']*/);
 router.use('/landfill', require('./api/landfill/route'), /*#swagger.tags = ['landfill']*/);
 router.use('/vehicles', require('./api/vehicle/route'), /*#swagger.tags = ['vehicle']*/);
+router.use('/contractor', require('./api/contractor/route'), /*#swagger.tags = ['contractor']*/);
 
 router.use('/routes', require('./api/routing/route'), /*#swagger.tags = ['vehicle']*/);
 

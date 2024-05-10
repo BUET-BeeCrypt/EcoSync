@@ -309,7 +309,7 @@ modules.getVehiclesOfSTS = async (req, res) => {
     if (!exists) return res.status(404).json({ message: "STS not found" });
 
     const isManager = await repository.isManagerOfSTS(sts_id, req.user.user_id);
-    if (req.user.role !== "SYSTEM_ADMIN" && !isManager)
+    if (req.user.role_name !== "SYSTEM_ADMIN" && !isManager)
       return res
         .status(403)
         .json({ message: "You are not a manager of this sts" });
