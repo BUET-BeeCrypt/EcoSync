@@ -11,15 +11,15 @@ app.use(morgan("common"));
 app.use(cors());
 app.use(express.json());
 
-while (true) {
-  console.log("Waiting for db");
-  try {
-    dbInit("./init_ddl.sql");
-    break;
-  } catch (e) { 
-    console.log(e);
-  }
-}
+// while (true) {
+//   console.log("Waiting for db");
+//   try {
+//     dbInit("./init_ddl.sql");
+//     break;
+//   } catch (e) { 
+//     console.log(e);
+//   }
+// }
 
 app.get("/", (req, res) => {
     res.json({

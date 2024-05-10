@@ -10,6 +10,8 @@
 -- Landfill_entry( landfill_entry_id, landfill_id, vehicle_id, entry_time, departute_time, volume )
 -- STS_entry( sts_entry_id, sts_id, vehicle_id, entry_time, departute_time, volume )
 -- Bill (bill_id, vehicle_id, timestamp, billed_amount)
+-- Contractor_Company(contract_company_id, name, contract_id, registration_date, tin, contact_number, workforce_size, ton_payment_rate, required_ton, contract_duration, collection_area, sts_id)
+-- Contractor_Manager(contract_manager_id, contract_company_id, user_id)
 
 
 DROP SCHEMA public CASCADE;
@@ -25,6 +27,7 @@ CREATE TABLE public."Role"
 INSERT INTO public."Role" (name, details) VALUES ('SYSTEM_ADMIN', 'System Admin role');
 INSERT INTO public."Role" (name, details) VALUES ('STS_MANAGER', 'STS Manager role');
 INSERT INTO public."Role" (name, details) VALUES ('LANDFILL_MANAGER', 'Landfill Manager role');
+INSERT INTO public."Role" (name, details) VALUES ('CONTRACTOR_MANAGER', 'Contractor Manager role');
 INSERT INTO public."Role" (name, details) VALUES ('UNASSIGNED', 'Unassigned role');
 
 
@@ -131,6 +134,23 @@ Landfill_entry
     - entry_time [timestamp]
     - departure_time [timestamp]
     - volume [double]
+
+Contractor_Company
+    - name [string]
+    - contract_id [string]
+    - registration_date [timestamp]
+    - tin [string]
+    - contact_number [string]
+    - workforce_size [int]
+    - ton_payment_rate [double]
+    - required_ton [double]
+    - contract_duration [int]
+    - collection_area [string]
+    - sts_id [int]
+
+Contractor_Manager
+
+
 
 ***/
 
@@ -244,6 +264,67 @@ CREATE TABLE public."Landfill_Manager"
 
 INSERT INTO public."Landfill_Manager"(landfill_id,user_id) VALUES (1,4);
 
+CREATE TABLE public."Contractor_Company"
+(
+    contract_company_id serial NOT NULL,
+    name character varying(256) NOT NULL,
+    contract_id character varying(256) NOT NULL,
+    registration_date timestamp NOT NULL,
+    tin character varying(256) NOT NULL,
+    contact_number character varying(256) NOT NULL,
+    workforce_size integer NOT NULL,
+    ton_payment_rate double precision NOT NULL,
+    required_ton double precision NOT NULL,
+    contract_duration integer NOT NULL,
+    collection_area character varying(256) NOT NULL,
+    sts_id integer NOT NULL,
+    PRIMARY KEY (contract_company_id),
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE public."Contractor_Manager"
+(
+    contract_company_id integer NOT NULL,
+    user_id integer NOT NULL UNIQUE,
+    PRIMARY KEY (contract_company_id, user_id),
+    FOREIGN KEY (contract_company_id)
+        REFERENCES public."Contractor_Company" (contract_company_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (user_id)
+        REFERENCES public."User" (user_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE public."Contractor_Worker"
+(
+    contract_worker_id serial NOT NULL,
+    contract_company_id integer NOT NULL,
+    name character varying(256) NOT NULL,
+    contact_number character varying(256) NOT NULL,
+    PRIMARY KEY (contract_worker_id),
+    FOREIGN KEY (contract_company_id)
+        REFERENCES public."Contractor_Company" (contract_company_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE public."Contractor_Worker_Log"
+(
+    contract_worker_log_id serial NOT NULL,
+    contract_worker_id integer NOT NULL,
+    entry_time timestamp NOT NULL,
+    departure_time timestamp,
+    PRIMARY KEY (contract_worker_log_id),
+    FOREIGN KEY (contract_worker_id)
+        REFERENCES public."Contractor_Worker" (contract_worker_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
 
 CREATE TABLE public."Vehicle_Route"
 (
@@ -387,7 +468,9 @@ CREATE TABLE public."STS_Entry"
     manager_id integer NOT NULL,
     entry_time timestamp NOT NULL,
     departure_time timestamp,
-    vehicle_id integer,
+    vehicle_id integer DEFAULT NULL,
+    contract_company_id integer DEFAULT NULL,
+    contract_vehicle text NOT NULL DEFAULT 'N/A',
     volume double precision NOT NULL,
     PRIMARY KEY (sts_entry_id),
     FOREIGN KEY (sts_id)

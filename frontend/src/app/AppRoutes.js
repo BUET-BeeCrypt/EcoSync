@@ -21,6 +21,7 @@ const RoleManagement = lazy(() => import("./system-admin/RoleManagement"));
 const PermissionManagement = lazy(() =>
   import("./system-admin/PermissionManagement")
 );
+const ContractorCompany = lazy(() => import("./system-admin/Contractor"));
 
 const STSManagerHome = lazy(() => import("./sts-manager/Dashboard"));
 const STSVehicleEntry = lazy(() => import("./sts-manager/VehicleEntry"));
@@ -93,6 +94,10 @@ export default function AppRoutes() {
                 <Route path="/admin/add-user" component={AddUser} />
                 <Route path="/admin/users" component={Users} />
                 <Route path="/admin/facilities/sts" component={STSFacilities} />
+                <Route
+                  path="/admin/facilities/contractor"
+                  component={ContractorCompany}
+                />
                 <Route
                   path="/admin/facilities/landfill"
                   component={LandfillFacilities}

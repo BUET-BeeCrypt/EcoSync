@@ -1,8 +1,8 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTc0MzM4OCwiZXhwIjoxNzExNzQ2OTg4fQ.7hhIfmlb55UeVtzrXswKhlkfvROvcUCY8T6OFdIqMYs
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxNTMzMjU5MywiZXhwIjoxNzE1MzM2MTkzfQ.rGgtVSgsmr2a1_QBXKrg_UwUWsWrzyzzrXmlCigmXVk
 
-@refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzExNzEzMDQ4LCJleHAiOjE3MTIzMTc4NDh9.sV4VT2Rtj5BdWsRRU6Wrg3OzVmEQzoNSZM8nKG5-LS4
+@refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzE1MzMyNTkzLCJleHAiOjE3MTU5MzczOTN9.UvvloPOXrRWib6Q0RY5L3EoycuA7QvDSF-U7zi-aR-c
 
 ### health
 GET {{url}} HTTP/1.1
@@ -16,7 +16,7 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "landfill_manager",
+  "username": "admin",
   "password": "12345678"
 }
 
@@ -461,8 +461,6 @@ Authorization: {{access}}
 DELETE {{url}}/api/landfill/1/managers/5 HTTP/1.1
 Authorization: {{access}}
 
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTczODk4MSwiZXhwIjoxNzExODI1MzgxfQ.wbS0fTPgXyBVukJS-VhCtkypZ3-Jx8LMwg7eFLDTiqY
-
 ### Create landfill entry
 POST {{url}}/api/landfill/entries HTTP/1.1
 Authorization: {{access}}
@@ -493,3 +491,30 @@ Authorization: {{access}}
 ### Get Statistics
 GET {{url}}/api/stats HTTP/1.1
 Authorization: {{access}}
+
+### Get Contractors
+GET {{url}}/api/contractor HTTP/1.1
+Authorization: {{access}}
+
+### Get Contractors
+GET {{url}}/api/contractor/1 HTTP/1.1
+Authorization: {{access}}
+
+### Create Contractor
+POST {{url}}/api/contractor HTTP/1.
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "name": "Contractor 1",
+  "contract_id": "123",
+  "registration_date": "2024-03-29T23:50:00",
+  "tin": "123",
+  "contact_number": "123",
+  "workforce_size": 10,
+  "ton_payment_rate": 10,
+  "required_ton": 10,
+  "contract_duration": 10,
+  "collection_area": "Dhanmondi",
+  "sts_id": 1
+}
