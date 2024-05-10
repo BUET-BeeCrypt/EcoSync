@@ -20,6 +20,8 @@ router.use('/routes', require('./api/routing/route'), /*#swagger.tags = ['vehicl
 
 router.use('/stats', require('./api/stat/route'), /*#swagger.tags = ['Stats']*/);
 
+router.use('/community', require('./api/community/route'), /*#swagger.tags = ['Community']*/);
+
 
 
 module.exports = router;
