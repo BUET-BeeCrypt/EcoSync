@@ -110,3 +110,6 @@ export const getContractorWorkers = async () => {
 
 export const getSTSofContractor = async () => 
   axios.get(api_url("/contractor/sts")).then((res) => res.data);
+
+export const routeScheduling = async (sts_location, locations) => 
+  axios.post(api_url("/routes/schedule"), {sts_location, locations}).then((res) => res.data);

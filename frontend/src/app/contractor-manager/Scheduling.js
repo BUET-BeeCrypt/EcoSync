@@ -11,7 +11,7 @@ import {
 } from "@react-google-maps/api";
 import Spinner from "../shared/Spinner";
 import { getRoutes } from "../api/sts";
-import { getSTSofContractor } from "../api/contractor";
+import { getSTSofContractor, routeScheduling } from "../api/contractor";
 
 const center = {
   lat: 23.8091,
@@ -36,6 +36,8 @@ function App() {
   const [selected, setSelected] = React.useState(null);
   const [route, setRoute] = React.useState(null);
 
+  const [clusters, setClusters] = React.useState([]);
+
   useEffect(() => {
     toast.promise(
       getSTSofContractor().then((sts) => {
@@ -48,6 +50,29 @@ function App() {
       }
     );
   }, []);
+
+  useEffect(() => {
+    if (route && route.direction.length && map) {
+      // for each route.directions
+      const dir = route.direction.map((d) => ({
+        lat: Number.parseFloat(d[1]),
+        lng: Number.parseFloat(d[0]),
+      }));
+      console.log(dir);
+      const flightPath = new window.google.maps.Polyline({
+        path: dir,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 2.5,
+      });
+      flightPath.setMap(map);
+      //   after 5 seconds remove the route
+      setTimeout(() => {
+        flightPath.setMap(null);
+      }, 5000);
+    }
+  }, [route, map]);
 
   // useEffect(() => {
   //   toast.promise(
@@ -227,6 +252,39 @@ function App() {
         <div className="col-md-3">
           <div className="card">
             <div className="card-body">
+              {clusters.length > 0 && (
+                <>
+                  <h4 className="card-title">Clusters</h4>
+                  <hr />
+                  <div className="row">
+                    {clusters.map((c, i) => (
+                      <div className="col-md-12">
+                        <p className="text-muted">Cluster {i + 1}</p>
+                        <p>
+                          {c.locations.map((d) => (
+                            <p>
+                              {d.lat}, {d.lon}
+                            </p>
+                          ))}
+                        </p>
+                        <p>Distance: {c.distance} km</p>
+                        {/* <p>Time: {c.duration} seconds</p> */}
+                        <p>
+                          <button
+                            className="btn btn-primary btn-block"
+                            onClick={() => {
+                              setRoute(c);
+                            }}
+                          >
+                            View Route
+                          </button>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
               <h4 className="card-title">Locations</h4>
               <hr />
               <div className="row">
@@ -294,7 +352,22 @@ function App() {
                 <div className="col-md-12">
                   <button
                     className="btn btn-primary btn-block"
-                    onClick={() => {}}
+                    onClick={() => {
+                      toast.promise(
+                        routeScheduling(
+                          { lat: sts.latitude, lon: sts.longitude },
+                          data
+                        ).then((c) => {
+                          console.log(c);
+                          setClusters(c.routes);
+                        }),
+                        {
+                          loading: "Scheduling...",
+                          success: "Scheduling done!",
+                          error: "Failed to schedule",
+                        }
+                      );
+                    }}
                   >
                     Generate
                   </button>
