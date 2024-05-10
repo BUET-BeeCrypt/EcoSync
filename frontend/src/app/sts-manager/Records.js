@@ -61,15 +61,24 @@ export default function STSRecords() {
                   <strong>Entry Time:</strong>{" "}
                   {formatDateFromTimestamp(record.entry_time)}
                 </p>
-                {record.departure_time ? (
+                {record.departure_time && (
                   <p className="card-text">
                     <strong>Departure Time:</strong>{" "}
                     {formatDateFromTimestamp(record.departure_time)}
                   </p>
-                ) : (
-                  <p className="card-text">
-                    <br />
-                  </p>
+                )}
+                {record.contract_company_id && (
+                  <>
+                    <p className="card-text">
+                      <strong>Contractor ID:</strong> {record.contract_company_id}
+                    </p>
+                    <p className="card-text">
+                      <strong>Waste Type:</strong> {record.waste_type}
+                    </p>
+                    <p className="card-text">
+                      <strong>Vehicle:</strong> {record.contract_vehicle}
+                    </p>
+                  </>
                 )}
                 <p
                   className={
@@ -85,8 +94,8 @@ export default function STSRecords() {
                   {record.volume === 0
                     ? "Waiting for departure"
                     : record.volume > 0
-                    ? record.volume
-                    : -record.volume}
+                    ? `${1000 * record.volume} kg`
+                    : `${-record.volume} ton`}
                 </p>
               </div>
             </div>

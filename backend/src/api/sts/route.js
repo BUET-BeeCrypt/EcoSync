@@ -10,6 +10,8 @@ router.get("/records", checkPermission("VIEW_STS_ENTRY"), controller.getEntriesO
 router.get("/vehicles", checkPermission("VIEW_VEHICLE"),controller.getVehiclesOfManager);
 router.get("/my", checkPermission("VIEW_STS_ENTRY"), controller.getSTSOfManager);
 
+router.get("/contractors", controller.getContractorsOfSTS);
+
 // create a new STS. Only admin 
 router.post("/", checkPermission("CREATE_STS"), controller.createSTS);
 router.get("/", checkPermission("VIEW_ALL_STS"),controller.getSTSs);

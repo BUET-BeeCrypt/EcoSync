@@ -407,8 +407,14 @@ modules.addDepartureToSTS = async (req, res) => {
 };
 
 modules.addDumpEntryToSTS = async (req, res) => {
-  const { entry_time, volume } = req.body;
+  let { entry_time, volume, waste_type, contract_company_id, contract_vehicle } = req.body;
   const manager_id = req.user.user_id;
+  waste_type = waste_type || "Domestic";
+
+  if (!contract_company_id) {
+    return res.status(400).json({ message: "Contract company id is required" });
+  }
+
   try{
     const sts_id = await repository.getSTSIDfromManagerID(manager_id);
 
@@ -421,12 +427,25 @@ modules.addDumpEntryToSTS = async (req, res) => {
     if (volume < 0) {
       res.status(400).json({ message: "Volume cannot be negative" });
     }
-    await repository.addDumpEntryToSTS(sts_id, manager_id, entry_time, volume);
+    await repository.addDumpEntryToSTS(sts_id, manager_id, entry_time, volume, waste_type, contract_company_id, contract_vehicle);
     res.status(200).json({ message: "Dump entry added to sts" });
   }catch(err){
     res.status(500).json({ message: err.message });
   }
 };
+
+modules.getContractorsOfSTS = async (req, res) => {
+  const sts_id = await repository.getSTSIDfromManagerID(req.user.user_id);
+
+  if (sts_id === null) {
+    return res
+      .status(404)
+      .json({ message: "Manager is not assigned to any sts" });
+  }
+
+  const contractors = await repository.getContractorsOfSTS(sts_id);
+  res.status(200).json(contractors);
+}
 
 modules.getSTSOfManager = async (req, res) => {
   const manager_id = req.user.user_id;

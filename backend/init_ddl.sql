@@ -163,6 +163,7 @@ CREATE TABLE public."STS"
     location character varying(256) NOT NULL,
     latitude double precision NOT NULL,
     longitude double precision NOT NULL,
+    fine_per_ton double precision NOT NULL DEFAULT 10,
     capacity double precision NOT NULL, -- Total Volume Of Garbage Day
     dump_area double precision NOT NULL, -- Total Area Of Dumping Area
     coverage_area double precision NOT NULL, -- Total Area Of Coverage Area
@@ -467,8 +468,9 @@ CREATE TABLE public."STS_Entry"
     sts_id integer NOT NULL,
     manager_id integer NOT NULL,
     entry_time timestamp NOT NULL,
-    departure_time timestamp,
+    departure_time timestamp DEFAULT NULL,
     vehicle_id integer DEFAULT NULL,
+    waste_type text NOT NULL DEFAULT 'Domestic',
     contract_company_id integer DEFAULT NULL,
     contract_vehicle text NOT NULL DEFAULT 'N/A',
     volume double precision NOT NULL,
@@ -486,12 +488,6 @@ CREATE TABLE public."STS_Entry"
         ON UPDATE CASCADE
         ON DELETE SET NULL
 );
-
-
-
-
-
-
 
 CREATE TABLE public."Bill"
 (
@@ -517,7 +513,14 @@ CREATE TABLE public."Bill"
         ON DELETE NO ACTION
 );
 
+-- Insert a contractor company
+INSERT INTO public."Contractor_Company" (name, contract_id, registration_date, tin, contact_number, workforce_size, ton_payment_rate, required_ton, contract_duration, collection_area, sts_id) VALUES 
+    ('Dhaka Metro', 'Dhaka Metro 1', '2021-01-01', '123456789', '01712345678', 10, 1000, 100, 12, 'Dhaka', 22);
 
+-- Insert a constructor manager user
+INSERT INTO public."User" (name, username, email, password, role_name, active) VALUES 
+    ('contractor_manager', 'contractor_manager', 'email@email.com', '$2a$04$RyESvcxCSv2pb0tYggsEfeMQL5PbGChly7SwlAHGOCqjvK57iikOa','CONTRACTOR_MANAGER', true);
+INSERT INTO public."Contractor_Manager" (contract_company_id, user_id) VALUES (1, 8);
 
 INSERT INTO public."Permission" ("name",details) VALUES
         ('LOGIN','Login permission'),
