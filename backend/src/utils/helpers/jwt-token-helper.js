@@ -9,7 +9,7 @@ function signAccessToken(user_id, username, role) {
     { user_id: user_id, username: username , role: role},
     jwtSecretKey,
     {
-      expiresIn: '1h',
+      expiresIn: '2d',
     }
   );
   return accessToken;
