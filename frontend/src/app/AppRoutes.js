@@ -44,6 +44,7 @@ const LandfillRecords = lazy(() => import("./landfill-manager/Records"));
 
 const CreateCollection = lazy(() => import("./contractor-manager/GoogleMap"));
 const Worker = lazy(() => import("./contractor-manager/Worker"));
+const Scheduling = lazy(() => import("./contractor-manager/Scheduling"));
 
 const SecuritySettings = lazy(() => import("./shared/Settings"));
 
@@ -98,6 +99,7 @@ export default function AppRoutes() {
                 <Route path="/contractor/dashboard" component={null} />
                 <Route path="/contractor/worker" component={Worker} />
                 <Route path="/contractor/collection/list" component={CreateCollection} />
+                <Route path="/contractor/collection/schedule" component={Scheduling} />
                 <Redirect to="/contractor/dashboard" />
               </Switch>
             )}

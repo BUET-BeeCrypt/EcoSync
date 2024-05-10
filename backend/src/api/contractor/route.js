@@ -2,6 +2,8 @@ const controller = require("./controller");
 const router = require("express-promise-router")();
 const checkPermission = require("../../middlewares/check-permission");
 
+router.get("/sts", controller.getSTS);
+
 router.get("/workforce/worker/:worker_id",controller.getContractorWorker);
 router.get("/workforce",controller.getContractorWorkers);
 router.post("/workforce",controller.createContractorWorker);

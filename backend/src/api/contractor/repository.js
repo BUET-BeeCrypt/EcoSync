@@ -410,4 +410,17 @@ modules.updateOrCreateWorkerFromArray = async (workers, user_id) => {
   }
 };
 
+modules.getSTS = async (user_id) => {
+  const constructor_id = await modules.getContructorIdFromUserId(user_id);
+
+  if (!constructor_id) {
+    return null;
+  }
+
+  const query = `SELECT s.* FROM public."STS" s JOIN public."Contractor_Company" c ON s.sts_id = c.sts_id WHERE c.contract_company_id = $1`;
+  const values = [constructor_id];
+  const { rows } = await pool.query(query, values);
+  return rows.length > 0 ? rows[0] : null;
+}
+
 module.exports = modules;

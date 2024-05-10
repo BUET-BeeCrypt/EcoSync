@@ -359,4 +359,14 @@ modules.createOrUpdateWorkers = async (req, res) => {
   }
 };
 
+modules.getSTS = async (req, res) => {
+  const user_id = req.user.user_id;
+  try {
+    const result = await repository.getSTS(user_id);
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+}
+
 module.exports = modules;

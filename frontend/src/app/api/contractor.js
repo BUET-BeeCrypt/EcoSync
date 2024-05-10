@@ -107,3 +107,6 @@ export const createOrUpdateWorkers = async (workers) => {
 export const getContractorWorkers = async () => {
   return axios.get(api_url("/contractor/workforce")).then((res) => res.data);
 }
+
+export const getSTSofContractor = async () => 
+  axios.get(api_url("/contractor/sts")).then((res) => res.data);
