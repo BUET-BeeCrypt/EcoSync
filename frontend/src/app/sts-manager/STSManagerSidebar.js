@@ -248,6 +248,16 @@ function STSManagerSideBar(props) {
             </ul>
           </Collapse>
         </li>
+        <li
+          className={
+            isPathActive("/sts/bills") ? "nav-item active" : "nav-item"
+          }
+        >
+          <Link className="nav-link" to="/sts/bills">
+            <span className="menu-title">Bills</span>
+            <i className="mdi mdi-cash-register menu-icon"></i>
+          </Link>
+        </li>
         {/* <li
           className={
             isPathActive("/sts/shared") ? "nav-item active" : "nav-item"

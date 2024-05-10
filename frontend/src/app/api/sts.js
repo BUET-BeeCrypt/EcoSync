@@ -41,3 +41,9 @@ export const confirmFleet = async (route_id, vehicles) =>
 
 export const getRoutes = async () =>
   axios.get(api_url(`/routes`)).then((res) => res.data);
+
+export const getContractorBills = async () => 
+  axios.get(api_url(`/sts/bills`)).then((res) => res.data);
+
+export const generateTodaysBill = async () =>
+  axios.post(api_url(`/sts/bills`)).then((res) => res.data);

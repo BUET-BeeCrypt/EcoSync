@@ -12,6 +12,9 @@ router.get("/my", checkPermission("VIEW_STS_ENTRY"), controller.getSTSOfManager)
 
 router.get("/contractors", controller.getContractorsOfSTS);
 
+router.get("/bills", controller.getAllBill);
+router.post("/bills", controller.generateTodaysBill);
+
 // create a new STS. Only admin 
 router.post("/", checkPermission("CREATE_STS"), controller.createSTS);
 router.get("/", checkPermission("VIEW_ALL_STS"),controller.getSTSs);

@@ -327,6 +327,27 @@ CREATE TABLE public."Contractor_Worker_Log"
         ON DELETE CASCADE
 );
 
+CREATE TABLE public."Contractor_Bills"
+(
+    bill_id serial NOT NULL,
+    sts_id integer NOT NULL,
+    contract_company_id integer NOT NULL,
+    created timestamp NOT NULL,
+    waste_collected double precision NOT NULL,
+    waste_required double precision NOT NULL,
+    payment_per_ton double precision NOT NULL,
+    fine_per_ton double precision NOT NULL,
+    PRIMARY KEY (bill_id),
+    FOREIGN KEY (contract_company_id)
+        REFERENCES public."Contractor_Company" (contract_company_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (sts_id)
+        REFERENCES public."STS" (sts_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 CREATE TABLE public."Vehicle_Route"
 (
     route_id serial NOT NULL,
