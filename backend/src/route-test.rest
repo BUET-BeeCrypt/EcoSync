@@ -1,6 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6InN0c19tYW5hZ2VyMSIsInJvbGUiOiJTVFNfTUFOQUdFUiIsImlhdCI6MTcxNTM0MTYxNiwiZXhwIjoxNzE1MzQ1MjE2fQ._K4mWJKyK5paKMv02NqCjQlflaTAH6Q9Q9Muup8Wd1M
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6InN0c19tYW5hZ2VyMSIsInJvbGUiOiJTVFNfTUFOQUdFUiIsImlhdCI6MTcxNTM3MzYzMSwiZXhwIjoxNzE1Mzc3MjMxfQ._8DVGGbfROZ-2XHa9LlNkDCrsZ8IlTukLOHUng_YI-0
 
 @refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzE1MzMyNTkzLCJleHAiOjE3MTU5MzczOTN9.UvvloPOXrRWib6Q0RY5L3EoycuA7QvDSF-U7zi-aR-c
 
@@ -581,3 +581,21 @@ Content-Type: application/json
 ### get sts contractors
 GET {{url}}/api/sts/contractors HTTP/1.1
 Authorization: {{access}}
+
+### get schedule
+POST {{url}}/api/routes/schedule HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "sts_location": 
+  {"lon":90.379139,"lat":23.736201},
+  "locations":[
+         {"lon": 90.389139, "lat": 23.726201, "weight":13},
+        {"lon": 90.356360,  "lat": 23.799340, "weight":13},
+         {"lon": 90.427382, "lat": 23.739731, "weight":13 },
+         {"lon": 90.417932,"lat": 23.737631, "weight":13},
+         {"lon": 90.396587,"lat": 23.722175, "weight":13},
+         {"lon":90.367370, "lat":23.789340, "weight":13}
+ ]
+}
