@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - prod
-    # paths: ['backend/**']
+    paths: ['backend/**']
   workflow_dispatch:
 
 jobs:
