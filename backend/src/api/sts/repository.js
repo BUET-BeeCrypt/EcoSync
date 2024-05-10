@@ -66,8 +66,9 @@ modules.createSTS = async (sts) => {
     capacity,
     dump_area,
     coverage_area,
+    fine_per_ton,
   } = sts;
-  const query = `INSERT INTO public."STS" (zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`;
+  const query = `INSERT INTO public."STS" (zone_no,ward_no,name,location,latitude,longitude,capacity,dump_area,coverage_area, fine_per_ton) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`;
   const values = [
     zone_no,
     ward_no,
@@ -78,6 +79,7 @@ modules.createSTS = async (sts) => {
     capacity,
     dump_area,
     coverage_area,
+    fine_per_ton,
   ];
   const result = await pool.query(query, values);
   return result.rows[0];
@@ -123,8 +125,9 @@ modules.updateSTS = async (sts_id, sts) => {
     capacity,
     dump_area,
     coverage_area,
+    fine_per_ton,
   } = sts;
-  const query = `UPDATE public."STS" SET zone_no = $1, ward_no = $2, name = $3, location = $4, latitude = $5, longitude = $6, capacity = $7, dump_area = $8, coverage_area = $9 WHERE sts_id = $10 RETURNING *`;
+  const query = `UPDATE public."STS" SET zone_no = $1, ward_no = $2, name = $3, location = $4, latitude = $5, longitude = $6, capacity = $7, dump_area = $8, coverage_area = $9, fine_per_ton = $10 WHERE sts_id = $11 RETURNING *`;
   const values = [
     zone_no,
     ward_no,
@@ -135,6 +138,7 @@ modules.updateSTS = async (sts_id, sts) => {
     capacity,
     dump_area,
     coverage_area,
+    fine_per_ton,
     sts_id,
   ];
   const result = await pool.query(query, values);

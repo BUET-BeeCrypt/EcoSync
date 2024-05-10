@@ -28,6 +28,7 @@ const addStsSample = {
   coverage_area: 0,
   manager_count: 0,
   amount: 0,
+  fine_per_ton: 0,
 };
 
 export default function STSFacilities() {
@@ -138,6 +139,7 @@ export default function STSFacilities() {
                       <th> Name </th>
                       <th> Amount </th>
                       <th> Capacity </th>
+                      <th> Fine </th>
                       {/* <th> Amount / Capacity </th> */}
                       <th> Coverage </th>
                       <th> Location </th>
@@ -153,6 +155,7 @@ export default function STSFacilities() {
                         <td> {s.name} </td>
                         <td> {s.amount} </td>
                         <td> {s.capacity} </td>
+                        <td> {s.fine_per_ton} </td>
                         {/* <td>
                           <ProgressBar
                             now={(s.amount / s.capacity) * 100}
@@ -339,7 +342,7 @@ export default function STSFacilities() {
               </div>
             </div>
 
-            <div className="col-md-6">
+            <div className="col-md-4">
               <div className="form-group">
                 <label>Capacity (in Tons)</label>
                 <input
@@ -349,14 +352,14 @@ export default function STSFacilities() {
                   onChange={(e) => {
                     setSelectedEditSts({
                       ...selectedEditSts,
-                      capacity: Number.parseInt(e.target.value),
+                      capacity: Number.parseFloat(e.target.value),
                     });
                   }}
                 />
               </div>
             </div>
 
-            <div className="col-md-6">
+            <div className="col-md-4">
               <div className="form-group">
                 <label>Coverage Area</label>
                 <input
@@ -366,7 +369,25 @@ export default function STSFacilities() {
                   onChange={(e) => {
                     setSelectedEditSts({
                       ...selectedEditSts,
-                      coverage_area: Number.parseInt(e.target.value),
+                      coverage_area: Number.parseFloat(e.target.value),
+                    });
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* fine_per_ton */}
+            <div className="col-md-4">
+              <div className="form-group">
+                <label>Fine per Ton</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={selectedEditSts?.fine_per_ton}
+                  onChange={(e) => {
+                    setSelectedEditSts({
+                      ...selectedEditSts,
+                      fine_per_ton: Number.parseFloat(e.target.value),
                     });
                   }}
                 />
@@ -402,7 +423,7 @@ export default function STSFacilities() {
                   onChange={(e) => {
                     setSelectedEditSts({
                       ...selectedEditSts,
-                      dump_area: Number.parseInt(e.target.value),
+                      dump_area: Number.parseFloat(e.target.value),
                     });
                   }}
                 />
@@ -462,7 +483,8 @@ export default function STSFacilities() {
                           selectedEditSts.longitude,
                           selectedEditSts.capacity,
                           selectedEditSts.dump_area,
-                          selectedEditSts.coverage_area
+                          selectedEditSts.coverage_area,
+                          selectedEditSts.fine_per_ton
                         ).then((e) => {
                           setSts([...sts, { ...selectedEditSts, ...e }]);
                           setSelectedEditSts(null);
@@ -477,7 +499,8 @@ export default function STSFacilities() {
                           selectedEditSts.longitude,
                           selectedEditSts.capacity,
                           selectedEditSts.dump_area,
-                          selectedEditSts.coverage_area
+                          selectedEditSts.coverage_area,
+                          selectedEditSts.fine_per_ton
                         ).then((e) => {
                           setSts(
                             sts.map((u) =>
