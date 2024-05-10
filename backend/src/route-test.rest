@@ -501,7 +501,7 @@ GET {{url}}/api/contractor/1 HTTP/1.1
 Authorization: {{access}}
 
 ### Create Contractor
-POST {{url}}/api/contractor HTTP/1.
+POST {{url}}/api/contractor HTTP/1.1
 Authorization: {{access}}
 Content-Type: application/json
 
@@ -517,6 +517,65 @@ Content-Type: application/json
   "contract_duration": 10,
   "collection_area": "Dhanmondi",
   "sts_id": 1
+}
+
+### Get Contractor worker of a company
+GET {{url}}/api/contractor/workforce/1 HTTP/1.1
+Authorization: {{access}}
+
+
+### Create Contractor Worker
+POST {{url}}/api/contractor/workforce HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "name": "Worker 1",
+  "contract_company_id":1,
+  "contact_number": "123",
+  "nid": "123",
+  "contractor_id": 1
+}
+
+### Get Contractor Worker
+GET {{url}}/api/contractor/workforce/worker/1 HTTP/1.1
+Authorization: {{access}}
+
+### Update Contractor Worker
+PUT {{url}}/api/contractor/workforce/worker/1 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "name": "Worker 1 updated",
+  "contract_company_id":1,
+  "contact_number": "123",
+  "nid": "123",
+  "contractor_id": 1
+}
+
+
+### Create contractor worker log
+POST {{url}}/api/contractor/logging HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "contract_worker_id": 1,
+  "entry_time": 1715348190188
+}
+
+### Get contractor worker log
+GET {{url}}/api/contractor/logging/1 HTTP/1.1
+Authorization: {{access}}
+
+### Update contractor worker log
+PUT {{url}}/api/contractor/logging/1 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "exit_time": 1715348190188
 }
 
 ### get sts contractors
