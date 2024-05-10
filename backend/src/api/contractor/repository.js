@@ -343,5 +343,12 @@ modules.getUnfinishedContractorWorkerLogs = async (contract_company_id) => {
   return rows;
 }
 
+modules.getContructorIdFromUserId = async (user_id) => {
+  const query = `SELECT contract_company_id FROM public."Contractor_Manager" WHERE user_id = $1`;
+  const values = [user_id];
+  const { rows } = await pool.query(query, values);
+  return rows.length > 0 ? rows[0].contract_company_id : null;
+}
+
 module.exports = modules;
 

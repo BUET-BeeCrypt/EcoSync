@@ -95,3 +95,7 @@ export const removeManagerFromContractorCompany = async (
   axios
     .delete(api_url(`/contractor/${contract_company_id}/managers/${user_id}`))
     .then((res) => res.data);
+
+export const getContractorCompanyId = async () => {
+  return axios.get(api_url("/contractor/id")).then((res) => res.data);
+}
