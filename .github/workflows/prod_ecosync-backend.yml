@@ -7,12 +7,15 @@ on:
   push:
     branches:
       - prod
+    # paths: ['backend/**']
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: 'ubuntu-latest'
-
+    defaults:
+      run:
+        working-directory: ./backend
     steps:
     - uses: actions/checkout@v2
 
@@ -23,15 +26,15 @@ jobs:
       uses: docker/login-action@v2
       with:
         registry: https://index.docker.io/v1/
-        username: ${{ secrets.AzureAppService_ContainerUsername_146394b9cc2f42a684d985333977d5d6 }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_7eb5435bd8324e0abcdae1792ad7c562 }}
+        username: ${{ secrets.AzureAppService_ContainerUsername_33fe0bee9bc94e4f924ff9920120501e }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_f395b21dd42f4f1abf57d63b5a6146f8 }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_146394b9cc2f42a684d985333977d5d6 }}/masum1805/cs24:${{ github.sha }}
-        file: ./Dockerfile
+        tags: masum1805/cs24:${{ github.sha }}
+        context: ./backend
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,5 +50,5 @@ jobs:
       with:
         app-name: 'ecosync-backend'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_d8370b3a065a4d299af8bcf9e2d57617 }}
-        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_146394b9cc2f42a684d985333977d5d6 }}/masum1805/cs24:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_52eee3ea9f2e4a148ab3803977b248f1 }}
+        images: 'masum1805/cs24:${{ github.sha }}'
