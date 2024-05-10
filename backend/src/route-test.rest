@@ -1,7 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6InN0c19tYW5hZ2VyMSIsInJvbGUiOiJTVFNfTUFOQUdFUiIsImlhdCI6MTcxNTM0MTYxNiwiZXhwIjoxNzE1MzQ1MjE2fQ._K4mWJKyK5paKMv02NqCjQlflaTAH6Q9Q9Muup8Wd1M
-
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTcxNTM0NzM5MSwiZXhwIjoxNzE1NTIwMTkxfQ.VN5M_kqepVRngdW9LAgbU51L3DDhTsa_pCaV1InA6_U
 @refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzE1MzMyNTkzLCJleHAiOjE3MTU5MzczOTN9.UvvloPOXrRWib6Q0RY5L3EoycuA7QvDSF-U7zi-aR-c
 
 ### health
@@ -16,7 +15,7 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "sts_manager1",
+  "username": "sts_manager",
   "password": "12345678"
 }
 
@@ -519,6 +518,88 @@ Content-Type: application/json
   "sts_id": 1
 }
 
+###### POST
+
+### Create post
+POST {{url}}/api/community/post HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "title": "Post 1",
+  "description": "Description 1",
+  "image_uri": [
+    "1.jpg", "2.jpg"
+  ],
+  "type": "Issue",
+  "issue_type": "Overflowing bins",
+  "visibility": "DNCC",
+  "latitude" : 23.8103,
+  "longitude" : 90.4125
+}
+
+### Create post
+POST {{url}}/api/community/post HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "title": "Post 1",
+  "description": "Description 1",
+  "image_uri": [
+    "1.jpg", "2.jpg"
+  ],
+  "type": "Event",
+  "type_value": "2024-05-10T16:35:45.229Z",
+  "visibility": "D",
+  "latitude" : 23.8103,
+  "longitude" : 90.4125
+}
+
+### get all posts
+GET {{url}}/api/community/post?page=1&limit=5 HTTP/1.1
+Authorization: {{access}}
+
+
+### get all posts by type
+GET {{url}}/api/community/post/type/Event?page=1&limit=5 HTTP/1.1
+Authorization: {{access}}
+
+
+### get post by id
+GET {{url}}/api/community/post/1 HTTP/1.1
+Authorization: {{access}}
+
+### add comments to post
+POST {{url}}/api/community/post/1/comment HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "comment": "Comment 5",
+  "anonymous": true
+}
+
+### get all comments of post
+GET {{url}}/api/community/post/1/comment?page=1&limit=3 HTTP/1.1
+Authorization: {{access}}
+
+
+### add likes to post
+GET {{url}}/api/community/post/1/like HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+
+### dislike
+DELETE {{url}}/api/community/post/1/like HTTP/1.1
+Authorization: {{access}}
+
+
+
+
+
+
 ### Get Contractor worker of a company
 GET {{url}}/api/contractor/workforce/1 HTTP/1.1
 Authorization: {{access}}
@@ -580,4 +661,13 @@ Content-Type: application/json
 
 ### get sts contractors
 GET {{url}}/api/sts/contractors HTTP/1.1
+Authorization: {{access}}
+
+
+### get sts bills
+GET {{url}}/api/sts/bills HTTP/1.1
+Authorization: {{access}}
+
+### generate sts bills
+POST {{url}}/api/sts/bills HTTP/1.1
 Authorization: {{access}}
