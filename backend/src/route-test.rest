@@ -1,6 +1,6 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6InN0c19tYW5hZ2VyMSIsInJvbGUiOiJTVFNfTUFOQUdFUiIsImlhdCI6MTcxNTM3MzYzMSwiZXhwIjoxNzE1Mzc3MjMxfQ._8DVGGbfROZ-2XHa9LlNkDCrsZ8IlTukLOHUng_YI-0
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxNTM3ODk5NSwiZXhwIjoxNzE1MzgyNTk1fQ.DN6jD_P4UGh53iQaR7VxsA5zlUVgN290qeJqMMRgwcQ
 
 @refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzE1MzMyNTkzLCJleHAiOjE3MTU5MzczOTN9.UvvloPOXrRWib6Q0RY5L3EoycuA7QvDSF-U7zi-aR-c
 
@@ -16,7 +16,7 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "sts_manager1",
+  "username": "landfill_manager",
   "password": "12345678"
 }
 
@@ -587,12 +587,13 @@ POST {{url}}/api/routes/schedule HTTP/1.1
 Authorization: {{access}}
 Content-Type: application/json
 
+
 {
   "sts_location": 
   {"lon":90.379139,"lat":23.736201},
   "locations":[
          {"lon": 90.389139, "lat": 23.726201, "weight":13},
-        {"lon": 90.356360,  "lat": 23.799340, "weight":13},
+          {"lon": 90.356360,  "lat": 23.799340, "weight":13},
          {"lon": 90.427382, "lat": 23.739731, "weight":13 },
          {"lon": 90.417932,"lat": 23.737631, "weight":13},
          {"lon": 90.396587,"lat": 23.722175, "weight":13},
