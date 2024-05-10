@@ -44,7 +44,9 @@ modules.getPosts = async (page, limit) => {
   try {
     const query = `SELECT *,
     (SELECT COUNT(*) FROM public."Like" WHERE public."Like".post_id = public."Post".post_id)::INTEGER as likes
-    FROM public."Post" ORDER BY timestamp DESC LIMIT $1 OFFSET $2`;
+    FROM public."Post"
+    WHERE visibility != 'DNCC'
+    ORDER BY timestamp DESC LIMIT $1 OFFSET $2`;
     const values = [limit, (page - 1) * limit];
     const { rows } = await pool.query(query, values);
     return rows;
@@ -58,7 +60,8 @@ modules.getPostsByType = async (type, page, limit) => {
   try {
     const query = `SELECT *,
     (SELECT COUNT(*) FROM public."Like" WHERE public."Like".post_id = public."Post".post_id)::INTEGER as likes
-    FROM public."Post" WHERE type = $1 ORDER BY timestamp DESC LIMIT $2 OFFSET $3`;
+    FROM public."Post" WHERE type = $1 AND visibility != 'DNCC'
+    ORDER BY timestamp DESC LIMIT $2 OFFSET $3`;
     const values = [type, limit, (page - 1) * limit];
     const { rows } = await pool.query(query, values);
     return rows;
@@ -66,6 +69,36 @@ modules.getPostsByType = async (type, page, limit) => {
     throw error;
   }
 };
+
+// get post for dncc
+modules.getPostsForDNCC = async (type, page, limit) => {
+  try {
+
+    let  query = `SELECT *,
+    (SELECT COUNT(*) FROM public."Like" WHERE public."Like".post_id = public."Post".post_id)::INTEGER as likes
+    FROM public."Post"
+    WHERE visibility = 'DNCC' AND type = $1
+    ORDER BY timestamp DESC LIMIT $2 OFFSET $3`;
+
+    let values = [type, limit, (page - 1) * limit];
+
+    if(type === 'all'){
+      query = `SELECT *,
+      (SELECT COUNT(*) FROM public."Like" WHERE public."Like".post_id = public."Post".post_id)::INTEGER as likes
+      FROM public."Post"
+      WHERE visibility = 'DNCC'
+      ORDER BY timestamp DESC LIMIT $1 OFFSET $2`;
+
+      values = [limit, (page - 1) * limit];
+    }
+
+  
+    const { rows } = await pool.query(query, values);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
 
 // get a post
 modules.getPost = async (postId) => {

@@ -49,6 +49,18 @@ modules.getPostsByType = async (req, res) => {
   }
 };
 
+modules.getPostsForDNCC = async (req, res) => {
+  try{
+    const limit = req.query.limit || 500;
+    const page = req.query.page || 1;
+    const { type } = req.params;
+    const posts = await repository.getPostsForDNCC(type, page, limit);
+    res.status(200).json(posts);
+  }catch(err){
+    res.status(500).json({message: err.message});
+  }
+};
+
 modules.getPost = async (req, res) => {
   try{
     const { postId } = req.params;
