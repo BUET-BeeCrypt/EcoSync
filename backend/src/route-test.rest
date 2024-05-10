@@ -675,3 +675,21 @@ Authorization: {{access}}
 ### generate sts bills
 POST {{url}}/api/sts/bills HTTP/1.1
 Authorization: {{access}}
+### get schedule
+POST {{url}}/api/routes/schedule HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+
+{
+  "sts_location": 
+  {"lon":90.379139,"lat":23.736201},
+  "locations":[
+         {"lon": 90.389139, "lat": 23.726201, "weight":13},
+          {"lon": 90.356360,  "lat": 23.799340, "weight":13},
+         {"lon": 90.427382, "lat": 23.739731, "weight":13 },
+         {"lon": 90.417932,"lat": 23.737631, "weight":13},
+         {"lon": 90.396587,"lat": 23.722175, "weight":13},
+         {"lon":90.367370, "lat":23.789340, "weight":13}
+ ]
+}

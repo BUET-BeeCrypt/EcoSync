@@ -15,6 +15,7 @@ router.delete("/workforce/route/:worker_id",controller.deleteContractorWorkerRou
 router.post("/logging",controller.createContractorWorkerLog);
 router.get("/logging/:contract_company_id",controller.getContractorWorkerLogsRunning);
 router.put("/logging/:log_id",controller.updateContractorWorkerLog);
+
 router.post("/", controller.createContractorCompany);
 router.get("/", controller.getContractorCompanys);
 router.get("/:contract_company_id", controller.getContractorCompany);
