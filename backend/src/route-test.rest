@@ -544,25 +544,28 @@ Authorization: {{access}}
 Content-Type: application/json
 
 {
-  "title": "Post 1",
-  "description": "Description 1",
+  "title": "Post 5",
+  "description": "sdfasdfsffffffffffffffff",
   "image_uri": [
-    "1.jpg", "2.jpg"
   ],
-  "type": "Event",
-  "type_value": "2024-05-10T16:35:45.229Z",
-  "visibility": "D",
-  "latitude" : 23.8103,
-  "longitude" : 90.4125
+  "type": "Issue",
+  "type_value": "Event 1",
+  "visibility": "DNCC",
+  "latitude" : 23.7600205,
+  "longitude" : 90.3826549
 }
 
 ### get all posts
-GET {{url}}/api/community/post?page=1&limit=5 HTTP/1.1
+GET {{url}}/api/community/post?page=1&limit=50 HTTP/1.1
 Authorization: {{access}}
 
 
 ### get all posts by type
-GET {{url}}/api/community/post/type/Event?page=1&limit=5 HTTP/1.1
+GET {{url}}/api/community/post/type/Issue?page=1&limit=5 HTTP/1.1
+Authorization: {{access}}
+
+### get posts for dncc
+GET {{url}}/api/community/post/dncc/Issue?page=1&limit=5 HTTP/1.1
 Authorization: {{access}}
 
 

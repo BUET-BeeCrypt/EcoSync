@@ -754,6 +754,7 @@ INSERT INTO public."Bill"(vehicle_id,landfill_id,sts_id,amount,distance,timestam
 CREATE TABLE public."Post" (
     "post_id" SERIAL PRIMARY KEY,
     "user_id" TEXT, -- null for anonymous post
+    "username" TEXT, -- null for anonymous post
     "title" VARCHAR(100) NOT NULL,
     "description" TEXT NOT NULL,
     "image_uri" TEXT[],

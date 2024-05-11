@@ -5,7 +5,7 @@ const modules = {};
 
 modules.createPost = async (req, res) => {
   try{
-    const { user_id } = req.user;
+    const { user_id, username } = req.user;
     const content  = req.body;
 
     // console.table(content);
@@ -17,7 +17,7 @@ modules.createPost = async (req, res) => {
     });
 
   
-    const post = await repository.createPost(user_id, content);
+    const post = await repository.createPost(user_id,username,content);
     res.status(201).json(post);
   }catch(err){
     res.status(500).json({message: err.message});
@@ -43,6 +43,18 @@ modules.getPostsByType = async (req, res) => {
     const page = req.query.page || 1;
     const { type } = req.params;
     const posts = await repository.getPostsByType(type, page, limit);
+    res.status(200).json(posts);
+  }catch(err){
+    res.status(500).json({message: err.message});
+  }
+};
+
+modules.getPostsForDNCC = async (req, res) => {
+  try{
+    const limit = req.query.limit || 500;
+    const page = req.query.page || 1;
+    const { type } = req.params;
+    const posts = await repository.getPostsForDNCC(type, page, limit);
     res.status(200).json(posts);
   }catch(err){
     res.status(500).json({message: err.message});
