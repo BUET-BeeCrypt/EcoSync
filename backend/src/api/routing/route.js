@@ -7,7 +7,7 @@ router.post("/",controller.testLocal);
 router.get("/recalculate",controller.calculateRoutes);
 router.get("/fleet/suggest",controller.suggestFleet);
 router.post("/fleet/confirm",controller.confirmFleet);
-
+router.post("/schedule",controller.scheduleCollection);
 
 
 module.exports = router;

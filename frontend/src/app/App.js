@@ -10,11 +10,13 @@ import { toast } from "react-hot-toast";
 import STSManagerSidebar from "./sts-manager/STSManagerSidebar";
 import AdminSidebar from "./system-admin/SystemAdminSidebar";
 import LandfillManagerSidebar from "./landfill-manager/LandfillManagerSidebar";
+import ContractorSidebar from "./contractor-manager/ContractorSidebar";
 
 export const USER_ROLES = {
   SYSTEM_ADMIN: "SYSTEM_ADMIN",
   STS_MANAGER: "STS_MANAGER",
   LANDFILL_MANAGER: "LANDFILL_MANAGER",
+  CONTRACTOR_MANAGER: "CONTRACTOR_MANAGER",
   UNASSIGNED: "UNASSIGNED",
 };
 
@@ -113,6 +115,8 @@ function App() {
       <AdminSidebar />
     ) : user?.role === USER_ROLES.LANDFILL_MANAGER ? (
       <LandfillManagerSidebar />
+    ) : user?.role === USER_ROLES.CONTRACTOR_MANAGER ? (
+      <ContractorSidebar />
     ) : null
   ) : (
     ""

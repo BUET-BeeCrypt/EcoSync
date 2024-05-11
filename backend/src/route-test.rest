@@ -1,8 +1,7 @@
 
 @url=http://localhost:8000
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTc0MzM4OCwiZXhwIjoxNzExNzQ2OTg4fQ.7hhIfmlb55UeVtzrXswKhlkfvROvcUCY8T6OFdIqMYs
-
-@refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzExNzEzMDQ4LCJleHAiOjE3MTIzMTc4NDh9.sV4VT2Rtj5BdWsRRU6Wrg3OzVmEQzoNSZM8nKG5-LS4
+@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo4LCJ1c2VybmFtZSI6ImNvbnRyYWN0b3JfbWFuYWdlciIsInJvbGUiOiJDT05UUkFDVE9SX01BTkFHRVIiLCJpYXQiOjE3MTUzODI5ODYsImV4cCI6MTcxNTU1NTc4Nn0.XJQq7UHtmji91Fyc1rJdDU6GmM2GguW78Z9tfFOC5ZI
+@refesh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzE1MzMyNTkzLCJleHAiOjE3MTU5MzczOTN9.UvvloPOXrRWib6Q0RY5L3EoycuA7QvDSF-U7zi-aR-c
 
 ### health
 GET {{url}} HTTP/1.1
@@ -16,7 +15,7 @@ POST {{url}}/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-  "username": "landfill_manager",
+  "username": "contractor_manager",
   "password": "12345678"
 }
 
@@ -461,8 +460,6 @@ Authorization: {{access}}
 DELETE {{url}}/api/landfill/1/managers/5 HTTP/1.1
 Authorization: {{access}}
 
-@access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6ImxhbmRmaWxsX21hbmFnZXIiLCJyb2xlIjoiTEFOREZJTExfTUFOQUdFUiIsImlhdCI6MTcxMTczODk4MSwiZXhwIjoxNzExODI1MzgxfQ.wbS0fTPgXyBVukJS-VhCtkypZ3-Jx8LMwg7eFLDTiqY
-
 ### Create landfill entry
 POST {{url}}/api/landfill/entries HTTP/1.1
 Authorization: {{access}}
@@ -493,3 +490,209 @@ Authorization: {{access}}
 ### Get Statistics
 GET {{url}}/api/stats HTTP/1.1
 Authorization: {{access}}
+
+### Get Contractors
+GET {{url}}/api/contractor HTTP/1.1
+Authorization: {{access}}
+
+### Get Contractors
+GET {{url}}/api/contractor/1 HTTP/1.1
+Authorization: {{access}}
+
+### Create Contractor
+POST {{url}}/api/contractor HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "name": "Contractor 1",
+  "contract_id": "123",
+  "registration_date": "2024-03-29T23:50:00",
+  "tin": "123",
+  "contact_number": "123",
+  "workforce_size": 10,
+  "ton_payment_rate": 10,
+  "required_ton": 10,
+  "contract_duration": 10,
+  "collection_area": "Dhanmondi",
+  "sts_id": 1
+}
+
+###### POST
+
+### Create post
+POST {{url}}/api/community/post HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "title": "Post 1",
+  "description": "Description 1",
+  "image_uri": [
+    "1.jpg", "2.jpg"
+  ],
+  "type": "Issue",
+  "issue_type": "Overflowing bins",
+  "visibility": "DNCC",
+  "latitude" : 23.8103,
+  "longitude" : 90.4125
+}
+
+### Create post
+POST {{url}}/api/community/post HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "title": "Post 5",
+  "description": "sdfasdfsffffffffffffffff",
+  "image_uri": [
+  ],
+  "type": "Issue",
+  "type_value": "Event 1",
+  "visibility": "DNCC",
+  "latitude" : 23.7600205,
+  "longitude" : 90.3826549
+}
+
+### get all posts
+GET {{url}}/api/community/post?page=1&limit=50 HTTP/1.1
+Authorization: {{access}}
+
+
+### get all posts by type
+GET {{url}}/api/community/post/type/Issue?page=1&limit=5 HTTP/1.1
+Authorization: {{access}}
+
+### get posts for dncc
+GET {{url}}/api/community/post/dncc/Issue?page=1&limit=5 HTTP/1.1
+Authorization: {{access}}
+
+
+### get post by id
+GET {{url}}/api/community/post/1 HTTP/1.1
+Authorization: {{access}}
+
+### add comments to post
+POST {{url}}/api/community/post/1/comment HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "comment": "Comment 5",
+  "anonymous": true
+}
+
+### get all comments of post
+GET {{url}}/api/community/post/1/comment?page=1&limit=3 HTTP/1.1
+Authorization: {{access}}
+
+
+### add likes to post
+GET {{url}}/api/community/post/1/like HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+
+### dislike
+DELETE {{url}}/api/community/post/1/like HTTP/1.1
+Authorization: {{access}}
+
+
+
+
+
+
+### Get Contractor worker of a company
+GET {{url}}/api/contractor/workforce/1 HTTP/1.1
+Authorization: {{access}}
+
+
+### Create Contractor Worker
+POST {{url}}/api/contractor/workforce HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "name": "Worker 1",
+  "contract_company_id":1,
+  "contact_number": "123",
+  "nid": "123",
+  "contractor_id": 1
+}
+
+### Get Contractor Worker
+GET {{url}}/api/contractor/workforce/worker/1 HTTP/1.1
+Authorization: {{access}}
+
+### Update Contractor Worker
+PUT {{url}}/api/contractor/workforce/worker/1 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "name": "Worker 1 updated",
+  "contract_company_id":1,
+  "contact_number": "123",
+  "nid": "123",
+  "contractor_id": 1
+}
+
+
+### Create contractor worker log
+POST {{url}}/api/contractor/logging HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "contract_worker_id": 1,
+  "entry_time": 1715348190188
+}
+
+### Get contractor worker log
+GET {{url}}/api/contractor/logging/1 HTTP/1.1
+Authorization: {{access}}
+
+### Update contractor worker log
+PUT {{url}}/api/contractor/logging/1 HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+{
+  "exit_time": 1715348190188
+}
+
+### Get STS Info
+GET {{url}}/api/contractor/sts HTTP/1.1
+Authorization: {{access}}
+
+### get sts contractors
+GET {{url}}/api/sts/contractors HTTP/1.1
+Authorization: {{access}}
+
+
+### get sts bills
+GET {{url}}/api/sts/bills HTTP/1.1
+Authorization: {{access}}
+
+### generate sts bills
+POST {{url}}/api/sts/bills HTTP/1.1
+Authorization: {{access}}
+### get schedule
+POST {{url}}/api/routes/schedule HTTP/1.1
+Authorization: {{access}}
+Content-Type: application/json
+
+
+{
+  "sts_location": 
+  {"lon":90.379139,"lat":23.736201},
+  "locations":[
+         {"lon": 90.389139, "lat": 23.726201, "weight":13},
+          {"lon": 90.356360,  "lat": 23.799340, "weight":13},
+         {"lon": 90.427382, "lat": 23.739731, "weight":13 },
+         {"lon": 90.417932,"lat": 23.737631, "weight":13},
+         {"lon": 90.396587,"lat": 23.722175, "weight":13},
+         {"lon":90.367370, "lat":23.789340, "weight":13}
+ ]
+}

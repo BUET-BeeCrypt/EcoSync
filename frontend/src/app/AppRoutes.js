@@ -21,6 +21,7 @@ const RoleManagement = lazy(() => import("./system-admin/RoleManagement"));
 const PermissionManagement = lazy(() =>
   import("./system-admin/PermissionManagement")
 );
+const ContractorCompany = lazy(() => import("./system-admin/Contractor"));
 
 const STSManagerHome = lazy(() => import("./sts-manager/Dashboard"));
 const STSVehicleEntry = lazy(() => import("./sts-manager/VehicleEntry"));
@@ -29,6 +30,7 @@ const DumpEntry = lazy(() => import("./sts-manager/DumpEntry"));
 const STSRecords = lazy(() => import("./sts-manager/Records"));
 const STSRoutes = lazy(() => import("./sts-manager/GoogleMap"));
 const FleetGeneration = lazy(() => import("./sts-manager/FleetGenerate"));
+const ContractorBills = lazy(() => import("./sts-manager/ContractorBill"));
 
 const LandfillManagerHome = lazy(() => import("./landfill-manager/Dashboard"));
 const LandfillVehicleEntry = lazy(() =>
@@ -39,6 +41,10 @@ const LandfillVehicleExit = lazy(() =>
 );
 const LandfillBills = lazy(() => import("./landfill-manager/Bills"));
 const LandfillRecords = lazy(() => import("./landfill-manager/Records"));
+
+const CreateCollection = lazy(() => import("./contractor-manager/GoogleMap"));
+const Worker = lazy(() => import("./contractor-manager/Worker"));
+const Scheduling = lazy(() => import("./contractor-manager/Scheduling"));
 
 const SecuritySettings = lazy(() => import("./shared/Settings"));
 
@@ -63,6 +69,7 @@ export default function AppRoutes() {
                 <Route path="/sts/dump" component={DumpEntry} />
                 <Route path="/sts/records" component={STSRecords} />
                 <Route path="/sts/route/find" component={STSRoutes} />
+                <Route path="/sts/bills" component={ContractorBills} />
                 <Redirect to="/sts/dashboard" />
               </Switch>
             )}
@@ -87,12 +94,26 @@ export default function AppRoutes() {
               </Switch>
             )}
 
+            {user?.role === USER_ROLES.CONTRACTOR_MANAGER && (
+              <Switch>
+                <Route path="/contractor/dashboard" component={null} />
+                <Route path="/contractor/worker" component={Worker} />
+                <Route path="/contractor/collection/list" component={CreateCollection} />
+                <Route path="/contractor/collection/schedule" component={Scheduling} />
+                <Redirect to="/contractor/dashboard" />
+              </Switch>
+            )}
+
             {user?.role === USER_ROLES.SYSTEM_ADMIN && (
               <Switch>
                 <Route path="/admin/dashboard" component={SystemAdminHome} />
                 <Route path="/admin/add-user" component={AddUser} />
                 <Route path="/admin/users" component={Users} />
                 <Route path="/admin/facilities/sts" component={STSFacilities} />
+                <Route
+                  path="/admin/facilities/contractor"
+                  component={ContractorCompany}
+                />
                 <Route
                   path="/admin/facilities/landfill"
                   component={LandfillFacilities}

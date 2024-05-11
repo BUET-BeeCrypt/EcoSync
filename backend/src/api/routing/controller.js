@@ -2,6 +2,8 @@ const repository = require("./repository");
 const stsRepository = require("../sts/repository");
 const landfillRepository = require("../landfill/repository");
 const axios = require("axios");
+
+const kMeansWithClusters = require("./clustering").kMeansWithClusters;
 const modules = {};
 
 const Valhalla = require("@routingjs/valhalla").Valhalla;
@@ -111,6 +113,60 @@ modules.endToEndLocal = async (start, end) => {
         console.log(err);
        return null;
    }
+}
+
+modules.matrixAPI = async (locations) => {
+
+    const json_data = {
+        "sources":locations,
+        "targets":locations,
+        "costing":"auto",
+        "units":"kilometers"
+    }
+    const valhalla_route = process.env.VALHALLA_URL+"/sources_to_targets?json="+JSON.stringify(json_data);
+    const result = await axios.get(valhalla_route);
+    
+
+    const distances = [];
+    let distance = 0;
+    let duration = 0;
+    for(let tripx of result.data.sources_to_targets){
+        const distance = [];
+        for(const trip of tripx){
+            distance.push(trip.distance);
+        }
+        distances.push(distance);
+    }
+    return distances;
+
+}
+
+modules.tsp = async (sts,intermediates) => {
+    const locations = [sts];
+    for( const intermediate of intermediates ){
+        locations.push(intermediate);
+    }
+    locations.push(sts);
+    
+    const json_data = {
+        "locations":locations,
+        "costing":"auto",
+        "units":"kilometers"
+    }
+    const valhalla_route = process.env.VALHALLA_URL+"/optimized_route?json="+JSON.stringify(json_data);
+    const result = await axios.get(valhalla_route);
+
+    const route = {};
+    route.direction = [];
+    route.distance = 0;
+    route.duration = 0;
+    for( const trip of result.data.trip.legs ){
+        route.direction.push(...modules.decode(trip.shape));
+        route.distance += trip.summary.length;
+        route.duration += trip.summary.time;
+    }
+
+    return route;
 }
 
 modules.createRoutesFromLandfill = async (landfill_id) => {
@@ -303,6 +359,62 @@ modules.testLocal = async (req, res) => {
     const end = req.body.end;
     await modules.endToEndLocal(start,end);
     return res.status(200).json({"ok":"ok"});
+}
+
+modules.scheduleCollection = async (req, res) => {
+    
+    try{
+        const sts_location = req.body.sts_location;
+        const locations = req.body.locations;
+        let van_capacity = 10;//req.body.van_capacity;
+        const routes = [];
+        for(const location of locations) {
+            if( location.weight >= van_capacity ){
+                const ret = await modules.endToEndLocal(sts_location, location);
+                const route = {};
+                route.direction = ret.direction;
+                route.distance = ret.distance;
+                route.duration = ret.duration;
+                route.locations = [sts_location, location];
+                while( location.weight > van_capacity ){
+                    // route.direction = "";
+                    routes.push(route);
+                    location.weight -= van_capacity;
+                }
+                
+            }
+        }
+        const distances = [];//await modules.matrixAPI(locations);
+        const clusters = kMeansWithClusters(locations, 3, distances, 100);
+        // return res.status(200).json({clusters:clusters.clusters});
+        // console.log(clusters);
+        for(let ii = 0; ii>=0; ii++) {
+            let weight = 0;
+            const cluster = clusters.clusters[ii];
+            if( cluster === undefined ) break;
+            for(let iii=0;iii<cluster.length;iii++){
+                weight += cluster[iii].weight;
+            }
+            const route = {};
+            const ret = await modules.tsp(sts_location, cluster);
+            route.direction = ret.direction;
+            route.distance = ret.distance;
+            route.duration = ret.duration;
+            route.locations = cluster;
+            route.locations.push(sts_location);
+
+            while(weight>0){
+                routes.push(route);
+                weight -= van_capacity;
+            }
+        }
+
+        return res.status(200).json({routes});
+    }catch(err){
+        console.log(err);
+        return res.status(400).json({message: err.message});
+    }
+
 }
 
 module.exports = modules;

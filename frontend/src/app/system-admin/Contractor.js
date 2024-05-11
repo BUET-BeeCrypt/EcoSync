@@ -14,60 +14,70 @@ import {
   updateSTS,
 } from "../api/admin";
 import { USER_ROLES } from "../App";
+import {
+  addContractorCompany,
+  assignManagaerToContractorCompany,
+  deleteContractorCompany,
+  getContractorCompanys,
+  getManagersOfContractorCompany,
+  removeManagerFromContractorCompany,
+  updateContractorCompany,
+} from "../api/contractor";
 
-const addStsSample = {
-  sts_id: 0,
-  ward_no: 0,
-  zone_no: 0,
+const addContractorSample = {
+  contract_company_id: 0,
   name: "",
-  capacity: 0,
-  dump_area: 0,
-  location: "",
-  latitude: 0,
-  longitude: 0,
-  coverage_area: 0,
-  manager_count: 0,
-  amount: 0,
-  fine_per_ton: 0,
+  contract_id: "",
+  registration_date: new Date().toISOString().substring(0, 10),
+  tin: "",
+  contact_number: "",
+  workforce_size: 0,
+  ton_payment_rate: 0,
+  required_ton: 0,
+  contract_duration: 0,
+  collection_area: "",
+  sts_id: 0,
 };
 
-export default function STSFacilities() {
+export default function ContractorCompanies() {
   // const [query, location] = useQuery();
   // const page = (Number.parseInt(query.get("page")) || 1) - 1;
 
-  const [sts, setSts] = useState([]);
+  const [contractorCompanies, setContractorCompanies] = useState([]);
   const [first, setFirst] = useState(true);
   const [last, setLast] = useState(true);
 
-  const [selectedEditSts, setSelectedEditSts] = useState(null);
-  const [selectedDeleteSTS, setSelectedDeleteSTS] = useState(null);
-  const [selectedStsManagers, setSelectedStsManagers] = useState(null);
+  const [selectedEditContractor, setSelectedEditContractor] = useState(null);
+  const [selectedDeleteContractor, setSelectedDeleteContractor] =
+    useState(null);
+  const [selectedContractorManagers, setSelectedContractorManagers] =
+    useState(null);
 
-  const [stsManagers, setStsManagers] = useState([]);
+  const [contractorManagers, setContractorManagers] = useState([]);
 
   useEffect(() => {
     toast.promise(
-      getSTSs().then((sts) => {
-        setSts(sts);
+      getContractorCompanys().then((c) => {
+        setContractorCompanies(c);
       }),
       {
-        loading: "Loading STS",
-        success: "Loaded STS",
-        error: "Failed loading STS",
+        loading: "Loading Contractors",
+        success: "Loaded Contractors",
+        error: "Failed loading Contractors",
       }
     );
     getUsers().then((users) => {
-      setStsManagers(
-        users.filter((u) => u.role_name === USER_ROLES.STS_MANAGER)
+      setContractorManagers(
+        users.filter((u) => u.role_name === USER_ROLES.CONTRACTOR_MANAGER)
       );
     });
   }, []);
 
   const closeManagerModal = () =>
-    setSelectedStsManagers((m) => {
-      setSts(
-        sts.map((s) =>
-          s.sts_id === m.sts_id
+    setSelectedContractorManagers((m) => {
+      setContractorCompanies(
+        contractorCompanies.map((s) =>
+          s.contract_company_id === m.contract_company_id
             ? { ...s, manager_count: `${m.managers.length}` }
             : s
         )
@@ -78,16 +88,16 @@ export default function STSFacilities() {
   return (
     <div>
       <div className="page-header">
-        <h3 className="page-title"> Solid Treatment Site (STS) Facilities </h3>
+        <h3 className="page-title"> Contractor Companies </h3>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
               <a href="!#" onClick={(event) => event.preventDefault()}>
-                Facilities
+                Management
               </a>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              STS
+              Contractor
             </li>
           </ol>
         </nav>
@@ -98,7 +108,7 @@ export default function STSFacilities() {
           <div className="card">
             <div className="card-body">
               <h4 className="card-title">
-                STS
+                Contractor Companies
                 <span className="float-right">
                   <button
                     className={
@@ -122,7 +132,7 @@ export default function STSFacilities() {
                     className={"btn btn-outline-success btn-sm icon-btn"}
                     onClick={(e) => {
                       e.preventDefault();
-                      setSelectedEditSts(addStsSample);
+                      setSelectedEditContractor(addContractorSample);
                     }}
                   >
                     <i className="mdi mdi-plus mr-2"></i>
@@ -134,63 +144,70 @@ export default function STSFacilities() {
                 <table className="table table-outline table-hover">
                   <thead>
                     <tr>
-                      <th> Ward # </th>
-                      <th> Zone # </th>
+                      <th> Contract ID (for Months) </th>
+                      <th> Reg. Date </th>
                       <th> Name </th>
-                      <th> Amount </th>
-                      <th> Capacity </th>
-                      <th> Fine </th>
-                      {/* <th> Amount / Capacity </th> */}
-                      <th> Coverage </th>
-                      <th> Location </th>
-                      <th> No of Managers </th>
+                      <th> TIN # </th>
+                      <th> Contact # </th>
+                      <th>
+                        {" "}
+                        P<sub>t</sub> / W<sub>r</sub>{" "}
+                      </th>
+                      <th> Area </th>
+                      <th> STS ID </th>
+                      <th> Manage </th>
                       <th> Action </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {sts.map((s) => (
-                      <tr key={s.sts_id} className={"text-dark"}>
-                        <td> {s.ward_no} </td>
-                        <td> {s.zone_no} </td>
-                        <td> {s.name} </td>
-                        <td> {s.amount} </td>
-                        <td> {s.capacity} </td>
-                        <td> {s.fine_per_ton} </td>
+                    {contractorCompanies.map((cc) => (
+                      <tr key={cc.contract_company_id} className={"text-dark"}>
+                        <td>
+                          {" "}
+                          {cc.contract_id} ({cc.contract_duration}){" "}
+                        </td>
+                        <td> {cc.registration_date.substring(0, 10)} </td>
+                        <td> {cc.name} </td>
+                        <td> {cc.tin} </td>
+                        <td> {cc.contact_number} </td>
+                        <td>
+                          {" "}
+                          {cc.ton_payment_rate} / {cc.required_ton}{" "}
+                        </td>
+                        <td> {cc.collection_area} </td>
+                        <td> {cc.sts_id} </td>
                         {/* <td>
                           <ProgressBar
                             now={(s.amount / s.capacity) * 100}
                             variant="success"
                           />
                         </td> */}
-                        <td> {s.coverage_area} </td>
-                        <td>
-                          {s.location} ({s.latitude}, {s.longitude})
-                        </td>
                         <td>
                           <span
                             className={
                               "mdi mdi-account mr-2 " +
-                              (s.manager_count === "0"
+                              (cc.manager_count === "0"
                                 ? " text-danger"
                                 : "text-dark")
                             }
                           >
                             {" "}
-                            {s.manager_count}{" "}
+                            {cc.manager_count}{" "}
                             <button
                               className="btn btn-outline-primary btn-sm ml-4"
                               onClick={(e) => {
                                 e.preventDefault();
                                 toast.promise(
-                                  getManagersOfSTS(s.sts_id).then(
-                                    (managers) => {
-                                      setSelectedStsManagers({
-                                        sts_id: s.sts_id,
-                                        ward_no: s.ward_no,
-                                        managers,
-                                      });
-                                    }
-                                  ),
+                                  getManagersOfContractorCompany(
+                                    cc.contract_company_id
+                                  ).then((managers) => {
+                                    setSelectedContractorManagers({
+                                      contract_company_id:
+                                        cc.contract_company_id,
+                                      name: cc.name,
+                                      managers,
+                                    });
+                                  }),
                                   {
                                     loading: "Loading Managers",
                                     success: "Loaded Managers",
@@ -209,7 +226,7 @@ export default function STSFacilities() {
                             className="btn btn-outline-dark btn-sm"
                             onClick={(e) => {
                               e.preventDefault();
-                              setSelectedEditSts(s);
+                              setSelectedEditContractor(cc);
                             }}
                           >
                             Edit
@@ -217,7 +234,7 @@ export default function STSFacilities() {
                           <button
                             className="btn btn-outline-danger btn-sm"
                             onClick={(e) => {
-                              setSelectedDeleteSTS(s);
+                              setSelectedDeleteContractor(cc);
                             }}
                           >
                             Delete
@@ -233,14 +250,14 @@ export default function STSFacilities() {
         </div>
       </div>
       <Modal
-        show={selectedDeleteSTS}
-        onHide={() => setSelectedDeleteSTS(null)}
+        show={selectedDeleteContractor}
+        onHide={() => setSelectedDeleteContractor(null)}
         centered
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            Are you sure you want to delete STS from Ward "
-            {selectedDeleteSTS?.ward_no}"?
+            Are you sure you want to delete Contractor "
+            {selectedDeleteContractor?.name}"?
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -248,7 +265,7 @@ export default function STSFacilities() {
             <div className="col-md-12 text-right">
               <button
                 className="btn btn-outline-danger mr-2"
-                onClick={() => setSelectedDeleteSTS(null)}
+                onClick={() => setSelectedDeleteContractor(null)}
               >
                 Cancel
               </button>
@@ -256,16 +273,22 @@ export default function STSFacilities() {
                 className="btn btn-danger"
                 onClick={() => {
                   toast.promise(
-                    deleteSTS(selectedDeleteSTS.sts_id).then((e) => {
-                      setSts(
-                        sts.filter((u) => u.sts_id !== selectedDeleteSTS.sts_id)
+                    deleteContractorCompany(
+                      selectedDeleteContractor.contract_company_id
+                    ).then((e) => {
+                      setContractorCompanies(
+                        contractorCompanies.filter(
+                          (u) =>
+                            u.contract_company_id !==
+                            selectedDeleteContractor.contract_company_id
+                        )
                       );
-                      setSelectedDeleteSTS(null);
+                      setSelectedDeleteContractor(null);
                     }),
                     {
-                      loading: "Deleting STS",
-                      success: "Deleted STS",
-                      error: "Failed deleting STS",
+                      loading: "Deleting Contractor",
+                      success: "Deleted Contractor",
+                      error: "Failed deleting Contractor",
                     }
                   );
                 }}
@@ -278,47 +301,53 @@ export default function STSFacilities() {
       </Modal>
 
       <Modal
-        show={selectedEditSts}
-        onHide={() => setSelectedEditSts(null)}
+        show={selectedEditContractor}
+        onHide={() => setSelectedEditContractor(null)}
         centered
         size="md"
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            {selectedEditSts?.sts_id === 0
-              ? "Add STS"
-              : `Edit STS in Ward #${selectedEditSts?.ward_no}`}
+            {selectedEditContractor?.contract_company_id === 0
+              ? "Add Contractor"
+              : `Edit Contractor with ID# ${selectedEditContractor?.contract_company_id}`}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="row">
+            {/* Contract No */}
             <div className="col-md-6">
               <div className="form-group">
-                <label>Ward #</label>
+                <label>Contract ID</label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
-                  value={selectedEditSts?.ward_no}
+                  value={selectedEditContractor?.contract_id}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
-                      ward_no: Number.parseInt(e.target.value),
+                    setSelectedEditContractor({
+                      ...selectedEditContractor,
+                      contract_id: e.target.value,
                     });
                   }}
                 />
               </div>
             </div>
+
+            {/* Registration Date */}
             <div className="col-md-6">
               <div className="form-group">
-                <label>Zone #</label>
+                <label>Registration Date</label>
                 <input
-                  type="number"
+                  type="date"
                   className="form-control"
-                  value={selectedEditSts?.zone_no}
+                  value={selectedEditContractor?.registration_date?.substring(
+                    0,
+                    10
+                  )}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
-                      zone_no: Number.parseInt(e.target.value),
+                    setSelectedEditContractor({
+                      ...selectedEditContractor,
+                      registration_date: e.target.value,
                     });
                   }}
                 />
@@ -331,10 +360,10 @@ export default function STSFacilities() {
                 <input
                   type="text"
                   className="form-control"
-                  value={selectedEditSts?.name}
+                  value={selectedEditContractor?.name}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
+                    setSelectedEditContractor({
+                      ...selectedEditContractor,
                       name: e.target.value,
                     });
                   }}
@@ -342,52 +371,72 @@ export default function STSFacilities() {
               </div>
             </div>
 
-            <div className="col-md-4">
+            {/* TIN */}
+            <div className="col-md-6">
               <div className="form-group">
-                <label>Capacity (in Tons)</label>
+                <label>TIN</label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
-                  value={selectedEditSts?.capacity}
+                  value={selectedEditContractor?.tin}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
-                      capacity: Number.parseFloat(e.target.value),
+                    setSelectedEditContractor({
+                      ...selectedEditContractor,
+                      tin: e.target.value,
                     });
                   }}
                 />
               </div>
             </div>
 
-            <div className="col-md-4">
+            {/* Contact Number */}
+            <div className="col-md-6">
               <div className="form-group">
-                <label>Coverage Area</label>
+                <label>Contact Number</label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
-                  value={selectedEditSts?.coverage_area}
+                  value={selectedEditContractor?.contact_number}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
-                      coverage_area: Number.parseFloat(e.target.value),
+                    setSelectedEditContractor({
+                      ...selectedEditContractor,
+                      contact_number: e.target.value,
                     });
                   }}
                 />
               </div>
             </div>
 
-            {/* fine_per_ton */}
-            <div className="col-md-4">
+            <div className="col-md-6">
               <div className="form-group">
-                <label>Fine per Ton</label>
+                <label>Payment Per Ton</label>
                 <input
                   type="number"
+                  step="any"
                   className="form-control"
-                  value={selectedEditSts?.fine_per_ton}
+                  value={selectedEditContractor?.ton_payment_rate}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
-                      fine_per_ton: Number.parseFloat(e.target.value),
+                    setSelectedEditContractor({
+                      ...selectedEditContractor,
+                      ton_payment_rate: Number.parseFloat(e.target.value),
+                    });
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-6">
+              <div className="form-group">
+                <label>Minimum Collection </label>
+                <input
+                step="any"
+                  type="number"
+                  className="form-control"
+                  value={selectedEditContractor?.required_ton}
+                  onChange={(e) => {
+                    setSelectedEditContractor({
+                      ...selectedEditContractor,
+                      required_ton: Number.parseFloat(e.target.value),
                     });
                   }}
                 />
@@ -395,77 +444,63 @@ export default function STSFacilities() {
             </div>
 
             {/* location */}
-            <div className="col-md-6">
+            <div className="col-md-12">
               <div className="form-group">
-                <label>Location</label>
+                <label>Area</label>
                 <input
                   type="text"
                   className="form-control"
-                  value={selectedEditSts?.location}
+                  value={selectedEditContractor?.collection_area}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
-                      location: e.target.value,
+                    setSelectedEditContractor({
+                      ...selectedEditContractor,
+                      collection_area: e.target.value,
                     });
                   }}
                 />
               </div>
             </div>
 
-            {/* dump area */}
+            {/* STS id */}
             <div className="col-md-6">
               <div className="form-group">
-                <label>Dump Area</label>
+                <label>STS ID</label>
                 <input
                   type="number"
                   className="form-control"
-                  value={selectedEditSts?.dump_area}
+                  value={selectedEditContractor?.sts_id}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
-                      dump_area: Number.parseFloat(e.target.value),
+                    setSelectedEditContractor({
+                      ...selectedEditContractor,
+                      sts_id: Number.parseInt(e.target.value),
                     });
                   }}
                 />
               </div>
             </div>
 
+            {/* Duration */}
             <div className="col-md-6">
               <div className="form-group">
-                <label>Latitude</label>
+                <label>Duration (months)</label>
                 <input
                   type="number"
                   className="form-control"
-                  value={selectedEditSts?.latitude}
+                  value={selectedEditContractor?.contract_duration}
                   onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
-                      latitude: Number.parseFloat(e.target.value),
+                    setSelectedEditContractor({
+                      ...selectedEditContractor,
+                      contract_duration: Number.parseInt(e.target.value),
                     });
                   }}
                 />
               </div>
             </div>
-            <div className="col-md-6">
-              <div className="form-group">
-                <label>Longitude</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={selectedEditSts?.longitude}
-                  onChange={(e) => {
-                    setSelectedEditSts({
-                      ...selectedEditSts,
-                      longitude: Number.parseFloat(e.target.value),
-                    });
-                  }}
-                />
-              </div>
-            </div>
+
             <div className="col-md-12 text-right">
               <button
                 className="btn btn-outline-danger mr-2"
-                onClick={() => setSelectedEditSts(null)}
+                onClick={() => setSelectedEditContractor(null)}
               >
                 Cancel
               </button>
@@ -473,52 +508,63 @@ export default function STSFacilities() {
                 className="btn btn-primary"
                 onClick={async () => {
                   toast.promise(
-                    selectedEditSts?.sts_id === 0
-                      ? addSTS(
-                          selectedEditSts.zone_no,
-                          selectedEditSts.ward_no,
-                          selectedEditSts.name,
-                          selectedEditSts.location,
-                          selectedEditSts.latitude,
-                          selectedEditSts.longitude,
-                          selectedEditSts.capacity,
-                          selectedEditSts.dump_area,
-                          selectedEditSts.coverage_area,
-                          selectedEditSts.fine_per_ton
+                    selectedEditContractor?.contract_company_id === 0
+                      ? addContractorCompany(
+                          selectedEditContractor.name,
+                          selectedEditContractor.contract_id,
+                          selectedEditContractor.registration_date,
+                          selectedEditContractor.tin,
+                          selectedEditContractor.contact_number,
+                          selectedEditContractor.workforce_size,
+                          selectedEditContractor.ton_payment_rate,
+                          selectedEditContractor.required_ton,
+                          selectedEditContractor.contract_duration,
+                          selectedEditContractor.collection_area,
+                          selectedEditContractor.sts_id
                         ).then((e) => {
-                          setSts([...sts, { ...selectedEditSts, ...e }]);
-                          setSelectedEditSts(null);
+                          setContractorCompanies([
+                            ...contractorCompanies,
+                            { ...selectedEditContractor, ...e },
+                          ]);
+                          setSelectedEditContractor(null);
                         })
-                      : updateSTS(
-                          selectedEditSts.sts_id,
-                          selectedEditSts.zone_no,
-                          selectedEditSts.ward_no,
-                          selectedEditSts.name,
-                          selectedEditSts.location,
-                          selectedEditSts.latitude,
-                          selectedEditSts.longitude,
-                          selectedEditSts.capacity,
-                          selectedEditSts.dump_area,
-                          selectedEditSts.coverage_area,
-                          selectedEditSts.fine_per_ton
+                      : updateContractorCompany(
+                          selectedEditContractor.contract_company_id,
+                          selectedEditContractor.name,
+                          selectedEditContractor.contract_id,
+                          selectedEditContractor.registration_date,
+                          selectedEditContractor.tin,
+                          selectedEditContractor.contact_number,
+                          selectedEditContractor.workforce_size,
+                          selectedEditContractor.ton_payment_rate,
+                          selectedEditContractor.required_ton,
+                          selectedEditContractor.contract_duration,
+                          selectedEditContractor.collection_area,
+                          selectedEditContractor.sts_id
                         ).then((e) => {
-                          setSts(
-                            sts.map((u) =>
-                              u.sts_id === e.sts_id ? selectedEditSts : u
+                          setContractorCompanies(
+                            contractorCompanies.map((u) =>
+                              u.contract_company_id === e.contract_company_id ? selectedEditContractor : u
                             )
                           );
-                          setSelectedEditSts(null);
+                          setSelectedEditContractor(null);
                         }),
                     {
                       loading: `${
-                        selectedEditSts?.sts_id === 0 ? "Adding" : "Updating"
-                      } STS`,
+                        selectedEditContractor?.contract_company_id === 0
+                          ? "Adding"
+                          : "Updating"
+                      } Contractor`,
                       success: `${
-                        selectedEditSts?.sts_id === 0 ? "Added" : "Updated"
-                      } STS`,
+                        selectedEditContractor?.contract_company_id === 0
+                          ? "Added"
+                          : "Updated"
+                      } Contractor`,
                       error: `Failed ${
-                        selectedEditSts?.sts_id === 0 ? "adding" : "updating"
-                      } STS`,
+                        selectedEditContractor?.sts_id === 0
+                          ? "adding"
+                          : "updating"
+                      } Contractor`,
                     }
                   );
                 }}
@@ -530,36 +576,38 @@ export default function STSFacilities() {
         </Modal.Body>
       </Modal>
       <Modal
-        show={selectedStsManagers}
+        show={selectedContractorManagers}
         onHide={closeManagerModal}
         centered
         size="xl"
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            Managers of STS in Ward #{selectedStsManagers?.ward_no}
+            Managers of Contractor "{selectedContractorManagers?.name}""
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="row">
             <div className="col-md-12">
               <div className="form-group">
-                <label>Add New STS Manager</label>
+                <label>Add New Contractor Manager</label>
                 <Typeahead
                   onChange={(selected) => {
                     if (selected.length === 0) return;
                     toast.promise(
-                      addManagerToSTS(
-                        selectedStsManagers.sts_id,
+                      assignManagaerToContractorCompany(
+                        selectedContractorManagers.contract_company_id,
                         selected[0].user_id
                       ).then((e) => {
-                        setSelectedStsManagers((selectedStsManagers) => ({
-                          ...selectedStsManagers,
-                          managers: [
-                            ...selectedStsManagers.managers,
-                            selected[0],
-                          ],
-                        }));
+                        setSelectedContractorManagers(
+                          (selectedStsManagers) => ({
+                            ...selectedStsManagers,
+                            managers: [
+                              ...selectedStsManagers.managers,
+                              selected[0],
+                            ],
+                          })
+                        );
                       }),
                       {
                         loading: "Adding Manager",
@@ -568,7 +616,7 @@ export default function STSFacilities() {
                       }
                     );
                   }}
-                  options={stsManagers}
+                  options={contractorManagers}
                   labelKey={(option) =>
                     `[${option.username}] ${option.name} (${option.email})`
                   }
@@ -588,7 +636,7 @@ export default function STSFacilities() {
                   </tr>
                 </thead>
                 <tbody>
-                  {selectedStsManagers?.managers.map((u) => (
+                  {selectedContractorManagers?.managers.map((u) => (
                     <tr key={u.user_id} className={"text-dark"}>
                       <td> {u.username} </td>
                       <td> {u.email} </td>
@@ -600,15 +648,16 @@ export default function STSFacilities() {
                           onClick={(e) => {
                             e.preventDefault();
                             toast.promise(
-                              removeManagerFromSTS(
-                                selectedStsManagers.sts_id,
+                              removeManagerFromContractorCompany(
+                                selectedContractorManagers.contract_company_id,
                                 u.user_id
                               ).then((e) => {
-                                setSelectedStsManagers({
-                                  ...selectedStsManagers,
-                                  managers: selectedStsManagers.managers.filter(
-                                    (m) => m.user_id !== u.user_id
-                                  ),
+                                setSelectedContractorManagers({
+                                  ...selectedContractorManagers,
+                                  managers:
+                                    selectedContractorManagers.managers.filter(
+                                      (m) => m.user_id !== u.user_id
+                                    ),
                                 });
                               }),
                               {
