@@ -120,7 +120,6 @@ modules.createContractorCompany = async (contractorCompany) => {
 };
 
 modules.existsContractorCompany = async (contractor_company_id) => {
-
   const query = `SELECT * FROM "Contractor_Company" WHERE contract_company_id = $1`;
   const values = [contractor_company_id];
 
@@ -212,22 +211,22 @@ modules.addContractorManager = async (contract_company_id, user_id) => {
 modules.getContractorManagers = async (contract_company_id) => {
   const query = `SELECT user_id, "name", username, email
   FROM public."User" WHERE user_id IN (SELECT user_id FROM public."Contractor_Manager" WHERE contract_company_id = $1)`;
-    const { rows } = await pool.query(query, [contract_company_id]);
-    return rows;
-}
+  const { rows } = await pool.query(query, [contract_company_id]);
+  return rows;
+};
 
 modules.isManagerOfContractorCompany = async (contract_company_id, user_id) => {
-    const query = `SELECT * FROM public."Contractor_Manager" WHERE contract_company_id = $1 AND user_id = $2`;
-    const values = [contract_company_id, user_id];
-    const { rows } = await pool.query(query, values);
-    return rows.length > 0;
-    }
+  const query = `SELECT * FROM public."Contractor_Manager" WHERE contract_company_id = $1 AND user_id = $2`;
+  const values = [contract_company_id, user_id];
+  const { rows } = await pool.query(query, values);
+  return rows.length > 0;
+};
 
 modules.removeContractorManager = async (contract_company_id, user_id) => {
-    const query = `DELETE FROM public."Contractor_Manager" WHERE contract_company_id = $1 AND user_id = $2`;
-    const values = [contract_company_id, user_id];
-    await pool.query(query, values);
-}
+  const query = `DELETE FROM public."Contractor_Manager" WHERE contract_company_id = $1 AND user_id = $2`;
+  const values = [contract_company_id, user_id];
+  await pool.query(query, values);
+};
 
 modules.createContractorWorker = async (contractorWorker) => {
   const {
@@ -262,28 +261,31 @@ modules.createContractorWorker = async (contractorWorker) => {
 
   const { rows } = await pool.query(query, values);
   return rows[0];
-}
+};
 
 modules.getContractorWorkers = async (contract_company_id) => {
   const query = `SELECT * FROM "Contractor_Worker" WHERE contract_company_id = $1`;
   const { rows } = await pool.query(query, [contract_company_id]);
   return rows;
-}
+};
 
 modules.getContractorWorker = async (contract_worker_id) => {
   const query = `SELECT * FROM "Contractor_Worker" WHERE contract_worker_id = $1`;
   const { rows } = await pool.query(query, [contract_worker_id]);
   return rows[0];
-}
+};
 
-modules.updateContractorWorker = async (contract_worker_id, contractorWorker) => {
+modules.updateContractorWorker = async (
+  contract_worker_id,
+  contractorWorker
+) => {
   const {
     name,
     contact_number,
     date_of_birth,
     date_of_hire,
     job_title,
-    payement_per_hour
+    payement_per_hour,
   } = contractorWorker;
 
   const query = `UPDATE "Contractor_Worker" SET
@@ -307,19 +309,23 @@ modules.updateContractorWorker = async (contract_worker_id, contractorWorker) =>
 
   const { rows } = await pool.query(query, values);
   return rows[0];
-}
+};
 
-modules.updateContractorWorkerRoute = async (contract_worker_id, assigned_route, assigned_markers) => {
+modules.updateContractorWorkerRoute = async (
+  contract_worker_id,
+  assigned_route,
+  assigned_markers
+) => {
   const query = `UPDATE "Contractor_Worker" SET assigned_route = $1, assigned_markers = $2 WHERE contract_worker_id = $3 RETURNING *`;
   const values = [assigned_route, assigned_markers, contract_worker_id];
   const { rows } = await pool.query(query, values);
   return rows[0];
-}
+};
 
 modules.deleteContractorWorker = async (contract_worker_id) => {
   const query = `DELETE FROM "Contractor_Worker" WHERE contract_worker_id = $1`;
   await pool.query(query, [contract_worker_id]);
-}
+};
 
 modules.createContractorWorkerLog = async (contract_worker_id, start_time) => {
   console.log(contract_worker_id, start_time);
@@ -327,21 +333,94 @@ modules.createContractorWorkerLog = async (contract_worker_id, start_time) => {
   const values = [contract_worker_id, new Date(start_time)];
   const { rows } = await pool.query(query, values);
   return rows[0];
-}
+};
 
-modules.updateContractorWorkerLog = async (contract_worker_log_id, end_time) => {
+modules.updateContractorWorkerLog = async (
+  contract_worker_log_id,
+  end_time
+) => {
   const query = `UPDATE "Contractor_Worker_Log" SET departure_time = $2 WHERE contract_worker_log_id = $1 RETURNING *`;
   const values = [contract_worker_log_id, new Date(end_time)];
   const { rows } = await pool.query(query, values);
   return rows[0];
-}
+};
 
 modules.getUnfinishedContractorWorkerLogs = async (contract_company_id) => {
   const query = `SELECT * FROM "Contractor_Worker_Log" NATURAL JOIN "Contractor_Worker"  WHERE departure_time IS NULL AND contract_company_id = $1`;
   const values = [contract_company_id];
   const { rows } = await pool.query(query, values);
   return rows;
+};
+
+modules.getContructorIdFromUserId = async (user_id) => {
+  const query = `SELECT contract_company_id FROM public."Contractor_Manager" WHERE user_id = $1`;
+  const values = [user_id];
+  const { rows } = await pool.query(query, values);
+  return rows.length > 0 ? rows[0].contract_company_id : null;
+};
+
+modules.updateOrCreateWorkerFromArray = async (workers, user_id) => {
+  const constructor_id = await modules.getContructorIdFromUserId(user_id);
+
+  if (!constructor_id) {
+    return;
+  }
+
+  const createOrReplace = `INSERT INTO "Contractor_Worker" (
+    contract_worker_id,
+    contract_company_id,
+    name,
+    contact_number,
+    date_of_birth,
+    date_of_hire,
+    job_title,
+    payement_per_hour
+  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+  ON CONFLICT (contract_worker_id) DO UPDATE SET
+    contract_company_id = $2,
+    name = $3,
+    contact_number = $4,
+    date_of_birth = $5,
+    date_of_hire = $6,
+    job_title = $7,
+    payement_per_hour = $8
+  `;
+
+  for (const worker of workers) {
+    const values = [
+      worker.contract_worker_id,
+      constructor_id,
+      worker.name,
+      worker.contact_number,
+      worker.date_of_birth,
+      worker.date_of_hire,
+      worker.job_title,
+      worker.payement_per_hour,
+    ];
+
+    await pool.query(createOrReplace, values);
+
+    // if any worker is not in the array, delete it
+    const query = `DELETE FROM "Contractor_Worker" WHERE contract_company_id = $1 AND contract_worker_id NOT IN (${workers
+      .map((w) => w.contract_worker_id)
+      .join(",")})`;
+    await pool.query(query, [constructor_id]);
+
+    return;
+  }
+};
+
+modules.getSTS = async (user_id) => {
+  const constructor_id = await modules.getContructorIdFromUserId(user_id);
+
+  if (!constructor_id) {
+    return null;
+  }
+
+  const query = `SELECT s.* FROM public."STS" s JOIN public."Contractor_Company" c ON s.sts_id = c.sts_id WHERE c.contract_company_id = $1`;
+  const values = [constructor_id];
+  const { rows } = await pool.query(query, values);
+  return rows.length > 0 ? rows[0] : null;
 }
 
 module.exports = modules;
-

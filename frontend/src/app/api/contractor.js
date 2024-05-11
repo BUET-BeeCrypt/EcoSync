@@ -95,3 +95,21 @@ export const removeManagerFromContractorCompany = async (
   axios
     .delete(api_url(`/contractor/${contract_company_id}/managers/${user_id}`))
     .then((res) => res.data);
+
+export const getContractorCompanyId = async () => {
+  return axios.get(api_url("/contractor/id")).then((res) => res.data);
+}
+
+export const createOrUpdateWorkers = async (workers) => {
+  return axios.put(api_url("/contractor/workforce"), workers).then((res) => res.data);
+}
+
+export const getContractorWorkers = async () => {
+  return axios.get(api_url("/contractor/workforce")).then((res) => res.data);
+}
+
+export const getSTSofContractor = async () => 
+  axios.get(api_url("/contractor/sts")).then((res) => res.data);
+
+export const routeScheduling = async (sts_location, locations) => 
+  axios.post(api_url("/routes/schedule"), {sts_location, locations}).then((res) => res.data);
